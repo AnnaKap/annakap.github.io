@@ -6,10 +6,10 @@ module.exports = {
     entry: './src/index.js',
     output: {
         filename: 'main.js',
-        path: path.resolve(__dirname, 'docs'),
+        path: path.resolve(__dirname),
     },
     devServer: {
-        contentBase: './docs',
+        contentBase: 'index.html',
     },
     module: {
         rules: [
