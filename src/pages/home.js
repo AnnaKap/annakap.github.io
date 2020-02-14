@@ -12,7 +12,7 @@ const Work = (props) => {
             className={`${type} works`}
             onClick={() => {setModalOpen(true); setWorkType(type);}}
         >
-            {`${type.toUpperCase()}-WORKS`}
+            {`${type.toUpperCase()}`}
         </div>
     )
 }
@@ -20,6 +20,7 @@ const ListItem = (props) => {
     const { link, setLink, setSubModalOpen } = props;
     return (
         <div 
+            className="listItem"
             onClick={() => {setLink(link); setSubModalOpen(true)}}
         >
            {link.title}
@@ -30,8 +31,9 @@ const SubModal = props => {
     const { link } = props;
     return (
         <>
-        <div>lalalal</div>
-        <div>{link.title}</div>
+            <div>{link.title}</div>
+            <div>{link.description}</div>
+            <div>{link.link}</div>
         </>
 
     )
@@ -43,9 +45,10 @@ const Home = (props) => {
     const [ subModalOpen, setSubModalOpen ] = useState(false);
     const [ workType, setWorkType ] = useState(null);
     const [ link, setLink ] = useState(null);
-    const works = ['tech','art'];
+    const works = ['tech','art', 'contact', 'about'];
     return(
-        <div className="home" ref={constraintsRef}>
+        <div className="constraint" ref={constraintsRef}>
+        <div className="home">
             {works.map(w => (<Work key={`${w}-works`} type={w} setModalOpen={setModalOpen} setWorkType={setWorkType}/>))}
             {modalOpen && (
                     <Modal setModalOpen={setModalOpen} constraintsRef={constraintsRef} setSubModalOpen={setSubModalOpen}>
@@ -57,6 +60,7 @@ const Home = (props) => {
                     <SubModal modalOpen={subModalOpen} link={link}/>
                 </Modal>
             )}
+        </div>
         </div>
     );
 }

@@ -2,11 +2,33 @@
     transform: rotate(10deg) translate(10px, 120px);
 }
 .home {
-    padding: 3em;
-    background-color: palegoldenrod;
-    width: 50vw;
+    position: relative;
+    top: 20rem;
+    left: 20rem;
+    width: 90vw;
     height: 50vh;
 }
 .works {
-    width: 10em;
+    width: 90vw;
+    color: white;
+}
+.tech {
+    transform: rotate(10deg);
+}
+.art {
+    transform: rotate(-5deg);
+}
+.contact {
+    transform: rotate(-10deg);
+}
+.about {
+    transform: rotate(10deg);
+}
+.works:hover {
+    color: white;
+    background-color: red;
+}
+.constraint {
+    width: 90vw;
+    height: 90vh;
 }

@@ -36,6 +36,7 @@ class App extends Component {
         return (
             <>
             <Navbar changeRoute={this.changeRoute}/>
+            {/* <div>Anna Kaplan</div> */}
             {this.renderRoute()}
             </>
         )

@@ -1,13 +1,19 @@
 .nav-wrapper {
-    background-color: blue;
+    // background-color: blue;
+    padding: 2rem;
 }
 .navbar {
     display: flex;
 }
 .nav-item {
     flex-grow: 1;
-    color:white;
+    // color:white;
+}
+.nav-item:hover {
+    background-color: red;
+    color: white;
 }
 .nav-item.Home {
     flex-grow: 20;
 }
+

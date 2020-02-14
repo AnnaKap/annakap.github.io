@@ -9,8 +9,8 @@ class Navbar extends Component {
         const { changeRoute } = this.props;
         const routes = [
             {title: 'ANNA KAPLAN', route: 'Home'},
-            {title: 'CONTACT', route: 'Contact'},
-            {title: 'ABOUT', route: 'About'},
+            // {title: 'CONTACT', route: 'Contact'},
+            // {title: 'ABOUT', route: 'About'},
         ];
         return (
             <div className="nav-wrapper">

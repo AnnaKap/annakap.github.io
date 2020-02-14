@@ -3,32 +3,32 @@ const worksObj = {
         name: 'tech',
         links: [
             {
-                title: 'Scroll Animation',
+                title: 'scroll animation',
                 photos: [],
                 link: '',
             },
             {
-                title: 'Drity Lemon Vending Machine',
+                title: 'drity lemon vending machine',
                 photos: [],
                 link: '',
             },
             {
-                title: 'The Drug Store Kiosk App',
+                title: 'the drug store kiosk',
                 photos: [],
                 link: '', // link to youtube video
             },
             {
-                title: 'SVG Animations',
+                title: 'svg animations',
                 photos: [],
                 link: '',
             },
             {
-                title: 'Face Fun', 
+                title: 'face Fun', 
                 photos: [],
                 link: '',
             },
             {
-                title: 'Codescape',
+                title: 'codescape',
                 photos: [],
                 link: '',
             }
@@ -38,17 +38,30 @@ const worksObj = {
         name: 'art',
         links: [
             {
-                title: 'Tumblr',
+                title: 'tumblr',
                 link: ''
             },
             {
-                title: 'Instagram', // sketch dump,
+                title: 'instagram', // sketch dump,
                 link: ''
             },
             {
-                title: 'Ello',
+                title: 'ello',
                 link: '',
             }
+        ]
+    },
+    about: {
+        name: 'about',
+        links: [
+            {title: 'yer',  description: 'Software engineer & artist based in NYC. BA in Environmental Biology from Barnard College. Certificate of completion from Grace Hopper Program at Fullstack Academy.'},
+        ]
+    },
+    contact: {
+        name: 'contact',
+        links: [
+            {title: 'email', link: 'miss.akaplan@gmail.com'},
+            {title: 'linkedIn', link: ''}
         ]
     }
 }

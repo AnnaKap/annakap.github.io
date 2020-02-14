@@ -4,24 +4,28 @@ import '../styles/components/modal.scss';
 
 const Modal = (props) => {
     const { setModalOpen, constraintsRef, children, setSubModalOpen, modalOpen } = props;
+    const isSubmodal = !!setSubModalOpen
     const closeModals = () => { 
         setModalOpen(false); 
-        if (setSubModalOpen) {
+        if (isSubmodal) {
             setSubModalOpen(false);
         }
     }
+    const x = isSubmodal ? 100 : 300;
+    const y = isSubmodal? -20 : 40;
+    
     return (
         <AnimatePresence>
             <motion.div
                 dragConstraints={constraintsRef}
                 drag
-                initial={{ opacity: 0, scale: 0 }}
+                initial={{ opacity: 0, scale: 0, x, y}}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0 }}
                 className="modal"
             >
-                <div onClick={closeModals}>x</div>
-                <div>{children}</div>
+                <div className="close" onClick={closeModals}>x</div>
+                <div className="children">{children}</div>
             </motion.div>
         </AnimatePresence>
     )
