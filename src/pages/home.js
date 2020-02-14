@@ -19,7 +19,8 @@ const Work = (props) => {
 const ListItem = (props) => {
     const { link, setLink, setSubModalOpen } = props;
     let hasSubModal = false;
-    if (link.video || link.name === 'about' || link.name === 'contact') {
+    console.log("link", link.video, link.name)
+    if (link.video || link.description || link.name === 'email') {
         hasSubModal = true;
     }
     if (hasSubModal === true) {
@@ -38,7 +39,7 @@ const SubModal = props => {
     const { link } = props;
     return (
         <>
-            <div>{link.title}</div>
+            {/* <div>{link.title}</div> */}
             <div>{link.description}</div>
             <div>{link.link}</div>
         </>

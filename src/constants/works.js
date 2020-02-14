@@ -21,15 +21,15 @@ const worksObj = {
                 link: 'https://annakap.github.io/SVGTrial/',
             },
             {
-                title: 'face Fun',
+                title: 'face fun',
                 video: '', 
                 photos: [],
-                link: '',
+                link: 'https://medium.com/@miss.akaplan/integrating-ml5-js-posenet-model-with-three-js-b19710e2862b',
             },
             {
                 title: 'codescape',
                 photos: [],
-                link: '',
+                link: 'http://codescape.herokuapp.com/',
             }
         ]
     },
@@ -59,8 +59,8 @@ const worksObj = {
     contact: {
         name: 'contact',
         links: [
-            {title: 'email', link: 'miss.akaplan@gmail.com'},
-            {title: 'linkedIn', link: ''}
+            {name: 'email', title: 'email', link: 'miss.akaplan@gmail.com'},
+            {name: 'linkedIn', title: 'linkedIn', link: 'https://www.linkedin.com/in/annakaplan1/'}
         ]
     }
 }
