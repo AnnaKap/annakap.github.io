@@ -11,9 +11,13 @@ const Modal = (props) => {
             setSubModalOpen(false);
         }
     }
-    const x = isSubmodal ? 100 : 300;
-    const y = isSubmodal? -20 : 40;
-    
+    const width = window.innerWidth
+    const height = window.innerHeight
+    const xPercent = isSubmodal ? -.5 : -.4
+    const yPercent = isSubmodal ? -.2 : -.1
+    const x = Number(width) * xPercent ;
+    const y = Number(height) * yPercent;
+
     return (
         <AnimatePresence>
             <motion.div

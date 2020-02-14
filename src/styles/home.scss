@@ -3,26 +3,27 @@
 }
 .home {
     position: relative;
-    top: 20rem;
-    left: 20rem;
+    top: 30vh;
+    left: 60vw;
     width: 90vw;
     height: 50vh;
 }
 .works {
     width: 90vw;
     color: white;
+    // margin: 2rem;
 }
 .tech {
-    transform: rotate(10deg);
+    transform: rotate(20deg);
 }
 .art {
-    transform: rotate(-5deg);
+    transform: rotate(10deg);
 }
 .contact {
-    transform: rotate(-10deg);
+    transform: rotate(-5deg);
 }
 .about {
-    transform: rotate(10deg);
+    transform: rotate(-20deg);
 }
 .works:hover {
     color: white;

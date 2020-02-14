@@ -54,7 +54,7 @@ const worksObj = {
     about: {
         name: 'about',
         links: [
-            {title: 'yer',  description: 'Software engineer & artist based in NYC. BA in Environmental Biology from Barnard College. Certificate of completion from Grace Hopper Program at Fullstack Academy.'},
+            {title: 'yer',  description: 'software engineer & artist based in NYC'},
         ]
     },
     contact: {
