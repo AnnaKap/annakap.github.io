@@ -53,8 +53,8 @@ const Home = (props) => {
                     </Modal>
                 )}
             { subModalOpen && (
-                <Modal setModalOpen={setSubModalOpen} constraintsRef={constraintsRef}>
-                    <SubModal link={link}/>
+                <Modal modalOpen={subModalOpen} setModalOpen={setSubModalOpen} constraintsRef={constraintsRef}>
+                    <SubModal modalOpen={subModalOpen} link={link}/>
                 </Modal>
             )}
         </div>
