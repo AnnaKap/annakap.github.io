@@ -31,6 +31,19 @@ module.exports = {
               {
                 test: /\.scss$/,
                 use: ['style-loader', 'css-loader', 'sass-loader']
+              },
+              {
+                test: /\.(gif|png|jpe?g|svg)$/i,
+                use: [
+                  'file-loader',
+                  {
+                    loader: 'file-loader',
+                    options: {
+                      name: '[path][name].[ext]',
+                      outputPath: '/docs/static/'
+                    }
+                  },
+                ],
               }
             ]
           },

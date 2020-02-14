@@ -3,7 +3,7 @@ import { motion } from "framer-motion"
 import Modal from '../components/modal'
 import worksObj from '../constants/works';
 import '../styles/home.scss'
-
+import gif from '../static/giphy.gif';
 
 const Work = (props) => {
     const {type, setModalOpen, setWorkType} = props;
@@ -42,6 +42,7 @@ const SubModal = props => {
             {/* <div>{link.title}</div> */}
             <div>{link.description}</div>
             <div>{link.link}</div>
+            {link.video && (<div><img src={gif}/></div>)}
         </>
 
     )

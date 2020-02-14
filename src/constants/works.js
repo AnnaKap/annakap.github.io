@@ -8,7 +8,7 @@ const worksObj = {
             },
             {
                 title: 'drity lemon vending machine',
-                video: '',
+                video: 'giphy.gif',
                 photos: [],
             },
             {
