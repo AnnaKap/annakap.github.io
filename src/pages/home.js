@@ -18,15 +18,22 @@ const Work = (props) => {
 }
 const ListItem = (props) => {
     const { link, setLink, setSubModalOpen } = props;
-    return (
+    let hasSubModal = false;
+    if (link.video || link.name === 'about' || link.name === 'contact') {
+        hasSubModal = true;
+    }
+    if (hasSubModal === true) {
+        return (
         <div 
             className="listItem"
             onClick={() => {setLink(link); setSubModalOpen(true)}}
         >
            {link.title}
-        </div>
-    )
+        </div>)
+    }
+    return (<div  className="listItem"><a target="_blank" href={link.link}>{link.title}</a></div>)
 }
+
 const SubModal = props => {
     const { link } = props;
     return (

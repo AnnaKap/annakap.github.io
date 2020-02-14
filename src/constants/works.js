@@ -4,26 +4,25 @@ const worksObj = {
         links: [
             {
                 title: 'scroll animation',
-                photos: [],
-                link: '',
+                link: 'https://annakap.github.io/flip-book-animation/',
             },
             {
                 title: 'drity lemon vending machine',
+                video: '',
                 photos: [],
-                link: '',
             },
             {
                 title: 'the drug store kiosk',
+                video: '',
                 photos: [],
-                link: '', // link to youtube video
             },
             {
                 title: 'svg animations',
-                photos: [],
-                link: '',
+                link: 'https://annakap.github.io/SVGTrial/',
             },
             {
-                title: 'face Fun', 
+                title: 'face Fun',
+                video: '', 
                 photos: [],
                 link: '',
             },
@@ -39,15 +38,15 @@ const worksObj = {
         links: [
             {
                 title: 'tumblr',
-                link: ''
+                link: 'https://smelleachother.tumblr.com/'
             },
             {
                 title: 'instagram', // sketch dump,
-                link: ''
+                link: 'https://www.instagram.com/ahhhhhnahhhhh/'
             },
             {
                 title: 'ello',
-                link: '',
+                link: 'https://ello.co/annakaplan',
             }
         ]
     },
