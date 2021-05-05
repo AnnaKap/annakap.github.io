@@ -10,11 +10,13 @@ const worksObj = {
                 title: 'drity lemon vending machine',
                 video: 'giphy.gif',
                 photos: [],
+                link: 'https://docs.google.com/presentation/d/1bVujhC2yXr-WrjXBDogukeigS2yiWB_EYf43uWnXXmQ/present?slide=id.p'
             },
             {
                 title: 'the drug store kiosk',
                 video: '',
                 photos: [],
+                link: 'https://docs.google.com/presentation/d/1RqWprZvI-xe3nJz90JcpdkT1S_xyLIU8wFP7e3Bsyc0/present?slide=id.p'
             },
             {
                 title: 'svg animations',
