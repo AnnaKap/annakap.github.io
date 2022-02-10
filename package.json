@@ -35,7 +35,7 @@
     "css-loader": "^3.4.2",
     "file-loader": "^5.0.2",
     "framer-motion": "^1.8.4",
-    "node-sass": "^4.13.1",
+    "node-sass": "^7.0.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "sass-loader": "^8.0.2",
