@@ -54,3 +54,23 @@ body {
     scrollbar-color: rebeccapurple green;
     overflow: scroll !important;
 }
+
+svg path{
+  transition: d 1s, stroke 1s;
+}
+svg ellipse{
+  transition: ry 1s, fill 1s;
+}
+#smile svg:hover path {
+  d: path("M 10 60 q 55 100 110 0");
+}
+#sad svg:hover path{
+  d: path("M 10 100 Q 65 0 120 100");
+  stroke: #1900ff;
+}
+#sad svg:hover ellipse{
+  fill: #1900ff;
+}
+svg:hover ellipse{
+  ry: 10;
+}
