@@ -1,0 +1,141 @@
+{
+  "skills": [
+    {
+      "category": "Languages",
+      "items": [
+        {
+          "name": "Javascript",
+          "img": ""
+        },
+        {
+          "name": "PHP",
+          "img": ""
+        },
+        {
+          "name": "Python",
+          "img": ""
+        },
+        {
+          "name": "SQL",
+          "img": ""
+        },
+        {
+          "name": "TypeScript",
+          "img": ""
+        }
+      ]
+    },
+    {
+      "category": "Frameworks & Libraries",
+      "items": [
+        {
+          "name": "React",
+          "img": ""
+        },
+        {
+          "name": "graphql",
+          "img": ""
+        },
+        {
+          "name": "Rest API",
+          "img": ""
+        },
+        {
+          "name": "Nest.js",
+          "img": ""
+        },
+        {
+          "name": "Next.js",
+          "img": ""
+        },
+        {
+          "name": "Node.js",
+          "img": ""
+        },
+        {
+          "name": "Express",
+          "img": ""
+        },
+        {
+          "name": "Eleventy",
+          "img": "https://www.11ty.dev/img/logo.svg"
+        },
+        {
+          "name": "Tailwind CSS",
+          "img": ""
+        }
+      ]
+    },
+    {
+      "category": "Dev Tooling",
+      "items": [
+        {
+          "name": "Git",
+          "img": ""
+        },
+        {
+          "name": "Jira",
+          "img": ""
+        },
+        {
+          "name": "Miro",
+          "img": ""
+        },
+        {
+          "name": "DataDog",
+          "img": ""
+        },
+        {
+          "name": "Sentry",
+          "img": ""
+        }
+      ]
+    },
+    {
+      "category": "Data",
+      "items": [
+        {
+          "name": "SQLite",
+          "img": ""
+        },
+        {
+          "name": "MySQL",
+          "img": ""
+        },
+        {
+          "name": "PostgreSQL",
+          "img": ""
+        },
+        {
+          "name": "Pandas",
+          "img": ""
+        }
+      ]
+    },
+    {
+      "category": "Integrations",
+      "items": [
+        {
+          "name": "Mixpanel",
+          "img": ""
+        },
+        {
+          "name": "Stripe",
+          "img": ""
+        },
+        {
+          "name": "Google Tag Manager",
+          "img": ""
+        },
+        {
+          "name": "Blueshift",
+          "img": ""
+        },
+        {
+          "name": "Split.io",
+          "img": ""
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+---
+layout: layouts/main.liquid
+title: Anna Kaplan - Projects
+---
+<div class="flex justify-start flex-col md:flex-row">
+    <div class="flex flex-row items-start scroll h-3/5 md:w-1/2 w-full shadow-xl bg-orange-200">
+    {% for project in projects %}
+        <div class="flex-item w-1/2 shrink-0  m-2 bg-slate-100 hover:bg-yellow-100">
+            <h1 class=" pl-2 font-bold text-lg">{{ project.title }}</h1>
+            <div class="mb-2 mt-1">
+                <p class="p-3 text-base">{{ project.description }}</p>
+            </div>
+            <div class="flex">
+                {% if project.url %}
+                    <div class="mb-2">
+                        <a  class="text-blue-400 text-base p-3 hover:bg-yellow-300" target="_blank"  rel="noopener noreferrer" href="{{ project.url.src }}" class="text-blue-500">{{project.url.text}}</a>
+                    </div>
+                {% endif %}
+                {% if project.github %}
+                    <div class="mb-2">
+                        <a class="text-blue-400 text-base p-3 hover:bg-yellow-300" target="_blank"   rel="noopener noreferrer" href="{{ project.github }}" class="text-blue-500">Github</a>
+                    </div>
+                {% endif %}
+                {% if project.video %}
+                    <div class="mb-2">
+                        <a  class="text-blue-400 text-base p-3 hover:bg-yellow-300" target="_blank"  rel="noopener noreferrer"href="{{ project.video }}" class="text-blue-500">Demo</a>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="my-1"> 
+                <h1 class="pl-2 font-bold text-lg">Built with</h1>
+                <ul class="m-1 mb-2 p-3">
+                    {% for tool in project.tools %}
+                        <li class="text-base">{{ tool }}</li>
+                    {% endfor %}
+            </div>
+            <div class="flex justify-center">
+                {% if project.image %} 
+                    {% image project.image.src, project.image.alt, "w-4/5 transition-all hover:scale-150"%}
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+    <div class="text-base ml-10">
+        <p>Some of my past/current personal/professional projects</p>
+        <p>I'm also currently learning GoLang :)</p>
+        </div>
+</div>

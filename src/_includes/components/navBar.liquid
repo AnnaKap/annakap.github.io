@@ -1,0 +1,12 @@
+<section class="px-10 flex justify-around items-end">
+  {% include 'components/userHeader.liquid' %}
+  <nav class="grow">
+    <ul class="flex justify-end">
+      {% for item in navBar.items %}
+        <li class="mr-4">
+          <a class="text-base  hover:bg-red-300 {% if page.url == item.url %}bg-red-300 {% endif %}" href="{{ item.url }}">{{ item.title }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+</section>

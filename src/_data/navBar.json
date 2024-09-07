@@ -1,0 +1,24 @@
+{
+    "items": [
+        {
+            "title": "info",
+            "url": "/info/"
+        },
+       {
+            "title": "contact",
+            "url": "/contact/"
+        },
+        {
+            "title": "blog",
+            "url": "/blog/"
+        },
+        {
+            "title": "CV",
+            "url": "/cv/"
+        },
+        {
+            "title": "projects",
+            "url": "/projects/"
+        }
+    ]
+}

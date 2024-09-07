@@ -1,1 +1,11 @@
 /node_modules
+docs/
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+.env
+.cache/
+
+# VSCode settings
+.vscode/

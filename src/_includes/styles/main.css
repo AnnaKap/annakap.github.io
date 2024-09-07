@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@font-face {
+    font-family: 'swansea';
+    src: url('../../assets/fonts/Swansea-q3pd.ttf') format('tff');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'swansea';
+    src: url('../../assets/fonts/SwanseaBold-D0ox.ttf') format('tff');
+    font-weight: bold;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'swansea';
+    src: url('../../assets/fonts/SwanseaBoldItalic-p3Dv.ttf') format('tff');
+    font-weight: bold;
+    font-style: italic;
+  }
+
+  @font-face {
+    font-family: 'swansea';
+    src: url('../../assets/fonts/SwanseaItalic-AwqD.ttf') format('tff');
+    font-weight: normal;
+    font-style: italic;
+  }
+  
+html {
+    font-size: 16px;
+}
+
+body {
+    font-family: 'swansea', sans-serif;
+    font-size: 1.5rem;
+    line-height: 1.5;
+    color: #333;
+    background-color: #f1f5f9;  /* bg-slate-100 */
+}
+
+.flex-item {
+    flex: 0 0 auto;
+}
+#enter {
+    color:blue;
+}
+
+.scroll {
+    scrollbar-color: rebeccapurple green;
+    overflow: scroll !important;
+}
