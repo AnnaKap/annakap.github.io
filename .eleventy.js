@@ -24,9 +24,6 @@ module.exports = function(eleventyConfig) {
     });
     eleventyConfig.addPassthroughCopy("src/assets/pdf");
 
-    // prevents GitHub Pages from ignoring files or folders that start with underscores (_)
-    eleventyConfig.addPassthroughCopy(".nojekyll");
-
     eleventyConfig.addPassthroughCopy("docs/scripts"); // Ensures JS gets copied over
   
     return {
