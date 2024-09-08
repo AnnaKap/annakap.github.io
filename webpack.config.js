@@ -6,7 +6,8 @@ module.exports = {
     filename: 'bundle.js', // Output bundle
     path: path.resolve(__dirname, 'docs/scripts'), // Output directory (aligned with Eleventy output)
   },
-  mode: 'production', // or 'development' for unminified code
+  mode: 'development', // or 'development' for unminified code
+  devtool: 'source-map', // Add this line to enable source maps
   module: {
     rules: [
       {
