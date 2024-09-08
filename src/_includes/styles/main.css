@@ -52,25 +52,89 @@ body {
 
 .scroll {
     scrollbar-color: rebeccapurple green;
-    overflow: scroll !important;
+    height: 80vh;
+    overflow-y: scroll !important;
 }
 
-svg path{
-  transition: d 1s, stroke 1s;
+/* Define keyframes for path animations */
+@keyframes smilePath {
+  0% {
+    d: path("M 10 60 q 55 100 110 0");
+    stroke: #ff0000;
+  }
+  50% {
+    stroke: #1900ff;
+    d: path("M 10 60 q 55 50 110 0");
+  }
+  100% {
+    d: path("M 10 60 q 55 100 110 0");
+    stroke: #ff0000;
+  }
 }
-svg ellipse{
-  transition: ry 1s, fill 1s;
+
+@keyframes sadPath {
+  0% {
+    d: path("M 10 100 Q 65 0 120 100");
+    stroke: #1900ff;
+  }
+  50% {
+    d: path("M 10 100 Q 65 50 120 100");
+    stroke: #ff0000;
+  }
+  100% {
+    d: path("M 10 100 Q 65 0 120 100");
+    stroke: #1900ff;
+  }
 }
-#smile svg:hover path {
-  d: path("M 10 60 q 55 100 110 0");
+
+/* Define keyframes for ellipse animations */
+@keyframes sadEllipse {
+  0% {
+    ry: 2;
+    fill: #1900ff;
+  }
+  50% {
+    ry: 10;
+    fill: #ff0000;;
+  }
+  100% {
+    ry: 2;
+    fill: #1900ff;
+  }
 }
-#sad svg:hover path{
-  d: path("M 10 100 Q 65 0 120 100");
-  stroke: #1900ff;
+
+@keyframes hoverEllipse {
+  0% {
+    ry: 2;
+    fill: #ff0000;;
+  }
+  50% {
+    ry: 10;
+    fill: #1900ff;
+  }
+  100% {
+    ry: 2;
+    fill: #ff0000;;
+  }
 }
-#sad svg:hover ellipse{
-  fill: #1900ff;
+
+/* Apply animations to the respective elements */
+#smile svg path {
+  animation: smilePath 2s infinite;
 }
-svg:hover ellipse{
-  ry: 10;
+
+#sad svg path {
+  animation: sadPath 2s infinite;
+}
+
+#sad svg ellipse {
+  animation: sadEllipse 2s infinite;
+}
+
+svg ellipse {
+  animation: hoverEllipse 2s infinite;
+}
+
+.pdf-container {
+  height:85vh;
 }

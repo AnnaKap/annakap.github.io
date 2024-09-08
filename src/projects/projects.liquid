@@ -2,10 +2,10 @@
 layout: layouts/main.liquid
 title: Anna Kaplan - Projects
 ---
-<div class="flex justify-start flex-col md:flex-row">
-    <div class="flex flex-row items-start scroll h-3/5 md:w-1/2 w-full shadow-xl bg-orange-200">
+<div>
+    <div class="flex flex-col items-center scroll md:w-2/3 w-full shadow-xl bg-orange-200 rounded-sm">
     {% for project in projects %}
-        <div class="flex-item w-1/2 shrink-0  m-2 bg-slate-100 hover:bg-yellow-100">
+        <div class="flex-item sm:w-4/5 lg:w-1/2 shrink-0  m-2 bg-slate-100 hover:bg-yellow-100 rounded-sm">
             <h1 class=" pl-2 font-bold text-lg">{{ project.title }}</h1>
             <div class="mb-2 mt-1">
                 <p class="p-3 text-base">{{ project.description }}</p>
@@ -42,8 +42,4 @@ title: Anna Kaplan - Projects
         </div>
     {% endfor %}
     </div>
-    <div class="text-base ml-10">
-        <p>Some of my past/current personal/professional projects</p>
-        <p>I'm also currently learning GoLang :)</p>
-        </div>
 </div>

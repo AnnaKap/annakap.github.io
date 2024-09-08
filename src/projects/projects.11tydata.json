@@ -10,7 +10,8 @@
             "date":"September 2024",
             "title": "Personal Portfolio",
             "description": "My personal portfolio site built with Eleventy <3",
-            "tools": ["Eleventy", "TailwindCSS", "JavaScript", "liquid"]
+            "tools": ["Eleventy", "TailwindCSS", "JavaScript", "liquid"],
+            "github":"https://github.com/AnnaKap/annakap.github.io"
         },
         {
             "date":"February 2020",

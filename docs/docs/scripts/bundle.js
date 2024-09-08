@@ -1,24 +1,6 @@
-/*
- * ATTENTION: The "eval" devtool has been used (maybe by default in mode: "development").
- * This devtool is neither made for production nor for readable output files.
- * It uses "eval()" calls to create a separate source file in the browser devtools.
- * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
- * or disable the default devtool with "devtool: false".
- * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
- */
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
-
-/***/ "./src/scripts/main.js":
-/*!*****************************!*\
-  !*** ./src/scripts/main.js ***!
-  \*****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _svgdotjs_svg_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @svgdotjs/svg.js */ \"./node_modules/@svgdotjs/svg.js/src/main.js\");\n\nvar sad = function sad() {\n  var sadDraw = (0,_svgdotjs_svg_js__WEBPACK_IMPORTED_MODULE_0__.SVG)().addTo('#sad').size(180, 120); // Changed 'SVG('sad')' to addTo('#sad')\n  var frown = sadDraw.path('M 10 60 q 55 0 110 0').fill('none').stroke({\n    color: '#f06',\n    width: 4,\n    linecap: 'round',\n    linejoin: 'round'\n  });\n  var eye1 = sadDraw.ellipse(20, 5).fill('#f06').move(10, 10);\n  var eye2 = sadDraw.ellipse(20, 5).fill('#f06').move(100, 10);\n};\nvar smile = function smile() {\n  var smileDraw = (0,_svgdotjs_svg_js__WEBPACK_IMPORTED_MODULE_0__.SVG)().addTo('#smile').size(180, 120); // Changed 'SVG('smile')' to addTo('#smile')\n  var smile = smileDraw.path('M 10 60 q 55 0 110 0').fill('none').stroke({\n    color: '#f06',\n    width: 4,\n    linecap: 'round',\n    linejoin: 'round'\n  });\n  var eye1 = smileDraw.ellipse(20, 5).fill('#f06').move(10, 10);\n  var eye2 = smileDraw.ellipse(20, 5).fill('#f06').move(100, 10);\n};\nsad();\nsmile();\n\n//# sourceURL=webpack://annakap.github.io/./src/scripts/main.js?");
-
-/***/ }),
 
 /***/ "./node_modules/@svgdotjs/svg.js/src/animation/Animator.js":
 /*!*****************************************************************!*\
@@ -26,7 +8,115 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _svg
   \*****************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/window.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/window.js\");\n/* harmony import */ var _Queue_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Queue.js */ \"./node_modules/@svgdotjs/svg.js/src/animation/Queue.js\");\n\n\n\nconst Animator = {\n  nextDraw: null,\n  frames: new _Queue_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"](),\n  timeouts: new _Queue_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"](),\n  immediates: new _Queue_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"](),\n  timer: () => _utils_window_js__WEBPACK_IMPORTED_MODULE_0__.globals.window.performance || _utils_window_js__WEBPACK_IMPORTED_MODULE_0__.globals.window.Date,\n  transforms: [],\n\n  frame(fn) {\n    // Store the node\n    const node = Animator.frames.push({ run: fn })\n\n    // Request an animation frame if we don't have one\n    if (Animator.nextDraw === null) {\n      Animator.nextDraw = _utils_window_js__WEBPACK_IMPORTED_MODULE_0__.globals.window.requestAnimationFrame(Animator._draw)\n    }\n\n    // Return the node so we can remove it easily\n    return node\n  },\n\n  timeout(fn, delay) {\n    delay = delay || 0\n\n    // Work out when the event should fire\n    const time = Animator.timer().now() + delay\n\n    // Add the timeout to the end of the queue\n    const node = Animator.timeouts.push({ run: fn, time: time })\n\n    // Request another animation frame if we need one\n    if (Animator.nextDraw === null) {\n      Animator.nextDraw = _utils_window_js__WEBPACK_IMPORTED_MODULE_0__.globals.window.requestAnimationFrame(Animator._draw)\n    }\n\n    return node\n  },\n\n  immediate(fn) {\n    // Add the immediate fn to the end of the queue\n    const node = Animator.immediates.push(fn)\n    // Request another animation frame if we need one\n    if (Animator.nextDraw === null) {\n      Animator.nextDraw = _utils_window_js__WEBPACK_IMPORTED_MODULE_0__.globals.window.requestAnimationFrame(Animator._draw)\n    }\n\n    return node\n  },\n\n  cancelFrame(node) {\n    node != null && Animator.frames.remove(node)\n  },\n\n  clearTimeout(node) {\n    node != null && Animator.timeouts.remove(node)\n  },\n\n  cancelImmediate(node) {\n    node != null && Animator.immediates.remove(node)\n  },\n\n  _draw(now) {\n    // Run all the timeouts we can run, if they are not ready yet, add them\n    // to the end of the queue immediately! (bad timeouts!!! [sarcasm])\n    let nextTimeout = null\n    const lastTimeout = Animator.timeouts.last()\n    while ((nextTimeout = Animator.timeouts.shift())) {\n      // Run the timeout if its time, or push it to the end\n      if (now >= nextTimeout.time) {\n        nextTimeout.run()\n      } else {\n        Animator.timeouts.push(nextTimeout)\n      }\n\n      // If we hit the last item, we should stop shifting out more items\n      if (nextTimeout === lastTimeout) break\n    }\n\n    // Run all of the animation frames\n    let nextFrame = null\n    const lastFrame = Animator.frames.last()\n    while (nextFrame !== lastFrame && (nextFrame = Animator.frames.shift())) {\n      nextFrame.run(now)\n    }\n\n    let nextImmediate = null\n    while ((nextImmediate = Animator.immediates.shift())) {\n      nextImmediate()\n    }\n\n    // If we have remaining timeouts or frames, draw until we don't anymore\n    Animator.nextDraw =\n      Animator.timeouts.first() || Animator.frames.first()\n        ? _utils_window_js__WEBPACK_IMPORTED_MODULE_0__.globals.window.requestAnimationFrame(Animator._draw)\n        : null\n  }\n}\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Animator);\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/animation/Animator.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/window.js */ "./node_modules/@svgdotjs/svg.js/src/utils/window.js");
+/* harmony import */ var _Queue_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Queue.js */ "./node_modules/@svgdotjs/svg.js/src/animation/Queue.js");
+
+
+
+const Animator = {
+  nextDraw: null,
+  frames: new _Queue_js__WEBPACK_IMPORTED_MODULE_1__["default"](),
+  timeouts: new _Queue_js__WEBPACK_IMPORTED_MODULE_1__["default"](),
+  immediates: new _Queue_js__WEBPACK_IMPORTED_MODULE_1__["default"](),
+  timer: () => _utils_window_js__WEBPACK_IMPORTED_MODULE_0__.globals.window.performance || _utils_window_js__WEBPACK_IMPORTED_MODULE_0__.globals.window.Date,
+  transforms: [],
+
+  frame(fn) {
+    // Store the node
+    const node = Animator.frames.push({ run: fn })
+
+    // Request an animation frame if we don't have one
+    if (Animator.nextDraw === null) {
+      Animator.nextDraw = _utils_window_js__WEBPACK_IMPORTED_MODULE_0__.globals.window.requestAnimationFrame(Animator._draw)
+    }
+
+    // Return the node so we can remove it easily
+    return node
+  },
+
+  timeout(fn, delay) {
+    delay = delay || 0
+
+    // Work out when the event should fire
+    const time = Animator.timer().now() + delay
+
+    // Add the timeout to the end of the queue
+    const node = Animator.timeouts.push({ run: fn, time: time })
+
+    // Request another animation frame if we need one
+    if (Animator.nextDraw === null) {
+      Animator.nextDraw = _utils_window_js__WEBPACK_IMPORTED_MODULE_0__.globals.window.requestAnimationFrame(Animator._draw)
+    }
+
+    return node
+  },
+
+  immediate(fn) {
+    // Add the immediate fn to the end of the queue
+    const node = Animator.immediates.push(fn)
+    // Request another animation frame if we need one
+    if (Animator.nextDraw === null) {
+      Animator.nextDraw = _utils_window_js__WEBPACK_IMPORTED_MODULE_0__.globals.window.requestAnimationFrame(Animator._draw)
+    }
+
+    return node
+  },
+
+  cancelFrame(node) {
+    node != null && Animator.frames.remove(node)
+  },
+
+  clearTimeout(node) {
+    node != null && Animator.timeouts.remove(node)
+  },
+
+  cancelImmediate(node) {
+    node != null && Animator.immediates.remove(node)
+  },
+
+  _draw(now) {
+    // Run all the timeouts we can run, if they are not ready yet, add them
+    // to the end of the queue immediately! (bad timeouts!!! [sarcasm])
+    let nextTimeout = null
+    const lastTimeout = Animator.timeouts.last()
+    while ((nextTimeout = Animator.timeouts.shift())) {
+      // Run the timeout if its time, or push it to the end
+      if (now >= nextTimeout.time) {
+        nextTimeout.run()
+      } else {
+        Animator.timeouts.push(nextTimeout)
+      }
+
+      // If we hit the last item, we should stop shifting out more items
+      if (nextTimeout === lastTimeout) break
+    }
+
+    // Run all of the animation frames
+    let nextFrame = null
+    const lastFrame = Animator.frames.last()
+    while (nextFrame !== lastFrame && (nextFrame = Animator.frames.shift())) {
+      nextFrame.run(now)
+    }
+
+    let nextImmediate = null
+    while ((nextImmediate = Animator.immediates.shift())) {
+      nextImmediate()
+    }
+
+    // If we have remaining timeouts or frames, draw until we don't anymore
+    Animator.nextDraw =
+      Animator.timeouts.first() || Animator.frames.first()
+        ? _utils_window_js__WEBPACK_IMPORTED_MODULE_0__.globals.window.requestAnimationFrame(Animator._draw)
+        : null
+  }
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Animator);
+
 
 /***/ }),
 
@@ -36,7 +126,249 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*******************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   Controller: () => (/* binding */ Controller),\n/* harmony export */   Ease: () => (/* binding */ Ease),\n/* harmony export */   PID: () => (/* binding */ PID),\n/* harmony export */   Spring: () => (/* binding */ Spring),\n/* harmony export */   Stepper: () => (/* binding */ Stepper),\n/* harmony export */   easing: () => (/* binding */ easing)\n/* harmony export */ });\n/* harmony import */ var _modules_core_defaults_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../modules/core/defaults.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/defaults.js\");\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n\n\n\n/***\nBase Class\n==========\nThe base stepper class that will be\n***/\n\nfunction makeSetterGetter(k, f) {\n  return function (v) {\n    if (v == null) return this[k]\n    this[k] = v\n    if (f) f.call(this)\n    return this\n  }\n}\n\nconst easing = {\n  '-': function (pos) {\n    return pos\n  },\n  '<>': function (pos) {\n    return -Math.cos(pos * Math.PI) / 2 + 0.5\n  },\n  '>': function (pos) {\n    return Math.sin((pos * Math.PI) / 2)\n  },\n  '<': function (pos) {\n    return -Math.cos((pos * Math.PI) / 2) + 1\n  },\n  bezier: function (x1, y1, x2, y2) {\n    // see https://www.w3.org/TR/css-easing-1/#cubic-bezier-algo\n    return function (t) {\n      if (t < 0) {\n        if (x1 > 0) {\n          return (y1 / x1) * t\n        } else if (x2 > 0) {\n          return (y2 / x2) * t\n        } else {\n          return 0\n        }\n      } else if (t > 1) {\n        if (x2 < 1) {\n          return ((1 - y2) / (1 - x2)) * t + (y2 - x2) / (1 - x2)\n        } else if (x1 < 1) {\n          return ((1 - y1) / (1 - x1)) * t + (y1 - x1) / (1 - x1)\n        } else {\n          return 1\n        }\n      } else {\n        return 3 * t * (1 - t) ** 2 * y1 + 3 * t ** 2 * (1 - t) * y2 + t ** 3\n      }\n    }\n  },\n  // see https://www.w3.org/TR/css-easing-1/#step-timing-function-algo\n  steps: function (steps, stepPosition = 'end') {\n    // deal with \"jump-\" prefix\n    stepPosition = stepPosition.split('-').reverse()[0]\n\n    let jumps = steps\n    if (stepPosition === 'none') {\n      --jumps\n    } else if (stepPosition === 'both') {\n      ++jumps\n    }\n\n    // The beforeFlag is essentially useless\n    return (t, beforeFlag = false) => {\n      // Step is called currentStep in referenced url\n      let step = Math.floor(t * steps)\n      const jumping = (t * step) % 1 === 0\n\n      if (stepPosition === 'start' || stepPosition === 'both') {\n        ++step\n      }\n\n      if (beforeFlag && jumping) {\n        --step\n      }\n\n      if (t >= 0 && step < 0) {\n        step = 0\n      }\n\n      if (t <= 1 && step > jumps) {\n        step = jumps\n      }\n\n      return step / jumps\n    }\n  }\n}\n\nclass Stepper {\n  done() {\n    return false\n  }\n}\n\n/***\nEasing Functions\n================\n***/\n\nclass Ease extends Stepper {\n  constructor(fn = _modules_core_defaults_js__WEBPACK_IMPORTED_MODULE_0__.timeline.ease) {\n    super()\n    this.ease = easing[fn] || fn\n  }\n\n  step(from, to, pos) {\n    if (typeof from !== 'number') {\n      return pos < 1 ? from : to\n    }\n    return from + (to - from) * this.ease(pos)\n  }\n}\n\n/***\nController Types\n================\n***/\n\nclass Controller extends Stepper {\n  constructor(fn) {\n    super()\n    this.stepper = fn\n  }\n\n  done(c) {\n    return c.done\n  }\n\n  step(current, target, dt, c) {\n    return this.stepper(current, target, dt, c)\n  }\n}\n\nfunction recalculate() {\n  // Apply the default parameters\n  const duration = (this._duration || 500) / 1000\n  const overshoot = this._overshoot || 0\n\n  // Calculate the PID natural response\n  const eps = 1e-10\n  const pi = Math.PI\n  const os = Math.log(overshoot / 100 + eps)\n  const zeta = -os / Math.sqrt(pi * pi + os * os)\n  const wn = 3.9 / (zeta * duration)\n\n  // Calculate the Spring values\n  this.d = 2 * zeta * wn\n  this.k = wn * wn\n}\n\nclass Spring extends Controller {\n  constructor(duration = 500, overshoot = 0) {\n    super()\n    this.duration(duration).overshoot(overshoot)\n  }\n\n  step(current, target, dt, c) {\n    if (typeof current === 'string') return current\n    c.done = dt === Infinity\n    if (dt === Infinity) return target\n    if (dt === 0) return current\n\n    if (dt > 100) dt = 16\n\n    dt /= 1000\n\n    // Get the previous velocity\n    const velocity = c.velocity || 0\n\n    // Apply the control to get the new position and store it\n    const acceleration = -this.d * velocity - this.k * (current - target)\n    const newPosition = current + velocity * dt + (acceleration * dt * dt) / 2\n\n    // Store the velocity\n    c.velocity = velocity + acceleration * dt\n\n    // Figure out if we have converged, and if so, pass the value\n    c.done = Math.abs(target - newPosition) + Math.abs(velocity) < 0.002\n    return c.done ? target : newPosition\n  }\n}\n\n(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.extend)(Spring, {\n  duration: makeSetterGetter('_duration', recalculate),\n  overshoot: makeSetterGetter('_overshoot', recalculate)\n})\n\nclass PID extends Controller {\n  constructor(p = 0.1, i = 0.01, d = 0, windup = 1000) {\n    super()\n    this.p(p).i(i).d(d).windup(windup)\n  }\n\n  step(current, target, dt, c) {\n    if (typeof current === 'string') return current\n    c.done = dt === Infinity\n\n    if (dt === Infinity) return target\n    if (dt === 0) return current\n\n    const p = target - current\n    let i = (c.integral || 0) + p * dt\n    const d = (p - (c.error || 0)) / dt\n    const windup = this._windup\n\n    // antiwindup\n    if (windup !== false) {\n      i = Math.max(-windup, Math.min(i, windup))\n    }\n\n    c.error = p\n    c.integral = i\n\n    c.done = Math.abs(p) < 0.001\n\n    return c.done ? target : current + (this.P * p + this.I * i + this.D * d)\n  }\n}\n\n(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.extend)(PID, {\n  windup: makeSetterGetter('_windup'),\n  p: makeSetterGetter('P'),\n  i: makeSetterGetter('I'),\n  d: makeSetterGetter('D')\n})\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/animation/Controller.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Controller: () => (/* binding */ Controller),
+/* harmony export */   Ease: () => (/* binding */ Ease),
+/* harmony export */   PID: () => (/* binding */ PID),
+/* harmony export */   Spring: () => (/* binding */ Spring),
+/* harmony export */   Stepper: () => (/* binding */ Stepper),
+/* harmony export */   easing: () => (/* binding */ easing)
+/* harmony export */ });
+/* harmony import */ var _modules_core_defaults_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../modules/core/defaults.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/defaults.js");
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+
+
+
+/***
+Base Class
+==========
+The base stepper class that will be
+***/
+
+function makeSetterGetter(k, f) {
+  return function (v) {
+    if (v == null) return this[k]
+    this[k] = v
+    if (f) f.call(this)
+    return this
+  }
+}
+
+const easing = {
+  '-': function (pos) {
+    return pos
+  },
+  '<>': function (pos) {
+    return -Math.cos(pos * Math.PI) / 2 + 0.5
+  },
+  '>': function (pos) {
+    return Math.sin((pos * Math.PI) / 2)
+  },
+  '<': function (pos) {
+    return -Math.cos((pos * Math.PI) / 2) + 1
+  },
+  bezier: function (x1, y1, x2, y2) {
+    // see https://www.w3.org/TR/css-easing-1/#cubic-bezier-algo
+    return function (t) {
+      if (t < 0) {
+        if (x1 > 0) {
+          return (y1 / x1) * t
+        } else if (x2 > 0) {
+          return (y2 / x2) * t
+        } else {
+          return 0
+        }
+      } else if (t > 1) {
+        if (x2 < 1) {
+          return ((1 - y2) / (1 - x2)) * t + (y2 - x2) / (1 - x2)
+        } else if (x1 < 1) {
+          return ((1 - y1) / (1 - x1)) * t + (y1 - x1) / (1 - x1)
+        } else {
+          return 1
+        }
+      } else {
+        return 3 * t * (1 - t) ** 2 * y1 + 3 * t ** 2 * (1 - t) * y2 + t ** 3
+      }
+    }
+  },
+  // see https://www.w3.org/TR/css-easing-1/#step-timing-function-algo
+  steps: function (steps, stepPosition = 'end') {
+    // deal with "jump-" prefix
+    stepPosition = stepPosition.split('-').reverse()[0]
+
+    let jumps = steps
+    if (stepPosition === 'none') {
+      --jumps
+    } else if (stepPosition === 'both') {
+      ++jumps
+    }
+
+    // The beforeFlag is essentially useless
+    return (t, beforeFlag = false) => {
+      // Step is called currentStep in referenced url
+      let step = Math.floor(t * steps)
+      const jumping = (t * step) % 1 === 0
+
+      if (stepPosition === 'start' || stepPosition === 'both') {
+        ++step
+      }
+
+      if (beforeFlag && jumping) {
+        --step
+      }
+
+      if (t >= 0 && step < 0) {
+        step = 0
+      }
+
+      if (t <= 1 && step > jumps) {
+        step = jumps
+      }
+
+      return step / jumps
+    }
+  }
+}
+
+class Stepper {
+  done() {
+    return false
+  }
+}
+
+/***
+Easing Functions
+================
+***/
+
+class Ease extends Stepper {
+  constructor(fn = _modules_core_defaults_js__WEBPACK_IMPORTED_MODULE_0__.timeline.ease) {
+    super()
+    this.ease = easing[fn] || fn
+  }
+
+  step(from, to, pos) {
+    if (typeof from !== 'number') {
+      return pos < 1 ? from : to
+    }
+    return from + (to - from) * this.ease(pos)
+  }
+}
+
+/***
+Controller Types
+================
+***/
+
+class Controller extends Stepper {
+  constructor(fn) {
+    super()
+    this.stepper = fn
+  }
+
+  done(c) {
+    return c.done
+  }
+
+  step(current, target, dt, c) {
+    return this.stepper(current, target, dt, c)
+  }
+}
+
+function recalculate() {
+  // Apply the default parameters
+  const duration = (this._duration || 500) / 1000
+  const overshoot = this._overshoot || 0
+
+  // Calculate the PID natural response
+  const eps = 1e-10
+  const pi = Math.PI
+  const os = Math.log(overshoot / 100 + eps)
+  const zeta = -os / Math.sqrt(pi * pi + os * os)
+  const wn = 3.9 / (zeta * duration)
+
+  // Calculate the Spring values
+  this.d = 2 * zeta * wn
+  this.k = wn * wn
+}
+
+class Spring extends Controller {
+  constructor(duration = 500, overshoot = 0) {
+    super()
+    this.duration(duration).overshoot(overshoot)
+  }
+
+  step(current, target, dt, c) {
+    if (typeof current === 'string') return current
+    c.done = dt === Infinity
+    if (dt === Infinity) return target
+    if (dt === 0) return current
+
+    if (dt > 100) dt = 16
+
+    dt /= 1000
+
+    // Get the previous velocity
+    const velocity = c.velocity || 0
+
+    // Apply the control to get the new position and store it
+    const acceleration = -this.d * velocity - this.k * (current - target)
+    const newPosition = current + velocity * dt + (acceleration * dt * dt) / 2
+
+    // Store the velocity
+    c.velocity = velocity + acceleration * dt
+
+    // Figure out if we have converged, and if so, pass the value
+    c.done = Math.abs(target - newPosition) + Math.abs(velocity) < 0.002
+    return c.done ? target : newPosition
+  }
+}
+
+(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.extend)(Spring, {
+  duration: makeSetterGetter('_duration', recalculate),
+  overshoot: makeSetterGetter('_overshoot', recalculate)
+})
+
+class PID extends Controller {
+  constructor(p = 0.1, i = 0.01, d = 0, windup = 1000) {
+    super()
+    this.p(p).i(i).d(d).windup(windup)
+  }
+
+  step(current, target, dt, c) {
+    if (typeof current === 'string') return current
+    c.done = dt === Infinity
+
+    if (dt === Infinity) return target
+    if (dt === 0) return current
+
+    const p = target - current
+    let i = (c.integral || 0) + p * dt
+    const d = (p - (c.error || 0)) / dt
+    const windup = this._windup
+
+    // antiwindup
+    if (windup !== false) {
+      i = Math.max(-windup, Math.min(i, windup))
+    }
+
+    c.error = p
+    c.integral = i
+
+    c.done = Math.abs(p) < 0.001
+
+    return c.done ? target : current + (this.P * p + this.I * i + this.D * d)
+  }
+}
+
+(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.extend)(PID, {
+  windup: makeSetterGetter('_windup'),
+  p: makeSetterGetter('P'),
+  i: makeSetterGetter('I'),
+  d: makeSetterGetter('D')
+})
+
 
 /***/ }),
 
@@ -46,7 +378,355 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \******************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   NonMorphable: () => (/* binding */ NonMorphable),\n/* harmony export */   ObjectBag: () => (/* binding */ ObjectBag),\n/* harmony export */   TransformBag: () => (/* binding */ TransformBag),\n/* harmony export */   \"default\": () => (/* binding */ Morphable),\n/* harmony export */   makeMorphable: () => (/* binding */ makeMorphable),\n/* harmony export */   registerMorphableType: () => (/* binding */ registerMorphableType)\n/* harmony export */ });\n/* harmony import */ var _Controller_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Controller.js */ \"./node_modules/@svgdotjs/svg.js/src/animation/Controller.js\");\n/* harmony import */ var _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../modules/core/regex.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js\");\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _types_Color_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../types/Color.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Color.js\");\n/* harmony import */ var _types_PathArray_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../types/PathArray.js */ \"./node_modules/@svgdotjs/svg.js/src/types/PathArray.js\");\n/* harmony import */ var _types_SVGArray_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../types/SVGArray.js */ \"./node_modules/@svgdotjs/svg.js/src/types/SVGArray.js\");\n/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../types/SVGNumber.js */ \"./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js\");\n\n\n\n\n\n\n\n\nconst getClassForType = (value) => {\n  const type = typeof value\n\n  if (type === 'number') {\n    return _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_6__[\"default\"]\n  } else if (type === 'string') {\n    if (_types_Color_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"].isColor(value)) {\n      return _types_Color_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"]\n    } else if (_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_1__.delimiter.test(value)) {\n      return _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_1__.isPathLetter.test(value) ? _types_PathArray_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"] : _types_SVGArray_js__WEBPACK_IMPORTED_MODULE_5__[\"default\"]\n    } else if (_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_1__.numberAndUnit.test(value)) {\n      return _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_6__[\"default\"]\n    } else {\n      return NonMorphable\n    }\n  } else if (morphableTypes.indexOf(value.constructor) > -1) {\n    return value.constructor\n  } else if (Array.isArray(value)) {\n    return _types_SVGArray_js__WEBPACK_IMPORTED_MODULE_5__[\"default\"]\n  } else if (type === 'object') {\n    return ObjectBag\n  } else {\n    return NonMorphable\n  }\n}\n\nclass Morphable {\n  constructor(stepper) {\n    this._stepper = stepper || new _Controller_js__WEBPACK_IMPORTED_MODULE_0__.Ease('-')\n\n    this._from = null\n    this._to = null\n    this._type = null\n    this._context = null\n    this._morphObj = null\n  }\n\n  at(pos) {\n    return this._morphObj.morph(\n      this._from,\n      this._to,\n      pos,\n      this._stepper,\n      this._context\n    )\n  }\n\n  done() {\n    const complete = this._context.map(this._stepper.done).reduce(function (\n      last,\n      curr\n    ) {\n      return last && curr\n    }, true)\n    return complete\n  }\n\n  from(val) {\n    if (val == null) {\n      return this._from\n    }\n\n    this._from = this._set(val)\n    return this\n  }\n\n  stepper(stepper) {\n    if (stepper == null) return this._stepper\n    this._stepper = stepper\n    return this\n  }\n\n  to(val) {\n    if (val == null) {\n      return this._to\n    }\n\n    this._to = this._set(val)\n    return this\n  }\n\n  type(type) {\n    // getter\n    if (type == null) {\n      return this._type\n    }\n\n    // setter\n    this._type = type\n    return this\n  }\n\n  _set(value) {\n    if (!this._type) {\n      this.type(getClassForType(value))\n    }\n\n    let result = new this._type(value)\n    if (this._type === _types_Color_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"]) {\n      result = this._to\n        ? result[this._to[4]]()\n        : this._from\n          ? result[this._from[4]]()\n          : result\n    }\n\n    if (this._type === ObjectBag) {\n      result = this._to\n        ? result.align(this._to)\n        : this._from\n          ? result.align(this._from)\n          : result\n    }\n\n    result = result.toConsumable()\n\n    this._morphObj = this._morphObj || new this._type()\n    this._context =\n      this._context ||\n      Array.apply(null, Array(result.length))\n        .map(Object)\n        .map(function (o) {\n          o.done = true\n          return o\n        })\n    return result\n  }\n}\n\nclass NonMorphable {\n  constructor(...args) {\n    this.init(...args)\n  }\n\n  init(val) {\n    val = Array.isArray(val) ? val[0] : val\n    this.value = val\n    return this\n  }\n\n  toArray() {\n    return [this.value]\n  }\n\n  valueOf() {\n    return this.value\n  }\n}\n\nclass TransformBag {\n  constructor(...args) {\n    this.init(...args)\n  }\n\n  init(obj) {\n    if (Array.isArray(obj)) {\n      obj = {\n        scaleX: obj[0],\n        scaleY: obj[1],\n        shear: obj[2],\n        rotate: obj[3],\n        translateX: obj[4],\n        translateY: obj[5],\n        originX: obj[6],\n        originY: obj[7]\n      }\n    }\n\n    Object.assign(this, TransformBag.defaults, obj)\n    return this\n  }\n\n  toArray() {\n    const v = this\n\n    return [\n      v.scaleX,\n      v.scaleY,\n      v.shear,\n      v.rotate,\n      v.translateX,\n      v.translateY,\n      v.originX,\n      v.originY\n    ]\n  }\n}\n\nTransformBag.defaults = {\n  scaleX: 1,\n  scaleY: 1,\n  shear: 0,\n  rotate: 0,\n  translateX: 0,\n  translateY: 0,\n  originX: 0,\n  originY: 0\n}\n\nconst sortByKey = (a, b) => {\n  return a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0\n}\n\nclass ObjectBag {\n  constructor(...args) {\n    this.init(...args)\n  }\n\n  align(other) {\n    const values = this.values\n    for (let i = 0, il = values.length; i < il; ++i) {\n      // If the type is the same we only need to check if the color is in the correct format\n      if (values[i + 1] === other[i + 1]) {\n        if (values[i + 1] === _types_Color_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"] && other[i + 7] !== values[i + 7]) {\n          const space = other[i + 7]\n          const color = new _types_Color_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"](this.values.splice(i + 3, 5))\n            [space]()\n            .toArray()\n          this.values.splice(i + 3, 0, ...color)\n        }\n\n        i += values[i + 2] + 2\n        continue\n      }\n\n      if (!other[i + 1]) {\n        return this\n      }\n\n      // The types differ, so we overwrite the new type with the old one\n      // And initialize it with the types default (e.g. black for color or 0 for number)\n      const defaultObject = new other[i + 1]().toArray()\n\n      // Than we fix the values array\n      const toDelete = values[i + 2] + 3\n\n      values.splice(\n        i,\n        toDelete,\n        other[i],\n        other[i + 1],\n        other[i + 2],\n        ...defaultObject\n      )\n\n      i += values[i + 2] + 2\n    }\n    return this\n  }\n\n  init(objOrArr) {\n    this.values = []\n\n    if (Array.isArray(objOrArr)) {\n      this.values = objOrArr.slice()\n      return\n    }\n\n    objOrArr = objOrArr || {}\n    const entries = []\n\n    for (const i in objOrArr) {\n      const Type = getClassForType(objOrArr[i])\n      const val = new Type(objOrArr[i]).toArray()\n      entries.push([i, Type, val.length, ...val])\n    }\n\n    entries.sort(sortByKey)\n\n    this.values = entries.reduce((last, curr) => last.concat(curr), [])\n    return this\n  }\n\n  toArray() {\n    return this.values\n  }\n\n  valueOf() {\n    const obj = {}\n    const arr = this.values\n\n    // for (var i = 0, len = arr.length; i < len; i += 2) {\n    while (arr.length) {\n      const key = arr.shift()\n      const Type = arr.shift()\n      const num = arr.shift()\n      const values = arr.splice(0, num)\n      obj[key] = new Type(values) // .valueOf()\n    }\n\n    return obj\n  }\n}\n\nconst morphableTypes = [NonMorphable, TransformBag, ObjectBag]\n\nfunction registerMorphableType(type = []) {\n  morphableTypes.push(...[].concat(type))\n}\n\nfunction makeMorphable() {\n  (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__.extend)(morphableTypes, {\n    to(val) {\n      return new Morphable()\n        .type(this.constructor)\n        .from(this.toArray()) // this.valueOf())\n        .to(val)\n    },\n    fromArray(arr) {\n      this.init(arr)\n      return this\n    },\n    toConsumable() {\n      return this.toArray()\n    },\n    morph(from, to, pos, stepper, context) {\n      const mapper = function (i, index) {\n        return stepper.step(i, to[index], pos, context[index], context)\n      }\n\n      return this.fromArray(from.map(mapper))\n    }\n  })\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/animation/Morphable.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   NonMorphable: () => (/* binding */ NonMorphable),
+/* harmony export */   ObjectBag: () => (/* binding */ ObjectBag),
+/* harmony export */   TransformBag: () => (/* binding */ TransformBag),
+/* harmony export */   "default": () => (/* binding */ Morphable),
+/* harmony export */   makeMorphable: () => (/* binding */ makeMorphable),
+/* harmony export */   registerMorphableType: () => (/* binding */ registerMorphableType)
+/* harmony export */ });
+/* harmony import */ var _Controller_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Controller.js */ "./node_modules/@svgdotjs/svg.js/src/animation/Controller.js");
+/* harmony import */ var _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../modules/core/regex.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js");
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _types_Color_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../types/Color.js */ "./node_modules/@svgdotjs/svg.js/src/types/Color.js");
+/* harmony import */ var _types_PathArray_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../types/PathArray.js */ "./node_modules/@svgdotjs/svg.js/src/types/PathArray.js");
+/* harmony import */ var _types_SVGArray_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../types/SVGArray.js */ "./node_modules/@svgdotjs/svg.js/src/types/SVGArray.js");
+/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../types/SVGNumber.js */ "./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js");
+
+
+
+
+
+
+
+
+const getClassForType = (value) => {
+  const type = typeof value
+
+  if (type === 'number') {
+    return _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_6__["default"]
+  } else if (type === 'string') {
+    if (_types_Color_js__WEBPACK_IMPORTED_MODULE_3__["default"].isColor(value)) {
+      return _types_Color_js__WEBPACK_IMPORTED_MODULE_3__["default"]
+    } else if (_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_1__.delimiter.test(value)) {
+      return _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_1__.isPathLetter.test(value) ? _types_PathArray_js__WEBPACK_IMPORTED_MODULE_4__["default"] : _types_SVGArray_js__WEBPACK_IMPORTED_MODULE_5__["default"]
+    } else if (_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_1__.numberAndUnit.test(value)) {
+      return _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_6__["default"]
+    } else {
+      return NonMorphable
+    }
+  } else if (morphableTypes.indexOf(value.constructor) > -1) {
+    return value.constructor
+  } else if (Array.isArray(value)) {
+    return _types_SVGArray_js__WEBPACK_IMPORTED_MODULE_5__["default"]
+  } else if (type === 'object') {
+    return ObjectBag
+  } else {
+    return NonMorphable
+  }
+}
+
+class Morphable {
+  constructor(stepper) {
+    this._stepper = stepper || new _Controller_js__WEBPACK_IMPORTED_MODULE_0__.Ease('-')
+
+    this._from = null
+    this._to = null
+    this._type = null
+    this._context = null
+    this._morphObj = null
+  }
+
+  at(pos) {
+    return this._morphObj.morph(
+      this._from,
+      this._to,
+      pos,
+      this._stepper,
+      this._context
+    )
+  }
+
+  done() {
+    const complete = this._context.map(this._stepper.done).reduce(function (
+      last,
+      curr
+    ) {
+      return last && curr
+    }, true)
+    return complete
+  }
+
+  from(val) {
+    if (val == null) {
+      return this._from
+    }
+
+    this._from = this._set(val)
+    return this
+  }
+
+  stepper(stepper) {
+    if (stepper == null) return this._stepper
+    this._stepper = stepper
+    return this
+  }
+
+  to(val) {
+    if (val == null) {
+      return this._to
+    }
+
+    this._to = this._set(val)
+    return this
+  }
+
+  type(type) {
+    // getter
+    if (type == null) {
+      return this._type
+    }
+
+    // setter
+    this._type = type
+    return this
+  }
+
+  _set(value) {
+    if (!this._type) {
+      this.type(getClassForType(value))
+    }
+
+    let result = new this._type(value)
+    if (this._type === _types_Color_js__WEBPACK_IMPORTED_MODULE_3__["default"]) {
+      result = this._to
+        ? result[this._to[4]]()
+        : this._from
+          ? result[this._from[4]]()
+          : result
+    }
+
+    if (this._type === ObjectBag) {
+      result = this._to
+        ? result.align(this._to)
+        : this._from
+          ? result.align(this._from)
+          : result
+    }
+
+    result = result.toConsumable()
+
+    this._morphObj = this._morphObj || new this._type()
+    this._context =
+      this._context ||
+      Array.apply(null, Array(result.length))
+        .map(Object)
+        .map(function (o) {
+          o.done = true
+          return o
+        })
+    return result
+  }
+}
+
+class NonMorphable {
+  constructor(...args) {
+    this.init(...args)
+  }
+
+  init(val) {
+    val = Array.isArray(val) ? val[0] : val
+    this.value = val
+    return this
+  }
+
+  toArray() {
+    return [this.value]
+  }
+
+  valueOf() {
+    return this.value
+  }
+}
+
+class TransformBag {
+  constructor(...args) {
+    this.init(...args)
+  }
+
+  init(obj) {
+    if (Array.isArray(obj)) {
+      obj = {
+        scaleX: obj[0],
+        scaleY: obj[1],
+        shear: obj[2],
+        rotate: obj[3],
+        translateX: obj[4],
+        translateY: obj[5],
+        originX: obj[6],
+        originY: obj[7]
+      }
+    }
+
+    Object.assign(this, TransformBag.defaults, obj)
+    return this
+  }
+
+  toArray() {
+    const v = this
+
+    return [
+      v.scaleX,
+      v.scaleY,
+      v.shear,
+      v.rotate,
+      v.translateX,
+      v.translateY,
+      v.originX,
+      v.originY
+    ]
+  }
+}
+
+TransformBag.defaults = {
+  scaleX: 1,
+  scaleY: 1,
+  shear: 0,
+  rotate: 0,
+  translateX: 0,
+  translateY: 0,
+  originX: 0,
+  originY: 0
+}
+
+const sortByKey = (a, b) => {
+  return a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0
+}
+
+class ObjectBag {
+  constructor(...args) {
+    this.init(...args)
+  }
+
+  align(other) {
+    const values = this.values
+    for (let i = 0, il = values.length; i < il; ++i) {
+      // If the type is the same we only need to check if the color is in the correct format
+      if (values[i + 1] === other[i + 1]) {
+        if (values[i + 1] === _types_Color_js__WEBPACK_IMPORTED_MODULE_3__["default"] && other[i + 7] !== values[i + 7]) {
+          const space = other[i + 7]
+          const color = new _types_Color_js__WEBPACK_IMPORTED_MODULE_3__["default"](this.values.splice(i + 3, 5))
+            [space]()
+            .toArray()
+          this.values.splice(i + 3, 0, ...color)
+        }
+
+        i += values[i + 2] + 2
+        continue
+      }
+
+      if (!other[i + 1]) {
+        return this
+      }
+
+      // The types differ, so we overwrite the new type with the old one
+      // And initialize it with the types default (e.g. black for color or 0 for number)
+      const defaultObject = new other[i + 1]().toArray()
+
+      // Than we fix the values array
+      const toDelete = values[i + 2] + 3
+
+      values.splice(
+        i,
+        toDelete,
+        other[i],
+        other[i + 1],
+        other[i + 2],
+        ...defaultObject
+      )
+
+      i += values[i + 2] + 2
+    }
+    return this
+  }
+
+  init(objOrArr) {
+    this.values = []
+
+    if (Array.isArray(objOrArr)) {
+      this.values = objOrArr.slice()
+      return
+    }
+
+    objOrArr = objOrArr || {}
+    const entries = []
+
+    for (const i in objOrArr) {
+      const Type = getClassForType(objOrArr[i])
+      const val = new Type(objOrArr[i]).toArray()
+      entries.push([i, Type, val.length, ...val])
+    }
+
+    entries.sort(sortByKey)
+
+    this.values = entries.reduce((last, curr) => last.concat(curr), [])
+    return this
+  }
+
+  toArray() {
+    return this.values
+  }
+
+  valueOf() {
+    const obj = {}
+    const arr = this.values
+
+    // for (var i = 0, len = arr.length; i < len; i += 2) {
+    while (arr.length) {
+      const key = arr.shift()
+      const Type = arr.shift()
+      const num = arr.shift()
+      const values = arr.splice(0, num)
+      obj[key] = new Type(values) // .valueOf()
+    }
+
+    return obj
+  }
+}
+
+const morphableTypes = [NonMorphable, TransformBag, ObjectBag]
+
+function registerMorphableType(type = []) {
+  morphableTypes.push(...[].concat(type))
+}
+
+function makeMorphable() {
+  (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__.extend)(morphableTypes, {
+    to(val) {
+      return new Morphable()
+        .type(this.constructor)
+        .from(this.toArray()) // this.valueOf())
+        .to(val)
+    },
+    fromArray(arr) {
+      this.init(arr)
+      return this
+    },
+    toConsumable() {
+      return this.toArray()
+    },
+    morph(from, to, pos, stepper, context) {
+      const mapper = function (i, index) {
+        return stepper.step(i, to[index], pos, context[index], context)
+      }
+
+      return this.fromArray(from.map(mapper))
+    }
+  })
+}
+
 
 /***/ }),
 
@@ -56,7 +736,73 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \**************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Queue)\n/* harmony export */ });\nclass Queue {\n  constructor() {\n    this._first = null\n    this._last = null\n  }\n\n  // Shows us the first item in the list\n  first() {\n    return this._first && this._first.value\n  }\n\n  // Shows us the last item in the list\n  last() {\n    return this._last && this._last.value\n  }\n\n  push(value) {\n    // An item stores an id and the provided value\n    const item =\n      typeof value.next !== 'undefined'\n        ? value\n        : { value: value, next: null, prev: null }\n\n    // Deal with the queue being empty or populated\n    if (this._last) {\n      item.prev = this._last\n      this._last.next = item\n      this._last = item\n    } else {\n      this._last = item\n      this._first = item\n    }\n\n    // Return the current item\n    return item\n  }\n\n  // Removes the item that was returned from the push\n  remove(item) {\n    // Relink the previous item\n    if (item.prev) item.prev.next = item.next\n    if (item.next) item.next.prev = item.prev\n    if (item === this._last) this._last = item.prev\n    if (item === this._first) this._first = item.next\n\n    // Invalidate item\n    item.prev = null\n    item.next = null\n  }\n\n  shift() {\n    // Check if we have a value\n    const remove = this._first\n    if (!remove) return null\n\n    // If we do, remove it and relink things\n    this._first = remove.next\n    if (this._first) this._first.prev = null\n    this._last = this._first ? this._last : null\n    return remove.value\n  }\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/animation/Queue.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Queue)
+/* harmony export */ });
+class Queue {
+  constructor() {
+    this._first = null
+    this._last = null
+  }
+
+  // Shows us the first item in the list
+  first() {
+    return this._first && this._first.value
+  }
+
+  // Shows us the last item in the list
+  last() {
+    return this._last && this._last.value
+  }
+
+  push(value) {
+    // An item stores an id and the provided value
+    const item =
+      typeof value.next !== 'undefined'
+        ? value
+        : { value: value, next: null, prev: null }
+
+    // Deal with the queue being empty or populated
+    if (this._last) {
+      item.prev = this._last
+      this._last.next = item
+      this._last = item
+    } else {
+      this._last = item
+      this._first = item
+    }
+
+    // Return the current item
+    return item
+  }
+
+  // Removes the item that was returned from the push
+  remove(item) {
+    // Relink the previous item
+    if (item.prev) item.prev.next = item.next
+    if (item.next) item.next.prev = item.prev
+    if (item === this._last) this._last = item.prev
+    if (item === this._first) this._first = item.next
+
+    // Invalidate item
+    item.prev = null
+    item.next = null
+  }
+
+  shift() {
+    // Check if we have a value
+    const remove = this._first
+    if (!remove) return null
+
+    // If we do, remove it and relink things
+    this._first = remove.next
+    if (this._first) this._first.prev = null
+    this._last = this._first ? this._last : null
+    return remove.value
+  }
+}
+
 
 /***/ }),
 
@@ -66,7 +812,1113 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \***************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   FakeRunner: () => (/* binding */ FakeRunner),\n/* harmony export */   RunnerArray: () => (/* binding */ RunnerArray),\n/* harmony export */   \"default\": () => (/* binding */ Runner)\n/* harmony export */ });\n/* harmony import */ var _Controller_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Controller.js */ \"./node_modules/@svgdotjs/svg.js/src/animation/Controller.js\");\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _modules_core_gradiented_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../modules/core/gradiented.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/gradiented.js\");\n/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/utils.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/utils.js\");\n/* harmony import */ var _modules_core_defaults_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../modules/core/defaults.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/defaults.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../modules/core/circled.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/circled.js\");\n/* harmony import */ var _Animator_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Animator.js */ \"./node_modules/@svgdotjs/svg.js/src/animation/Animator.js\");\n/* harmony import */ var _types_Box_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../types/Box.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Box.js\");\n/* harmony import */ var _types_EventTarget_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../types/EventTarget.js */ \"./node_modules/@svgdotjs/svg.js/src/types/EventTarget.js\");\n/* harmony import */ var _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../types/Matrix.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Matrix.js\");\n/* harmony import */ var _Morphable_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Morphable.js */ \"./node_modules/@svgdotjs/svg.js/src/animation/Morphable.js\");\n/* harmony import */ var _types_Point_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../types/Point.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Point.js\");\n/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../types/SVGNumber.js */ \"./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js\");\n/* harmony import */ var _Timeline_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./Timeline.js */ \"./node_modules/@svgdotjs/svg.js/src/animation/Timeline.js\");\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nclass Runner extends _types_EventTarget_js__WEBPACK_IMPORTED_MODULE_9__[\"default\"] {\n  constructor(options) {\n    super()\n\n    // Store a unique id on the runner, so that we can identify it later\n    this.id = Runner.id++\n\n    // Ensure a default value\n    options = options == null ? _modules_core_defaults_js__WEBPACK_IMPORTED_MODULE_4__.timeline.duration : options\n\n    // Ensure that we get a controller\n    options = typeof options === 'function' ? new _Controller_js__WEBPACK_IMPORTED_MODULE_0__.Controller(options) : options\n\n    // Declare all of the variables\n    this._element = null\n    this._timeline = null\n    this.done = false\n    this._queue = []\n\n    // Work out the stepper and the duration\n    this._duration = typeof options === 'number' && options\n    this._isDeclarative = options instanceof _Controller_js__WEBPACK_IMPORTED_MODULE_0__.Controller\n    this._stepper = this._isDeclarative ? options : new _Controller_js__WEBPACK_IMPORTED_MODULE_0__.Ease()\n\n    // We copy the current values from the timeline because they can change\n    this._history = {}\n\n    // Store the state of the runner\n    this.enabled = true\n    this._time = 0\n    this._lastTime = 0\n\n    // At creation, the runner is in reset state\n    this._reseted = true\n\n    // Save transforms applied to this runner\n    this.transforms = new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__[\"default\"]()\n    this.transformId = 1\n\n    // Looping variables\n    this._haveReversed = false\n    this._reverse = false\n    this._loopsDone = 0\n    this._swing = false\n    this._wait = 0\n    this._times = 1\n\n    this._frameId = null\n\n    // Stores how long a runner is stored after being done\n    this._persist = this._isDeclarative ? true : null\n  }\n\n  static sanitise(duration, delay, when) {\n    // Initialise the default parameters\n    let times = 1\n    let swing = false\n    let wait = 0\n    duration = duration ?? _modules_core_defaults_js__WEBPACK_IMPORTED_MODULE_4__.timeline.duration\n    delay = delay ?? _modules_core_defaults_js__WEBPACK_IMPORTED_MODULE_4__.timeline.delay\n    when = when || 'last'\n\n    // If we have an object, unpack the values\n    if (typeof duration === 'object' && !(duration instanceof _Controller_js__WEBPACK_IMPORTED_MODULE_0__.Stepper)) {\n      delay = duration.delay ?? delay\n      when = duration.when ?? when\n      swing = duration.swing || swing\n      times = duration.times ?? times\n      wait = duration.wait ?? wait\n      duration = duration.duration ?? _modules_core_defaults_js__WEBPACK_IMPORTED_MODULE_4__.timeline.duration\n    }\n\n    return {\n      duration: duration,\n      delay: delay,\n      swing: swing,\n      times: times,\n      wait: wait,\n      when: when\n    }\n  }\n\n  active(enabled) {\n    if (enabled == null) return this.enabled\n    this.enabled = enabled\n    return this\n  }\n\n  /*\n  Private Methods\n  ===============\n  Methods that shouldn't be used externally\n  */\n  addTransform(transform) {\n    this.transforms.lmultiplyO(transform)\n    return this\n  }\n\n  after(fn) {\n    return this.on('finished', fn)\n  }\n\n  animate(duration, delay, when) {\n    const o = Runner.sanitise(duration, delay, when)\n    const runner = new Runner(o.duration)\n    if (this._timeline) runner.timeline(this._timeline)\n    if (this._element) runner.element(this._element)\n    return runner.loop(o).schedule(o.delay, o.when)\n  }\n\n  clearTransform() {\n    this.transforms = new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__[\"default\"]()\n    return this\n  }\n\n  // TODO: Keep track of all transformations so that deletion is faster\n  clearTransformsFromQueue() {\n    if (\n      !this.done ||\n      !this._timeline ||\n      !this._timeline._runnerIds.includes(this.id)\n    ) {\n      this._queue = this._queue.filter((item) => {\n        return !item.isTransform\n      })\n    }\n  }\n\n  delay(delay) {\n    return this.animate(0, delay)\n  }\n\n  duration() {\n    return this._times * (this._wait + this._duration) - this._wait\n  }\n\n  during(fn) {\n    return this.queue(null, fn)\n  }\n\n  ease(fn) {\n    this._stepper = new _Controller_js__WEBPACK_IMPORTED_MODULE_0__.Ease(fn)\n    return this\n  }\n  /*\n  Runner Definitions\n  ==================\n  These methods help us define the runtime behaviour of the Runner or they\n  help us make new runners from the current runner\n  */\n\n  element(element) {\n    if (element == null) return this._element\n    this._element = element\n    element._prepareRunner()\n    return this\n  }\n\n  finish() {\n    return this.step(Infinity)\n  }\n\n  loop(times, swing, wait) {\n    // Deal with the user passing in an object\n    if (typeof times === 'object') {\n      swing = times.swing\n      wait = times.wait\n      times = times.times\n    }\n\n    // Sanitise the values and store them\n    this._times = times || Infinity\n    this._swing = swing || false\n    this._wait = wait || 0\n\n    // Allow true to be passed\n    if (this._times === true) {\n      this._times = Infinity\n    }\n\n    return this\n  }\n\n  loops(p) {\n    const loopDuration = this._duration + this._wait\n    if (p == null) {\n      const loopsDone = Math.floor(this._time / loopDuration)\n      const relativeTime = this._time - loopsDone * loopDuration\n      const position = relativeTime / this._duration\n      return Math.min(loopsDone + position, this._times)\n    }\n    const whole = Math.floor(p)\n    const partial = p % 1\n    const time = loopDuration * whole + this._duration * partial\n    return this.time(time)\n  }\n\n  persist(dtOrForever) {\n    if (dtOrForever == null) return this._persist\n    this._persist = dtOrForever\n    return this\n  }\n\n  position(p) {\n    // Get all of the variables we need\n    const x = this._time\n    const d = this._duration\n    const w = this._wait\n    const t = this._times\n    const s = this._swing\n    const r = this._reverse\n    let position\n\n    if (p == null) {\n      /*\n      This function converts a time to a position in the range [0, 1]\n      The full explanation can be found in this desmos demonstration\n        https://www.desmos.com/calculator/u4fbavgche\n      The logic is slightly simplified here because we can use booleans\n      */\n\n      // Figure out the value without thinking about the start or end time\n      const f = function (x) {\n        const swinging = s * Math.floor((x % (2 * (w + d))) / (w + d))\n        const backwards = (swinging && !r) || (!swinging && r)\n        const uncliped =\n          (Math.pow(-1, backwards) * (x % (w + d))) / d + backwards\n        const clipped = Math.max(Math.min(uncliped, 1), 0)\n        return clipped\n      }\n\n      // Figure out the value by incorporating the start time\n      const endTime = t * (w + d) - w\n      position =\n        x <= 0\n          ? Math.round(f(1e-5))\n          : x < endTime\n            ? f(x)\n            : Math.round(f(endTime - 1e-5))\n      return position\n    }\n\n    // Work out the loops done and add the position to the loops done\n    const loopsDone = Math.floor(this.loops())\n    const swingForward = s && loopsDone % 2 === 0\n    const forwards = (swingForward && !r) || (r && swingForward)\n    position = loopsDone + (forwards ? p : 1 - p)\n    return this.loops(position)\n  }\n\n  progress(p) {\n    if (p == null) {\n      return Math.min(1, this._time / this.duration())\n    }\n    return this.time(p * this.duration())\n  }\n\n  /*\n  Basic Functionality\n  ===================\n  These methods allow us to attach basic functions to the runner directly\n  */\n  queue(initFn, runFn, retargetFn, isTransform) {\n    this._queue.push({\n      initialiser: initFn || _modules_core_defaults_js__WEBPACK_IMPORTED_MODULE_4__.noop,\n      runner: runFn || _modules_core_defaults_js__WEBPACK_IMPORTED_MODULE_4__.noop,\n      retarget: retargetFn,\n      isTransform: isTransform,\n      initialised: false,\n      finished: false\n    })\n    const timeline = this.timeline()\n    timeline && this.timeline()._continue()\n    return this\n  }\n\n  reset() {\n    if (this._reseted) return this\n    this.time(0)\n    this._reseted = true\n    return this\n  }\n\n  reverse(reverse) {\n    this._reverse = reverse == null ? !this._reverse : reverse\n    return this\n  }\n\n  schedule(timeline, delay, when) {\n    // The user doesn't need to pass a timeline if we already have one\n    if (!(timeline instanceof _Timeline_js__WEBPACK_IMPORTED_MODULE_14__[\"default\"])) {\n      when = delay\n      delay = timeline\n      timeline = this.timeline()\n    }\n\n    // If there is no timeline, yell at the user...\n    if (!timeline) {\n      throw Error('Runner cannot be scheduled without timeline')\n    }\n\n    // Schedule the runner on the timeline provided\n    timeline.schedule(this, delay, when)\n    return this\n  }\n\n  step(dt) {\n    // If we are inactive, this stepper just gets skipped\n    if (!this.enabled) return this\n\n    // Update the time and get the new position\n    dt = dt == null ? 16 : dt\n    this._time += dt\n    const position = this.position()\n\n    // Figure out if we need to run the stepper in this frame\n    const running = this._lastPosition !== position && this._time >= 0\n    this._lastPosition = position\n\n    // Figure out if we just started\n    const duration = this.duration()\n    const justStarted = this._lastTime <= 0 && this._time > 0\n    const justFinished = this._lastTime < duration && this._time >= duration\n\n    this._lastTime = this._time\n    if (justStarted) {\n      this.fire('start', this)\n    }\n\n    // Work out if the runner is finished set the done flag here so animations\n    // know, that they are running in the last step (this is good for\n    // transformations which can be merged)\n    const declarative = this._isDeclarative\n    this.done = !declarative && !justFinished && this._time >= duration\n\n    // Runner is running. So its not in reset state anymore\n    this._reseted = false\n\n    let converged = false\n    // Call initialise and the run function\n    if (running || declarative) {\n      this._initialise(running)\n\n      // clear the transforms on this runner so they dont get added again and again\n      this.transforms = new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__[\"default\"]()\n      converged = this._run(declarative ? dt : position)\n\n      this.fire('step', this)\n    }\n    // correct the done flag here\n    // declarative animations itself know when they converged\n    this.done = this.done || (converged && declarative)\n    if (justFinished) {\n      this.fire('finished', this)\n    }\n    return this\n  }\n\n  /*\n  Runner animation methods\n  ========================\n  Control how the animation plays\n  */\n  time(time) {\n    if (time == null) {\n      return this._time\n    }\n    const dt = time - this._time\n    this.step(dt)\n    return this\n  }\n\n  timeline(timeline) {\n    // check explicitly for undefined so we can set the timeline to null\n    if (typeof timeline === 'undefined') return this._timeline\n    this._timeline = timeline\n    return this\n  }\n\n  unschedule() {\n    const timeline = this.timeline()\n    timeline && timeline.unschedule(this)\n    return this\n  }\n\n  // Run each initialise function in the runner if required\n  _initialise(running) {\n    // If we aren't running, we shouldn't initialise when not declarative\n    if (!running && !this._isDeclarative) return\n\n    // Loop through all of the initialisers\n    for (let i = 0, len = this._queue.length; i < len; ++i) {\n      // Get the current initialiser\n      const current = this._queue[i]\n\n      // Determine whether we need to initialise\n      const needsIt = this._isDeclarative || (!current.initialised && running)\n      running = !current.finished\n\n      // Call the initialiser if we need to\n      if (needsIt && running) {\n        current.initialiser.call(this)\n        current.initialised = true\n      }\n    }\n  }\n\n  // Save a morpher to the morpher list so that we can retarget it later\n  _rememberMorpher(method, morpher) {\n    this._history[method] = {\n      morpher: morpher,\n      caller: this._queue[this._queue.length - 1]\n    }\n\n    // We have to resume the timeline in case a controller\n    // is already done without being ever run\n    // This can happen when e.g. this is done:\n    //    anim = el.animate(new SVG.Spring)\n    // and later\n    //    anim.move(...)\n    if (this._isDeclarative) {\n      const timeline = this.timeline()\n      timeline && timeline.play()\n    }\n  }\n\n  // Try to set the target for a morpher if the morpher exists, otherwise\n  // Run each run function for the position or dt given\n  _run(positionOrDt) {\n    // Run all of the _queue directly\n    let allfinished = true\n    for (let i = 0, len = this._queue.length; i < len; ++i) {\n      // Get the current function to run\n      const current = this._queue[i]\n\n      // Run the function if its not finished, we keep track of the finished\n      // flag for the sake of declarative _queue\n      const converged = current.runner.call(this, positionOrDt)\n      current.finished = current.finished || converged === true\n      allfinished = allfinished && current.finished\n    }\n\n    // We report when all of the constructors are finished\n    return allfinished\n  }\n\n  // do nothing and return false\n  _tryRetarget(method, target, extra) {\n    if (this._history[method]) {\n      // if the last method wasn't even initialised, throw it away\n      if (!this._history[method].caller.initialised) {\n        const index = this._queue.indexOf(this._history[method].caller)\n        this._queue.splice(index, 1)\n        return false\n      }\n\n      // for the case of transformations, we use the special retarget function\n      // which has access to the outer scope\n      if (this._history[method].caller.retarget) {\n        this._history[method].caller.retarget.call(this, target, extra)\n        // for everything else a simple morpher change is sufficient\n      } else {\n        this._history[method].morpher.to(target)\n      }\n\n      this._history[method].caller.finished = false\n      const timeline = this.timeline()\n      timeline && timeline.play()\n      return true\n    }\n    return false\n  }\n}\n\nRunner.id = 0\n\nclass FakeRunner {\n  constructor(transforms = new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__[\"default\"](), id = -1, done = true) {\n    this.transforms = transforms\n    this.id = id\n    this.done = done\n  }\n\n  clearTransformsFromQueue() {}\n}\n\n(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.extend)([Runner, FakeRunner], {\n  mergeWith(runner) {\n    return new FakeRunner(\n      runner.transforms.lmultiply(this.transforms),\n      runner.id\n    )\n  }\n})\n\n// FakeRunner.emptyRunner = new FakeRunner()\n\nconst lmultiply = (last, curr) => last.lmultiplyO(curr)\nconst getRunnerTransform = (runner) => runner.transforms\n\nfunction mergeTransforms() {\n  // Find the matrix to apply to the element and apply it\n  const runners = this._transformationRunners.runners\n  const netTransform = runners\n    .map(getRunnerTransform)\n    .reduce(lmultiply, new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__[\"default\"]())\n\n  this.transform(netTransform)\n\n  this._transformationRunners.merge()\n\n  if (this._transformationRunners.length() === 1) {\n    this._frameId = null\n  }\n}\n\nclass RunnerArray {\n  constructor() {\n    this.runners = []\n    this.ids = []\n  }\n\n  add(runner) {\n    if (this.runners.includes(runner)) return\n    const id = runner.id + 1\n\n    this.runners.push(runner)\n    this.ids.push(id)\n\n    return this\n  }\n\n  clearBefore(id) {\n    const deleteCnt = this.ids.indexOf(id + 1) || 1\n    this.ids.splice(0, deleteCnt, 0)\n    this.runners\n      .splice(0, deleteCnt, new FakeRunner())\n      .forEach((r) => r.clearTransformsFromQueue())\n    return this\n  }\n\n  edit(id, newRunner) {\n    const index = this.ids.indexOf(id + 1)\n    this.ids.splice(index, 1, id + 1)\n    this.runners.splice(index, 1, newRunner)\n    return this\n  }\n\n  getByID(id) {\n    return this.runners[this.ids.indexOf(id + 1)]\n  }\n\n  length() {\n    return this.ids.length\n  }\n\n  merge() {\n    let lastRunner = null\n    for (let i = 0; i < this.runners.length; ++i) {\n      const runner = this.runners[i]\n\n      const condition =\n        lastRunner &&\n        runner.done &&\n        lastRunner.done &&\n        // don't merge runner when persisted on timeline\n        (!runner._timeline ||\n          !runner._timeline._runnerIds.includes(runner.id)) &&\n        (!lastRunner._timeline ||\n          !lastRunner._timeline._runnerIds.includes(lastRunner.id))\n\n      if (condition) {\n        // the +1 happens in the function\n        this.remove(runner.id)\n        const newRunner = runner.mergeWith(lastRunner)\n        this.edit(lastRunner.id, newRunner)\n        lastRunner = newRunner\n        --i\n      } else {\n        lastRunner = runner\n      }\n    }\n\n    return this\n  }\n\n  remove(id) {\n    const index = this.ids.indexOf(id + 1)\n    this.ids.splice(index, 1)\n    this.runners.splice(index, 1)\n    return this\n  }\n}\n\n(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_5__.registerMethods)({\n  Element: {\n    animate(duration, delay, when) {\n      const o = Runner.sanitise(duration, delay, when)\n      const timeline = this.timeline()\n      return new Runner(o.duration)\n        .loop(o)\n        .element(this)\n        .timeline(timeline.play())\n        .schedule(o.delay, o.when)\n    },\n\n    delay(by, when) {\n      return this.animate(0, by, when)\n    },\n\n    // this function searches for all runners on the element and deletes the ones\n    // which run before the current one. This is because absolute transformations\n    // overwrite anything anyway so there is no need to waste time computing\n    // other runners\n    _clearTransformRunnersBefore(currentRunner) {\n      this._transformationRunners.clearBefore(currentRunner.id)\n    },\n\n    _currentTransform(current) {\n      return (\n        this._transformationRunners.runners\n          // we need the equal sign here to make sure, that also transformations\n          // on the same runner which execute before the current transformation are\n          // taken into account\n          .filter((runner) => runner.id <= current.id)\n          .map(getRunnerTransform)\n          .reduce(lmultiply, new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__[\"default\"]())\n      )\n    },\n\n    _addRunner(runner) {\n      this._transformationRunners.add(runner)\n\n      // Make sure that the runner merge is executed at the very end of\n      // all Animator functions. That is why we use immediate here to execute\n      // the merge right after all frames are run\n      _Animator_js__WEBPACK_IMPORTED_MODULE_7__[\"default\"].cancelImmediate(this._frameId)\n      this._frameId = _Animator_js__WEBPACK_IMPORTED_MODULE_7__[\"default\"].immediate(mergeTransforms.bind(this))\n    },\n\n    _prepareRunner() {\n      if (this._frameId == null) {\n        this._transformationRunners = new RunnerArray().add(\n          new FakeRunner(new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__[\"default\"](this))\n        )\n      }\n    }\n  }\n})\n\n// Will output the elements from array A that are not in the array B\nconst difference = (a, b) => a.filter((x) => !b.includes(x))\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.extend)(Runner, {\n  attr(a, v) {\n    return this.styleAttr('attr', a, v)\n  },\n\n  // Add animatable styles\n  css(s, v) {\n    return this.styleAttr('css', s, v)\n  },\n\n  styleAttr(type, nameOrAttrs, val) {\n    if (typeof nameOrAttrs === 'string') {\n      return this.styleAttr(type, { [nameOrAttrs]: val })\n    }\n\n    let attrs = nameOrAttrs\n    if (this._tryRetarget(type, attrs)) return this\n\n    let morpher = new _Morphable_js__WEBPACK_IMPORTED_MODULE_11__[\"default\"](this._stepper).to(attrs)\n    let keys = Object.keys(attrs)\n\n    this.queue(\n      function () {\n        morpher = morpher.from(this.element()[type](keys))\n      },\n      function (pos) {\n        this.element()[type](morpher.at(pos).valueOf())\n        return morpher.done()\n      },\n      function (newToAttrs) {\n        // Check if any new keys were added\n        const newKeys = Object.keys(newToAttrs)\n        const differences = difference(newKeys, keys)\n\n        // If their are new keys, initialize them and add them to morpher\n        if (differences.length) {\n          // Get the values\n          const addedFromAttrs = this.element()[type](differences)\n\n          // Get the already initialized values\n          const oldFromAttrs = new _Morphable_js__WEBPACK_IMPORTED_MODULE_11__.ObjectBag(morpher.from()).valueOf()\n\n          // Merge old and new\n          Object.assign(oldFromAttrs, addedFromAttrs)\n          morpher.from(oldFromAttrs)\n        }\n\n        // Get the object from the morpher\n        const oldToAttrs = new _Morphable_js__WEBPACK_IMPORTED_MODULE_11__.ObjectBag(morpher.to()).valueOf()\n\n        // Merge in new attributes\n        Object.assign(oldToAttrs, newToAttrs)\n\n        // Change morpher target\n        morpher.to(oldToAttrs)\n\n        // Make sure that we save the work we did so we don't need it to do again\n        keys = newKeys\n        attrs = newToAttrs\n      }\n    )\n\n    this._rememberMorpher(type, morpher)\n    return this\n  },\n\n  zoom(level, point) {\n    if (this._tryRetarget('zoom', level, point)) return this\n\n    let morpher = new _Morphable_js__WEBPACK_IMPORTED_MODULE_11__[\"default\"](this._stepper).to(new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_13__[\"default\"](level))\n\n    this.queue(\n      function () {\n        morpher = morpher.from(this.element().zoom())\n      },\n      function (pos) {\n        this.element().zoom(morpher.at(pos), point)\n        return morpher.done()\n      },\n      function (newLevel, newPoint) {\n        point = newPoint\n        morpher.to(newLevel)\n      }\n    )\n\n    this._rememberMorpher('zoom', morpher)\n    return this\n  },\n\n  /**\n   ** absolute transformations\n   **/\n\n  //\n  // M v -----|-----(D M v = F v)------|----->  T v\n  //\n  // 1. define the final state (T) and decompose it (once)\n  //    t = [tx, ty, the, lam, sy, sx]\n  // 2. on every frame: pull the current state of all previous transforms\n  //    (M - m can change)\n  //   and then write this as m = [tx0, ty0, the0, lam0, sy0, sx0]\n  // 3. Find the interpolated matrix F(pos) = m + pos * (t - m)\n  //   - Note F(0) = M\n  //   - Note F(1) = T\n  // 4. Now you get the delta matrix as a result: D = F * inv(M)\n\n  transform(transforms, relative, affine) {\n    // If we have a declarative function, we should retarget it if possible\n    relative = transforms.relative || relative\n    if (\n      this._isDeclarative &&\n      !relative &&\n      this._tryRetarget('transform', transforms)\n    ) {\n      return this\n    }\n\n    // Parse the parameters\n    const isMatrix = _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__[\"default\"].isMatrixLike(transforms)\n    affine =\n      transforms.affine != null\n        ? transforms.affine\n        : affine != null\n          ? affine\n          : !isMatrix\n\n    // Create a morpher and set its type\n    const morpher = new _Morphable_js__WEBPACK_IMPORTED_MODULE_11__[\"default\"](this._stepper).type(\n      affine ? _Morphable_js__WEBPACK_IMPORTED_MODULE_11__.TransformBag : _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__[\"default\"]\n    )\n\n    let origin\n    let element\n    let current\n    let currentAngle\n    let startTransform\n\n    function setup() {\n      // make sure element and origin is defined\n      element = element || this.element()\n      origin = origin || (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_3__.getOrigin)(transforms, element)\n\n      startTransform = new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__[\"default\"](relative ? undefined : element)\n\n      // add the runner to the element so it can merge transformations\n      element._addRunner(this)\n\n      // Deactivate all transforms that have run so far if we are absolute\n      if (!relative) {\n        element._clearTransformRunnersBefore(this)\n      }\n    }\n\n    function run(pos) {\n      // clear all other transforms before this in case something is saved\n      // on this runner. We are absolute. We dont need these!\n      if (!relative) this.clearTransform()\n\n      const { x, y } = new _types_Point_js__WEBPACK_IMPORTED_MODULE_12__[\"default\"](origin).transform(\n        element._currentTransform(this)\n      )\n\n      let target = new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__[\"default\"]({ ...transforms, origin: [x, y] })\n      let start = this._isDeclarative && current ? current : startTransform\n\n      if (affine) {\n        target = target.decompose(x, y)\n        start = start.decompose(x, y)\n\n        // Get the current and target angle as it was set\n        const rTarget = target.rotate\n        const rCurrent = start.rotate\n\n        // Figure out the shortest path to rotate directly\n        const possibilities = [rTarget - 360, rTarget, rTarget + 360]\n        const distances = possibilities.map((a) => Math.abs(a - rCurrent))\n        const shortest = Math.min(...distances)\n        const index = distances.indexOf(shortest)\n        target.rotate = possibilities[index]\n      }\n\n      if (relative) {\n        // we have to be careful here not to overwrite the rotation\n        // with the rotate method of Matrix\n        if (!isMatrix) {\n          target.rotate = transforms.rotate || 0\n        }\n        if (this._isDeclarative && currentAngle) {\n          start.rotate = currentAngle\n        }\n      }\n\n      morpher.from(start)\n      morpher.to(target)\n\n      const affineParameters = morpher.at(pos)\n      currentAngle = affineParameters.rotate\n      current = new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__[\"default\"](affineParameters)\n\n      this.addTransform(current)\n      element._addRunner(this)\n      return morpher.done()\n    }\n\n    function retarget(newTransforms) {\n      // only get a new origin if it changed since the last call\n      if (\n        (newTransforms.origin || 'center').toString() !==\n        (transforms.origin || 'center').toString()\n      ) {\n        origin = (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_3__.getOrigin)(newTransforms, element)\n      }\n\n      // overwrite the old transformations with the new ones\n      transforms = { ...newTransforms, origin }\n    }\n\n    this.queue(setup, run, retarget, true)\n    this._isDeclarative && this._rememberMorpher('transform', morpher)\n    return this\n  },\n\n  // Animatable x-axis\n  x(x) {\n    return this._queueNumber('x', x)\n  },\n\n  // Animatable y-axis\n  y(y) {\n    return this._queueNumber('y', y)\n  },\n\n  ax(x) {\n    return this._queueNumber('ax', x)\n  },\n\n  ay(y) {\n    return this._queueNumber('ay', y)\n  },\n\n  dx(x = 0) {\n    return this._queueNumberDelta('x', x)\n  },\n\n  dy(y = 0) {\n    return this._queueNumberDelta('y', y)\n  },\n\n  dmove(x, y) {\n    return this.dx(x).dy(y)\n  },\n\n  _queueNumberDelta(method, to) {\n    to = new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_13__[\"default\"](to)\n\n    // Try to change the target if we have this method already registered\n    if (this._tryRetarget(method, to)) return this\n\n    // Make a morpher and queue the animation\n    const morpher = new _Morphable_js__WEBPACK_IMPORTED_MODULE_11__[\"default\"](this._stepper).to(to)\n    let from = null\n    this.queue(\n      function () {\n        from = this.element()[method]()\n        morpher.from(from)\n        morpher.to(from + to)\n      },\n      function (pos) {\n        this.element()[method](morpher.at(pos))\n        return morpher.done()\n      },\n      function (newTo) {\n        morpher.to(from + new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_13__[\"default\"](newTo))\n      }\n    )\n\n    // Register the morpher so that if it is changed again, we can retarget it\n    this._rememberMorpher(method, morpher)\n    return this\n  },\n\n  _queueObject(method, to) {\n    // Try to change the target if we have this method already registered\n    if (this._tryRetarget(method, to)) return this\n\n    // Make a morpher and queue the animation\n    const morpher = new _Morphable_js__WEBPACK_IMPORTED_MODULE_11__[\"default\"](this._stepper).to(to)\n    this.queue(\n      function () {\n        morpher.from(this.element()[method]())\n      },\n      function (pos) {\n        this.element()[method](morpher.at(pos))\n        return morpher.done()\n      }\n    )\n\n    // Register the morpher so that if it is changed again, we can retarget it\n    this._rememberMorpher(method, morpher)\n    return this\n  },\n\n  _queueNumber(method, value) {\n    return this._queueObject(method, new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_13__[\"default\"](value))\n  },\n\n  // Animatable center x-axis\n  cx(x) {\n    return this._queueNumber('cx', x)\n  },\n\n  // Animatable center y-axis\n  cy(y) {\n    return this._queueNumber('cy', y)\n  },\n\n  // Add animatable move\n  move(x, y) {\n    return this.x(x).y(y)\n  },\n\n  amove(x, y) {\n    return this.ax(x).ay(y)\n  },\n\n  // Add animatable center\n  center(x, y) {\n    return this.cx(x).cy(y)\n  },\n\n  // Add animatable size\n  size(width, height) {\n    // animate bbox based size for all other elements\n    let box\n\n    if (!width || !height) {\n      box = this._element.bbox()\n    }\n\n    if (!width) {\n      width = (box.width / box.height) * height\n    }\n\n    if (!height) {\n      height = (box.height / box.width) * width\n    }\n\n    return this.width(width).height(height)\n  },\n\n  // Add animatable width\n  width(width) {\n    return this._queueNumber('width', width)\n  },\n\n  // Add animatable height\n  height(height) {\n    return this._queueNumber('height', height)\n  },\n\n  // Add animatable plot\n  plot(a, b, c, d) {\n    // Lines can be plotted with 4 arguments\n    if (arguments.length === 4) {\n      return this.plot([a, b, c, d])\n    }\n\n    if (this._tryRetarget('plot', a)) return this\n\n    const morpher = new _Morphable_js__WEBPACK_IMPORTED_MODULE_11__[\"default\"](this._stepper)\n      .type(this._element.MorphArray)\n      .to(a)\n\n    this.queue(\n      function () {\n        morpher.from(this._element.array())\n      },\n      function (pos) {\n        this._element.plot(morpher.at(pos))\n        return morpher.done()\n      }\n    )\n\n    this._rememberMorpher('plot', morpher)\n    return this\n  },\n\n  // Add leading method\n  leading(value) {\n    return this._queueNumber('leading', value)\n  },\n\n  // Add animatable viewbox\n  viewbox(x, y, width, height) {\n    return this._queueObject('viewbox', new _types_Box_js__WEBPACK_IMPORTED_MODULE_8__[\"default\"](x, y, width, height))\n  },\n\n  update(o) {\n    if (typeof o !== 'object') {\n      return this.update({\n        offset: arguments[0],\n        color: arguments[1],\n        opacity: arguments[2]\n      })\n    }\n\n    if (o.opacity != null) this.attr('stop-opacity', o.opacity)\n    if (o.color != null) this.attr('stop-color', o.color)\n    if (o.offset != null) this.attr('offset', o.offset)\n\n    return this\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.extend)(Runner, { rx: _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_6__.rx, ry: _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_6__.ry, from: _modules_core_gradiented_js__WEBPACK_IMPORTED_MODULE_2__.from, to: _modules_core_gradiented_js__WEBPACK_IMPORTED_MODULE_2__.to })\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.register)(Runner, 'Runner')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/animation/Runner.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   FakeRunner: () => (/* binding */ FakeRunner),
+/* harmony export */   RunnerArray: () => (/* binding */ RunnerArray),
+/* harmony export */   "default": () => (/* binding */ Runner)
+/* harmony export */ });
+/* harmony import */ var _Controller_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Controller.js */ "./node_modules/@svgdotjs/svg.js/src/animation/Controller.js");
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _modules_core_gradiented_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../modules/core/gradiented.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/gradiented.js");
+/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/utils.js */ "./node_modules/@svgdotjs/svg.js/src/utils/utils.js");
+/* harmony import */ var _modules_core_defaults_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../modules/core/defaults.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/defaults.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../modules/core/circled.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/circled.js");
+/* harmony import */ var _Animator_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Animator.js */ "./node_modules/@svgdotjs/svg.js/src/animation/Animator.js");
+/* harmony import */ var _types_Box_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../types/Box.js */ "./node_modules/@svgdotjs/svg.js/src/types/Box.js");
+/* harmony import */ var _types_EventTarget_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../types/EventTarget.js */ "./node_modules/@svgdotjs/svg.js/src/types/EventTarget.js");
+/* harmony import */ var _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../types/Matrix.js */ "./node_modules/@svgdotjs/svg.js/src/types/Matrix.js");
+/* harmony import */ var _Morphable_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Morphable.js */ "./node_modules/@svgdotjs/svg.js/src/animation/Morphable.js");
+/* harmony import */ var _types_Point_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../types/Point.js */ "./node_modules/@svgdotjs/svg.js/src/types/Point.js");
+/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../types/SVGNumber.js */ "./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js");
+/* harmony import */ var _Timeline_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./Timeline.js */ "./node_modules/@svgdotjs/svg.js/src/animation/Timeline.js");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class Runner extends _types_EventTarget_js__WEBPACK_IMPORTED_MODULE_9__["default"] {
+  constructor(options) {
+    super()
+
+    // Store a unique id on the runner, so that we can identify it later
+    this.id = Runner.id++
+
+    // Ensure a default value
+    options = options == null ? _modules_core_defaults_js__WEBPACK_IMPORTED_MODULE_4__.timeline.duration : options
+
+    // Ensure that we get a controller
+    options = typeof options === 'function' ? new _Controller_js__WEBPACK_IMPORTED_MODULE_0__.Controller(options) : options
+
+    // Declare all of the variables
+    this._element = null
+    this._timeline = null
+    this.done = false
+    this._queue = []
+
+    // Work out the stepper and the duration
+    this._duration = typeof options === 'number' && options
+    this._isDeclarative = options instanceof _Controller_js__WEBPACK_IMPORTED_MODULE_0__.Controller
+    this._stepper = this._isDeclarative ? options : new _Controller_js__WEBPACK_IMPORTED_MODULE_0__.Ease()
+
+    // We copy the current values from the timeline because they can change
+    this._history = {}
+
+    // Store the state of the runner
+    this.enabled = true
+    this._time = 0
+    this._lastTime = 0
+
+    // At creation, the runner is in reset state
+    this._reseted = true
+
+    // Save transforms applied to this runner
+    this.transforms = new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__["default"]()
+    this.transformId = 1
+
+    // Looping variables
+    this._haveReversed = false
+    this._reverse = false
+    this._loopsDone = 0
+    this._swing = false
+    this._wait = 0
+    this._times = 1
+
+    this._frameId = null
+
+    // Stores how long a runner is stored after being done
+    this._persist = this._isDeclarative ? true : null
+  }
+
+  static sanitise(duration, delay, when) {
+    // Initialise the default parameters
+    let times = 1
+    let swing = false
+    let wait = 0
+    duration = duration ?? _modules_core_defaults_js__WEBPACK_IMPORTED_MODULE_4__.timeline.duration
+    delay = delay ?? _modules_core_defaults_js__WEBPACK_IMPORTED_MODULE_4__.timeline.delay
+    when = when || 'last'
+
+    // If we have an object, unpack the values
+    if (typeof duration === 'object' && !(duration instanceof _Controller_js__WEBPACK_IMPORTED_MODULE_0__.Stepper)) {
+      delay = duration.delay ?? delay
+      when = duration.when ?? when
+      swing = duration.swing || swing
+      times = duration.times ?? times
+      wait = duration.wait ?? wait
+      duration = duration.duration ?? _modules_core_defaults_js__WEBPACK_IMPORTED_MODULE_4__.timeline.duration
+    }
+
+    return {
+      duration: duration,
+      delay: delay,
+      swing: swing,
+      times: times,
+      wait: wait,
+      when: when
+    }
+  }
+
+  active(enabled) {
+    if (enabled == null) return this.enabled
+    this.enabled = enabled
+    return this
+  }
+
+  /*
+  Private Methods
+  ===============
+  Methods that shouldn't be used externally
+  */
+  addTransform(transform) {
+    this.transforms.lmultiplyO(transform)
+    return this
+  }
+
+  after(fn) {
+    return this.on('finished', fn)
+  }
+
+  animate(duration, delay, when) {
+    const o = Runner.sanitise(duration, delay, when)
+    const runner = new Runner(o.duration)
+    if (this._timeline) runner.timeline(this._timeline)
+    if (this._element) runner.element(this._element)
+    return runner.loop(o).schedule(o.delay, o.when)
+  }
+
+  clearTransform() {
+    this.transforms = new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__["default"]()
+    return this
+  }
+
+  // TODO: Keep track of all transformations so that deletion is faster
+  clearTransformsFromQueue() {
+    if (
+      !this.done ||
+      !this._timeline ||
+      !this._timeline._runnerIds.includes(this.id)
+    ) {
+      this._queue = this._queue.filter((item) => {
+        return !item.isTransform
+      })
+    }
+  }
+
+  delay(delay) {
+    return this.animate(0, delay)
+  }
+
+  duration() {
+    return this._times * (this._wait + this._duration) - this._wait
+  }
+
+  during(fn) {
+    return this.queue(null, fn)
+  }
+
+  ease(fn) {
+    this._stepper = new _Controller_js__WEBPACK_IMPORTED_MODULE_0__.Ease(fn)
+    return this
+  }
+  /*
+  Runner Definitions
+  ==================
+  These methods help us define the runtime behaviour of the Runner or they
+  help us make new runners from the current runner
+  */
+
+  element(element) {
+    if (element == null) return this._element
+    this._element = element
+    element._prepareRunner()
+    return this
+  }
+
+  finish() {
+    return this.step(Infinity)
+  }
+
+  loop(times, swing, wait) {
+    // Deal with the user passing in an object
+    if (typeof times === 'object') {
+      swing = times.swing
+      wait = times.wait
+      times = times.times
+    }
+
+    // Sanitise the values and store them
+    this._times = times || Infinity
+    this._swing = swing || false
+    this._wait = wait || 0
+
+    // Allow true to be passed
+    if (this._times === true) {
+      this._times = Infinity
+    }
+
+    return this
+  }
+
+  loops(p) {
+    const loopDuration = this._duration + this._wait
+    if (p == null) {
+      const loopsDone = Math.floor(this._time / loopDuration)
+      const relativeTime = this._time - loopsDone * loopDuration
+      const position = relativeTime / this._duration
+      return Math.min(loopsDone + position, this._times)
+    }
+    const whole = Math.floor(p)
+    const partial = p % 1
+    const time = loopDuration * whole + this._duration * partial
+    return this.time(time)
+  }
+
+  persist(dtOrForever) {
+    if (dtOrForever == null) return this._persist
+    this._persist = dtOrForever
+    return this
+  }
+
+  position(p) {
+    // Get all of the variables we need
+    const x = this._time
+    const d = this._duration
+    const w = this._wait
+    const t = this._times
+    const s = this._swing
+    const r = this._reverse
+    let position
+
+    if (p == null) {
+      /*
+      This function converts a time to a position in the range [0, 1]
+      The full explanation can be found in this desmos demonstration
+        https://www.desmos.com/calculator/u4fbavgche
+      The logic is slightly simplified here because we can use booleans
+      */
+
+      // Figure out the value without thinking about the start or end time
+      const f = function (x) {
+        const swinging = s * Math.floor((x % (2 * (w + d))) / (w + d))
+        const backwards = (swinging && !r) || (!swinging && r)
+        const uncliped =
+          (Math.pow(-1, backwards) * (x % (w + d))) / d + backwards
+        const clipped = Math.max(Math.min(uncliped, 1), 0)
+        return clipped
+      }
+
+      // Figure out the value by incorporating the start time
+      const endTime = t * (w + d) - w
+      position =
+        x <= 0
+          ? Math.round(f(1e-5))
+          : x < endTime
+            ? f(x)
+            : Math.round(f(endTime - 1e-5))
+      return position
+    }
+
+    // Work out the loops done and add the position to the loops done
+    const loopsDone = Math.floor(this.loops())
+    const swingForward = s && loopsDone % 2 === 0
+    const forwards = (swingForward && !r) || (r && swingForward)
+    position = loopsDone + (forwards ? p : 1 - p)
+    return this.loops(position)
+  }
+
+  progress(p) {
+    if (p == null) {
+      return Math.min(1, this._time / this.duration())
+    }
+    return this.time(p * this.duration())
+  }
+
+  /*
+  Basic Functionality
+  ===================
+  These methods allow us to attach basic functions to the runner directly
+  */
+  queue(initFn, runFn, retargetFn, isTransform) {
+    this._queue.push({
+      initialiser: initFn || _modules_core_defaults_js__WEBPACK_IMPORTED_MODULE_4__.noop,
+      runner: runFn || _modules_core_defaults_js__WEBPACK_IMPORTED_MODULE_4__.noop,
+      retarget: retargetFn,
+      isTransform: isTransform,
+      initialised: false,
+      finished: false
+    })
+    const timeline = this.timeline()
+    timeline && this.timeline()._continue()
+    return this
+  }
+
+  reset() {
+    if (this._reseted) return this
+    this.time(0)
+    this._reseted = true
+    return this
+  }
+
+  reverse(reverse) {
+    this._reverse = reverse == null ? !this._reverse : reverse
+    return this
+  }
+
+  schedule(timeline, delay, when) {
+    // The user doesn't need to pass a timeline if we already have one
+    if (!(timeline instanceof _Timeline_js__WEBPACK_IMPORTED_MODULE_14__["default"])) {
+      when = delay
+      delay = timeline
+      timeline = this.timeline()
+    }
+
+    // If there is no timeline, yell at the user...
+    if (!timeline) {
+      throw Error('Runner cannot be scheduled without timeline')
+    }
+
+    // Schedule the runner on the timeline provided
+    timeline.schedule(this, delay, when)
+    return this
+  }
+
+  step(dt) {
+    // If we are inactive, this stepper just gets skipped
+    if (!this.enabled) return this
+
+    // Update the time and get the new position
+    dt = dt == null ? 16 : dt
+    this._time += dt
+    const position = this.position()
+
+    // Figure out if we need to run the stepper in this frame
+    const running = this._lastPosition !== position && this._time >= 0
+    this._lastPosition = position
+
+    // Figure out if we just started
+    const duration = this.duration()
+    const justStarted = this._lastTime <= 0 && this._time > 0
+    const justFinished = this._lastTime < duration && this._time >= duration
+
+    this._lastTime = this._time
+    if (justStarted) {
+      this.fire('start', this)
+    }
+
+    // Work out if the runner is finished set the done flag here so animations
+    // know, that they are running in the last step (this is good for
+    // transformations which can be merged)
+    const declarative = this._isDeclarative
+    this.done = !declarative && !justFinished && this._time >= duration
+
+    // Runner is running. So its not in reset state anymore
+    this._reseted = false
+
+    let converged = false
+    // Call initialise and the run function
+    if (running || declarative) {
+      this._initialise(running)
+
+      // clear the transforms on this runner so they dont get added again and again
+      this.transforms = new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__["default"]()
+      converged = this._run(declarative ? dt : position)
+
+      this.fire('step', this)
+    }
+    // correct the done flag here
+    // declarative animations itself know when they converged
+    this.done = this.done || (converged && declarative)
+    if (justFinished) {
+      this.fire('finished', this)
+    }
+    return this
+  }
+
+  /*
+  Runner animation methods
+  ========================
+  Control how the animation plays
+  */
+  time(time) {
+    if (time == null) {
+      return this._time
+    }
+    const dt = time - this._time
+    this.step(dt)
+    return this
+  }
+
+  timeline(timeline) {
+    // check explicitly for undefined so we can set the timeline to null
+    if (typeof timeline === 'undefined') return this._timeline
+    this._timeline = timeline
+    return this
+  }
+
+  unschedule() {
+    const timeline = this.timeline()
+    timeline && timeline.unschedule(this)
+    return this
+  }
+
+  // Run each initialise function in the runner if required
+  _initialise(running) {
+    // If we aren't running, we shouldn't initialise when not declarative
+    if (!running && !this._isDeclarative) return
+
+    // Loop through all of the initialisers
+    for (let i = 0, len = this._queue.length; i < len; ++i) {
+      // Get the current initialiser
+      const current = this._queue[i]
+
+      // Determine whether we need to initialise
+      const needsIt = this._isDeclarative || (!current.initialised && running)
+      running = !current.finished
+
+      // Call the initialiser if we need to
+      if (needsIt && running) {
+        current.initialiser.call(this)
+        current.initialised = true
+      }
+    }
+  }
+
+  // Save a morpher to the morpher list so that we can retarget it later
+  _rememberMorpher(method, morpher) {
+    this._history[method] = {
+      morpher: morpher,
+      caller: this._queue[this._queue.length - 1]
+    }
+
+    // We have to resume the timeline in case a controller
+    // is already done without being ever run
+    // This can happen when e.g. this is done:
+    //    anim = el.animate(new SVG.Spring)
+    // and later
+    //    anim.move(...)
+    if (this._isDeclarative) {
+      const timeline = this.timeline()
+      timeline && timeline.play()
+    }
+  }
+
+  // Try to set the target for a morpher if the morpher exists, otherwise
+  // Run each run function for the position or dt given
+  _run(positionOrDt) {
+    // Run all of the _queue directly
+    let allfinished = true
+    for (let i = 0, len = this._queue.length; i < len; ++i) {
+      // Get the current function to run
+      const current = this._queue[i]
+
+      // Run the function if its not finished, we keep track of the finished
+      // flag for the sake of declarative _queue
+      const converged = current.runner.call(this, positionOrDt)
+      current.finished = current.finished || converged === true
+      allfinished = allfinished && current.finished
+    }
+
+    // We report when all of the constructors are finished
+    return allfinished
+  }
+
+  // do nothing and return false
+  _tryRetarget(method, target, extra) {
+    if (this._history[method]) {
+      // if the last method wasn't even initialised, throw it away
+      if (!this._history[method].caller.initialised) {
+        const index = this._queue.indexOf(this._history[method].caller)
+        this._queue.splice(index, 1)
+        return false
+      }
+
+      // for the case of transformations, we use the special retarget function
+      // which has access to the outer scope
+      if (this._history[method].caller.retarget) {
+        this._history[method].caller.retarget.call(this, target, extra)
+        // for everything else a simple morpher change is sufficient
+      } else {
+        this._history[method].morpher.to(target)
+      }
+
+      this._history[method].caller.finished = false
+      const timeline = this.timeline()
+      timeline && timeline.play()
+      return true
+    }
+    return false
+  }
+}
+
+Runner.id = 0
+
+class FakeRunner {
+  constructor(transforms = new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__["default"](), id = -1, done = true) {
+    this.transforms = transforms
+    this.id = id
+    this.done = done
+  }
+
+  clearTransformsFromQueue() {}
+}
+
+(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.extend)([Runner, FakeRunner], {
+  mergeWith(runner) {
+    return new FakeRunner(
+      runner.transforms.lmultiply(this.transforms),
+      runner.id
+    )
+  }
+})
+
+// FakeRunner.emptyRunner = new FakeRunner()
+
+const lmultiply = (last, curr) => last.lmultiplyO(curr)
+const getRunnerTransform = (runner) => runner.transforms
+
+function mergeTransforms() {
+  // Find the matrix to apply to the element and apply it
+  const runners = this._transformationRunners.runners
+  const netTransform = runners
+    .map(getRunnerTransform)
+    .reduce(lmultiply, new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__["default"]())
+
+  this.transform(netTransform)
+
+  this._transformationRunners.merge()
+
+  if (this._transformationRunners.length() === 1) {
+    this._frameId = null
+  }
+}
+
+class RunnerArray {
+  constructor() {
+    this.runners = []
+    this.ids = []
+  }
+
+  add(runner) {
+    if (this.runners.includes(runner)) return
+    const id = runner.id + 1
+
+    this.runners.push(runner)
+    this.ids.push(id)
+
+    return this
+  }
+
+  clearBefore(id) {
+    const deleteCnt = this.ids.indexOf(id + 1) || 1
+    this.ids.splice(0, deleteCnt, 0)
+    this.runners
+      .splice(0, deleteCnt, new FakeRunner())
+      .forEach((r) => r.clearTransformsFromQueue())
+    return this
+  }
+
+  edit(id, newRunner) {
+    const index = this.ids.indexOf(id + 1)
+    this.ids.splice(index, 1, id + 1)
+    this.runners.splice(index, 1, newRunner)
+    return this
+  }
+
+  getByID(id) {
+    return this.runners[this.ids.indexOf(id + 1)]
+  }
+
+  length() {
+    return this.ids.length
+  }
+
+  merge() {
+    let lastRunner = null
+    for (let i = 0; i < this.runners.length; ++i) {
+      const runner = this.runners[i]
+
+      const condition =
+        lastRunner &&
+        runner.done &&
+        lastRunner.done &&
+        // don't merge runner when persisted on timeline
+        (!runner._timeline ||
+          !runner._timeline._runnerIds.includes(runner.id)) &&
+        (!lastRunner._timeline ||
+          !lastRunner._timeline._runnerIds.includes(lastRunner.id))
+
+      if (condition) {
+        // the +1 happens in the function
+        this.remove(runner.id)
+        const newRunner = runner.mergeWith(lastRunner)
+        this.edit(lastRunner.id, newRunner)
+        lastRunner = newRunner
+        --i
+      } else {
+        lastRunner = runner
+      }
+    }
+
+    return this
+  }
+
+  remove(id) {
+    const index = this.ids.indexOf(id + 1)
+    this.ids.splice(index, 1)
+    this.runners.splice(index, 1)
+    return this
+  }
+}
+
+(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_5__.registerMethods)({
+  Element: {
+    animate(duration, delay, when) {
+      const o = Runner.sanitise(duration, delay, when)
+      const timeline = this.timeline()
+      return new Runner(o.duration)
+        .loop(o)
+        .element(this)
+        .timeline(timeline.play())
+        .schedule(o.delay, o.when)
+    },
+
+    delay(by, when) {
+      return this.animate(0, by, when)
+    },
+
+    // this function searches for all runners on the element and deletes the ones
+    // which run before the current one. This is because absolute transformations
+    // overwrite anything anyway so there is no need to waste time computing
+    // other runners
+    _clearTransformRunnersBefore(currentRunner) {
+      this._transformationRunners.clearBefore(currentRunner.id)
+    },
+
+    _currentTransform(current) {
+      return (
+        this._transformationRunners.runners
+          // we need the equal sign here to make sure, that also transformations
+          // on the same runner which execute before the current transformation are
+          // taken into account
+          .filter((runner) => runner.id <= current.id)
+          .map(getRunnerTransform)
+          .reduce(lmultiply, new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__["default"]())
+      )
+    },
+
+    _addRunner(runner) {
+      this._transformationRunners.add(runner)
+
+      // Make sure that the runner merge is executed at the very end of
+      // all Animator functions. That is why we use immediate here to execute
+      // the merge right after all frames are run
+      _Animator_js__WEBPACK_IMPORTED_MODULE_7__["default"].cancelImmediate(this._frameId)
+      this._frameId = _Animator_js__WEBPACK_IMPORTED_MODULE_7__["default"].immediate(mergeTransforms.bind(this))
+    },
+
+    _prepareRunner() {
+      if (this._frameId == null) {
+        this._transformationRunners = new RunnerArray().add(
+          new FakeRunner(new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__["default"](this))
+        )
+      }
+    }
+  }
+})
+
+// Will output the elements from array A that are not in the array B
+const difference = (a, b) => a.filter((x) => !b.includes(x))
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.extend)(Runner, {
+  attr(a, v) {
+    return this.styleAttr('attr', a, v)
+  },
+
+  // Add animatable styles
+  css(s, v) {
+    return this.styleAttr('css', s, v)
+  },
+
+  styleAttr(type, nameOrAttrs, val) {
+    if (typeof nameOrAttrs === 'string') {
+      return this.styleAttr(type, { [nameOrAttrs]: val })
+    }
+
+    let attrs = nameOrAttrs
+    if (this._tryRetarget(type, attrs)) return this
+
+    let morpher = new _Morphable_js__WEBPACK_IMPORTED_MODULE_11__["default"](this._stepper).to(attrs)
+    let keys = Object.keys(attrs)
+
+    this.queue(
+      function () {
+        morpher = morpher.from(this.element()[type](keys))
+      },
+      function (pos) {
+        this.element()[type](morpher.at(pos).valueOf())
+        return morpher.done()
+      },
+      function (newToAttrs) {
+        // Check if any new keys were added
+        const newKeys = Object.keys(newToAttrs)
+        const differences = difference(newKeys, keys)
+
+        // If their are new keys, initialize them and add them to morpher
+        if (differences.length) {
+          // Get the values
+          const addedFromAttrs = this.element()[type](differences)
+
+          // Get the already initialized values
+          const oldFromAttrs = new _Morphable_js__WEBPACK_IMPORTED_MODULE_11__.ObjectBag(morpher.from()).valueOf()
+
+          // Merge old and new
+          Object.assign(oldFromAttrs, addedFromAttrs)
+          morpher.from(oldFromAttrs)
+        }
+
+        // Get the object from the morpher
+        const oldToAttrs = new _Morphable_js__WEBPACK_IMPORTED_MODULE_11__.ObjectBag(morpher.to()).valueOf()
+
+        // Merge in new attributes
+        Object.assign(oldToAttrs, newToAttrs)
+
+        // Change morpher target
+        morpher.to(oldToAttrs)
+
+        // Make sure that we save the work we did so we don't need it to do again
+        keys = newKeys
+        attrs = newToAttrs
+      }
+    )
+
+    this._rememberMorpher(type, morpher)
+    return this
+  },
+
+  zoom(level, point) {
+    if (this._tryRetarget('zoom', level, point)) return this
+
+    let morpher = new _Morphable_js__WEBPACK_IMPORTED_MODULE_11__["default"](this._stepper).to(new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_13__["default"](level))
+
+    this.queue(
+      function () {
+        morpher = morpher.from(this.element().zoom())
+      },
+      function (pos) {
+        this.element().zoom(morpher.at(pos), point)
+        return morpher.done()
+      },
+      function (newLevel, newPoint) {
+        point = newPoint
+        morpher.to(newLevel)
+      }
+    )
+
+    this._rememberMorpher('zoom', morpher)
+    return this
+  },
+
+  /**
+   ** absolute transformations
+   **/
+
+  //
+  // M v -----|-----(D M v = F v)------|----->  T v
+  //
+  // 1. define the final state (T) and decompose it (once)
+  //    t = [tx, ty, the, lam, sy, sx]
+  // 2. on every frame: pull the current state of all previous transforms
+  //    (M - m can change)
+  //   and then write this as m = [tx0, ty0, the0, lam0, sy0, sx0]
+  // 3. Find the interpolated matrix F(pos) = m + pos * (t - m)
+  //   - Note F(0) = M
+  //   - Note F(1) = T
+  // 4. Now you get the delta matrix as a result: D = F * inv(M)
+
+  transform(transforms, relative, affine) {
+    // If we have a declarative function, we should retarget it if possible
+    relative = transforms.relative || relative
+    if (
+      this._isDeclarative &&
+      !relative &&
+      this._tryRetarget('transform', transforms)
+    ) {
+      return this
+    }
+
+    // Parse the parameters
+    const isMatrix = _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__["default"].isMatrixLike(transforms)
+    affine =
+      transforms.affine != null
+        ? transforms.affine
+        : affine != null
+          ? affine
+          : !isMatrix
+
+    // Create a morpher and set its type
+    const morpher = new _Morphable_js__WEBPACK_IMPORTED_MODULE_11__["default"](this._stepper).type(
+      affine ? _Morphable_js__WEBPACK_IMPORTED_MODULE_11__.TransformBag : _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__["default"]
+    )
+
+    let origin
+    let element
+    let current
+    let currentAngle
+    let startTransform
+
+    function setup() {
+      // make sure element and origin is defined
+      element = element || this.element()
+      origin = origin || (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_3__.getOrigin)(transforms, element)
+
+      startTransform = new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__["default"](relative ? undefined : element)
+
+      // add the runner to the element so it can merge transformations
+      element._addRunner(this)
+
+      // Deactivate all transforms that have run so far if we are absolute
+      if (!relative) {
+        element._clearTransformRunnersBefore(this)
+      }
+    }
+
+    function run(pos) {
+      // clear all other transforms before this in case something is saved
+      // on this runner. We are absolute. We dont need these!
+      if (!relative) this.clearTransform()
+
+      const { x, y } = new _types_Point_js__WEBPACK_IMPORTED_MODULE_12__["default"](origin).transform(
+        element._currentTransform(this)
+      )
+
+      let target = new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__["default"]({ ...transforms, origin: [x, y] })
+      let start = this._isDeclarative && current ? current : startTransform
+
+      if (affine) {
+        target = target.decompose(x, y)
+        start = start.decompose(x, y)
+
+        // Get the current and target angle as it was set
+        const rTarget = target.rotate
+        const rCurrent = start.rotate
+
+        // Figure out the shortest path to rotate directly
+        const possibilities = [rTarget - 360, rTarget, rTarget + 360]
+        const distances = possibilities.map((a) => Math.abs(a - rCurrent))
+        const shortest = Math.min(...distances)
+        const index = distances.indexOf(shortest)
+        target.rotate = possibilities[index]
+      }
+
+      if (relative) {
+        // we have to be careful here not to overwrite the rotation
+        // with the rotate method of Matrix
+        if (!isMatrix) {
+          target.rotate = transforms.rotate || 0
+        }
+        if (this._isDeclarative && currentAngle) {
+          start.rotate = currentAngle
+        }
+      }
+
+      morpher.from(start)
+      morpher.to(target)
+
+      const affineParameters = morpher.at(pos)
+      currentAngle = affineParameters.rotate
+      current = new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_10__["default"](affineParameters)
+
+      this.addTransform(current)
+      element._addRunner(this)
+      return morpher.done()
+    }
+
+    function retarget(newTransforms) {
+      // only get a new origin if it changed since the last call
+      if (
+        (newTransforms.origin || 'center').toString() !==
+        (transforms.origin || 'center').toString()
+      ) {
+        origin = (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_3__.getOrigin)(newTransforms, element)
+      }
+
+      // overwrite the old transformations with the new ones
+      transforms = { ...newTransforms, origin }
+    }
+
+    this.queue(setup, run, retarget, true)
+    this._isDeclarative && this._rememberMorpher('transform', morpher)
+    return this
+  },
+
+  // Animatable x-axis
+  x(x) {
+    return this._queueNumber('x', x)
+  },
+
+  // Animatable y-axis
+  y(y) {
+    return this._queueNumber('y', y)
+  },
+
+  ax(x) {
+    return this._queueNumber('ax', x)
+  },
+
+  ay(y) {
+    return this._queueNumber('ay', y)
+  },
+
+  dx(x = 0) {
+    return this._queueNumberDelta('x', x)
+  },
+
+  dy(y = 0) {
+    return this._queueNumberDelta('y', y)
+  },
+
+  dmove(x, y) {
+    return this.dx(x).dy(y)
+  },
+
+  _queueNumberDelta(method, to) {
+    to = new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_13__["default"](to)
+
+    // Try to change the target if we have this method already registered
+    if (this._tryRetarget(method, to)) return this
+
+    // Make a morpher and queue the animation
+    const morpher = new _Morphable_js__WEBPACK_IMPORTED_MODULE_11__["default"](this._stepper).to(to)
+    let from = null
+    this.queue(
+      function () {
+        from = this.element()[method]()
+        morpher.from(from)
+        morpher.to(from + to)
+      },
+      function (pos) {
+        this.element()[method](morpher.at(pos))
+        return morpher.done()
+      },
+      function (newTo) {
+        morpher.to(from + new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_13__["default"](newTo))
+      }
+    )
+
+    // Register the morpher so that if it is changed again, we can retarget it
+    this._rememberMorpher(method, morpher)
+    return this
+  },
+
+  _queueObject(method, to) {
+    // Try to change the target if we have this method already registered
+    if (this._tryRetarget(method, to)) return this
+
+    // Make a morpher and queue the animation
+    const morpher = new _Morphable_js__WEBPACK_IMPORTED_MODULE_11__["default"](this._stepper).to(to)
+    this.queue(
+      function () {
+        morpher.from(this.element()[method]())
+      },
+      function (pos) {
+        this.element()[method](morpher.at(pos))
+        return morpher.done()
+      }
+    )
+
+    // Register the morpher so that if it is changed again, we can retarget it
+    this._rememberMorpher(method, morpher)
+    return this
+  },
+
+  _queueNumber(method, value) {
+    return this._queueObject(method, new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_13__["default"](value))
+  },
+
+  // Animatable center x-axis
+  cx(x) {
+    return this._queueNumber('cx', x)
+  },
+
+  // Animatable center y-axis
+  cy(y) {
+    return this._queueNumber('cy', y)
+  },
+
+  // Add animatable move
+  move(x, y) {
+    return this.x(x).y(y)
+  },
+
+  amove(x, y) {
+    return this.ax(x).ay(y)
+  },
+
+  // Add animatable center
+  center(x, y) {
+    return this.cx(x).cy(y)
+  },
+
+  // Add animatable size
+  size(width, height) {
+    // animate bbox based size for all other elements
+    let box
+
+    if (!width || !height) {
+      box = this._element.bbox()
+    }
+
+    if (!width) {
+      width = (box.width / box.height) * height
+    }
+
+    if (!height) {
+      height = (box.height / box.width) * width
+    }
+
+    return this.width(width).height(height)
+  },
+
+  // Add animatable width
+  width(width) {
+    return this._queueNumber('width', width)
+  },
+
+  // Add animatable height
+  height(height) {
+    return this._queueNumber('height', height)
+  },
+
+  // Add animatable plot
+  plot(a, b, c, d) {
+    // Lines can be plotted with 4 arguments
+    if (arguments.length === 4) {
+      return this.plot([a, b, c, d])
+    }
+
+    if (this._tryRetarget('plot', a)) return this
+
+    const morpher = new _Morphable_js__WEBPACK_IMPORTED_MODULE_11__["default"](this._stepper)
+      .type(this._element.MorphArray)
+      .to(a)
+
+    this.queue(
+      function () {
+        morpher.from(this._element.array())
+      },
+      function (pos) {
+        this._element.plot(morpher.at(pos))
+        return morpher.done()
+      }
+    )
+
+    this._rememberMorpher('plot', morpher)
+    return this
+  },
+
+  // Add leading method
+  leading(value) {
+    return this._queueNumber('leading', value)
+  },
+
+  // Add animatable viewbox
+  viewbox(x, y, width, height) {
+    return this._queueObject('viewbox', new _types_Box_js__WEBPACK_IMPORTED_MODULE_8__["default"](x, y, width, height))
+  },
+
+  update(o) {
+    if (typeof o !== 'object') {
+      return this.update({
+        offset: arguments[0],
+        color: arguments[1],
+        opacity: arguments[2]
+      })
+    }
+
+    if (o.opacity != null) this.attr('stop-opacity', o.opacity)
+    if (o.color != null) this.attr('stop-color', o.color)
+    if (o.offset != null) this.attr('offset', o.offset)
+
+    return this
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.extend)(Runner, { rx: _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_6__.rx, ry: _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_6__.ry, from: _modules_core_gradiented_js__WEBPACK_IMPORTED_MODULE_2__.from, to: _modules_core_gradiented_js__WEBPACK_IMPORTED_MODULE_2__.to })
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.register)(Runner, 'Runner')
+
 
 /***/ }),
 
@@ -76,7 +1928,365 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*****************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Timeline)\n/* harmony export */ });\n/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/window.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/window.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _Animator_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Animator.js */ \"./node_modules/@svgdotjs/svg.js/src/animation/Animator.js\");\n/* harmony import */ var _types_EventTarget_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../types/EventTarget.js */ \"./node_modules/@svgdotjs/svg.js/src/types/EventTarget.js\");\n\n\n\n\n\nconst makeSchedule = function (runnerInfo) {\n  const start = runnerInfo.start\n  const duration = runnerInfo.runner.duration()\n  const end = start + duration\n  return {\n    start: start,\n    duration: duration,\n    end: end,\n    runner: runnerInfo.runner\n  }\n}\n\nconst defaultSource = function () {\n  const w = _utils_window_js__WEBPACK_IMPORTED_MODULE_0__.globals.window\n  return (w.performance || w.Date).now()\n}\n\nclass Timeline extends _types_EventTarget_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"] {\n  // Construct a new timeline on the given element\n  constructor(timeSource = defaultSource) {\n    super()\n\n    this._timeSource = timeSource\n\n    // terminate resets all variables to their initial state\n    this.terminate()\n  }\n\n  active() {\n    return !!this._nextFrame\n  }\n\n  finish() {\n    // Go to end and pause\n    this.time(this.getEndTimeOfTimeline() + 1)\n    return this.pause()\n  }\n\n  // Calculates the end of the timeline\n  getEndTime() {\n    const lastRunnerInfo = this.getLastRunnerInfo()\n    const lastDuration = lastRunnerInfo ? lastRunnerInfo.runner.duration() : 0\n    const lastStartTime = lastRunnerInfo ? lastRunnerInfo.start : this._time\n    return lastStartTime + lastDuration\n  }\n\n  getEndTimeOfTimeline() {\n    const endTimes = this._runners.map((i) => i.start + i.runner.duration())\n    return Math.max(0, ...endTimes)\n  }\n\n  getLastRunnerInfo() {\n    return this.getRunnerInfoById(this._lastRunnerId)\n  }\n\n  getRunnerInfoById(id) {\n    return this._runners[this._runnerIds.indexOf(id)] || null\n  }\n\n  pause() {\n    this._paused = true\n    return this._continue()\n  }\n\n  persist(dtOrForever) {\n    if (dtOrForever == null) return this._persist\n    this._persist = dtOrForever\n    return this\n  }\n\n  play() {\n    // Now make sure we are not paused and continue the animation\n    this._paused = false\n    return this.updateTime()._continue()\n  }\n\n  reverse(yes) {\n    const currentSpeed = this.speed()\n    if (yes == null) return this.speed(-currentSpeed)\n\n    const positive = Math.abs(currentSpeed)\n    return this.speed(yes ? -positive : positive)\n  }\n\n  // schedules a runner on the timeline\n  schedule(runner, delay, when) {\n    if (runner == null) {\n      return this._runners.map(makeSchedule)\n    }\n\n    // The start time for the next animation can either be given explicitly,\n    // derived from the current timeline time or it can be relative to the\n    // last start time to chain animations directly\n\n    let absoluteStartTime = 0\n    const endTime = this.getEndTime()\n    delay = delay || 0\n\n    // Work out when to start the animation\n    if (when == null || when === 'last' || when === 'after') {\n      // Take the last time and increment\n      absoluteStartTime = endTime\n    } else if (when === 'absolute' || when === 'start') {\n      absoluteStartTime = delay\n      delay = 0\n    } else if (when === 'now') {\n      absoluteStartTime = this._time\n    } else if (when === 'relative') {\n      const runnerInfo = this.getRunnerInfoById(runner.id)\n      if (runnerInfo) {\n        absoluteStartTime = runnerInfo.start + delay\n        delay = 0\n      }\n    } else if (when === 'with-last') {\n      const lastRunnerInfo = this.getLastRunnerInfo()\n      const lastStartTime = lastRunnerInfo ? lastRunnerInfo.start : this._time\n      absoluteStartTime = lastStartTime\n    } else {\n      throw new Error('Invalid value for the \"when\" parameter')\n    }\n\n    // Manage runner\n    runner.unschedule()\n    runner.timeline(this)\n\n    const persist = runner.persist()\n    const runnerInfo = {\n      persist: persist === null ? this._persist : persist,\n      start: absoluteStartTime + delay,\n      runner\n    }\n\n    this._lastRunnerId = runner.id\n\n    this._runners.push(runnerInfo)\n    this._runners.sort((a, b) => a.start - b.start)\n    this._runnerIds = this._runners.map((info) => info.runner.id)\n\n    this.updateTime()._continue()\n    return this\n  }\n\n  seek(dt) {\n    return this.time(this._time + dt)\n  }\n\n  source(fn) {\n    if (fn == null) return this._timeSource\n    this._timeSource = fn\n    return this\n  }\n\n  speed(speed) {\n    if (speed == null) return this._speed\n    this._speed = speed\n    return this\n  }\n\n  stop() {\n    // Go to start and pause\n    this.time(0)\n    return this.pause()\n  }\n\n  time(time) {\n    if (time == null) return this._time\n    this._time = time\n    return this._continue(true)\n  }\n\n  // Remove the runner from this timeline\n  unschedule(runner) {\n    const index = this._runnerIds.indexOf(runner.id)\n    if (index < 0) return this\n\n    this._runners.splice(index, 1)\n    this._runnerIds.splice(index, 1)\n\n    runner.timeline(null)\n    return this\n  }\n\n  // Makes sure, that after pausing the time doesn't jump\n  updateTime() {\n    if (!this.active()) {\n      this._lastSourceTime = this._timeSource()\n    }\n    return this\n  }\n\n  // Checks if we are running and continues the animation\n  _continue(immediateStep = false) {\n    _Animator_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"].cancelFrame(this._nextFrame)\n    this._nextFrame = null\n\n    if (immediateStep) return this._stepImmediate()\n    if (this._paused) return this\n\n    this._nextFrame = _Animator_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"].frame(this._step)\n    return this\n  }\n\n  _stepFn(immediateStep = false) {\n    // Get the time delta from the last time and update the time\n    const time = this._timeSource()\n    let dtSource = time - this._lastSourceTime\n\n    if (immediateStep) dtSource = 0\n\n    const dtTime = this._speed * dtSource + (this._time - this._lastStepTime)\n    this._lastSourceTime = time\n\n    // Only update the time if we use the timeSource.\n    // Otherwise use the current time\n    if (!immediateStep) {\n      // Update the time\n      this._time += dtTime\n      this._time = this._time < 0 ? 0 : this._time\n    }\n    this._lastStepTime = this._time\n    this.fire('time', this._time)\n\n    // This is for the case that the timeline was seeked so that the time\n    // is now before the startTime of the runner. That is why we need to set\n    // the runner to position 0\n\n    // FIXME:\n    // However, resetting in insertion order leads to bugs. Considering the case,\n    // where 2 runners change the same attribute but in different times,\n    // resetting both of them will lead to the case where the later defined\n    // runner always wins the reset even if the other runner started earlier\n    // and therefore should win the attribute battle\n    // this can be solved by resetting them backwards\n    for (let k = this._runners.length; k--; ) {\n      // Get and run the current runner and ignore it if its inactive\n      const runnerInfo = this._runners[k]\n      const runner = runnerInfo.runner\n\n      // Make sure that we give the actual difference\n      // between runner start time and now\n      const dtToStart = this._time - runnerInfo.start\n\n      // Dont run runner if not started yet\n      // and try to reset it\n      if (dtToStart <= 0) {\n        runner.reset()\n      }\n    }\n\n    // Run all of the runners directly\n    let runnersLeft = false\n    for (let i = 0, len = this._runners.length; i < len; i++) {\n      // Get and run the current runner and ignore it if its inactive\n      const runnerInfo = this._runners[i]\n      const runner = runnerInfo.runner\n      let dt = dtTime\n\n      // Make sure that we give the actual difference\n      // between runner start time and now\n      const dtToStart = this._time - runnerInfo.start\n\n      // Dont run runner if not started yet\n      if (dtToStart <= 0) {\n        runnersLeft = true\n        continue\n      } else if (dtToStart < dt) {\n        // Adjust dt to make sure that animation is on point\n        dt = dtToStart\n      }\n\n      if (!runner.active()) continue\n\n      // If this runner is still going, signal that we need another animation\n      // frame, otherwise, remove the completed runner\n      const finished = runner.step(dt).done\n      if (!finished) {\n        runnersLeft = true\n        // continue\n      } else if (runnerInfo.persist !== true) {\n        // runner is finished. And runner might get removed\n        const endTime = runner.duration() - runner.time() + this._time\n\n        if (endTime + runnerInfo.persist < this._time) {\n          // Delete runner and correct index\n          runner.unschedule()\n          --i\n          --len\n        }\n      }\n    }\n\n    // Basically: we continue when there are runners right from us in time\n    // when -->, and when runners are left from us when <--\n    if (\n      (runnersLeft && !(this._speed < 0 && this._time === 0)) ||\n      (this._runnerIds.length && this._speed < 0 && this._time > 0)\n    ) {\n      this._continue()\n    } else {\n      this.pause()\n      this.fire('finished')\n    }\n\n    return this\n  }\n\n  terminate() {\n    // cleanup memory\n\n    // Store the timing variables\n    this._startTime = 0\n    this._speed = 1.0\n\n    // Determines how long a runner is hold in memory. Can be a dt or true/false\n    this._persist = 0\n\n    // Keep track of the running animations and their starting parameters\n    this._nextFrame = null\n    this._paused = true\n    this._runners = []\n    this._runnerIds = []\n    this._lastRunnerId = -1\n    this._time = 0\n    this._lastSourceTime = 0\n    this._lastStepTime = 0\n\n    // Make sure that step is always called in class context\n    this._step = this._stepFn.bind(this, false)\n    this._stepImmediate = this._stepFn.bind(this, true)\n  }\n}\n\n(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({\n  Element: {\n    timeline: function (timeline) {\n      if (timeline == null) {\n        this._timeline = this._timeline || new Timeline()\n        return this._timeline\n      } else {\n        this._timeline = timeline\n        return this\n      }\n    }\n  }\n})\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/animation/Timeline.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Timeline)
+/* harmony export */ });
+/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/window.js */ "./node_modules/@svgdotjs/svg.js/src/utils/window.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _Animator_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Animator.js */ "./node_modules/@svgdotjs/svg.js/src/animation/Animator.js");
+/* harmony import */ var _types_EventTarget_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../types/EventTarget.js */ "./node_modules/@svgdotjs/svg.js/src/types/EventTarget.js");
+
+
+
+
+
+const makeSchedule = function (runnerInfo) {
+  const start = runnerInfo.start
+  const duration = runnerInfo.runner.duration()
+  const end = start + duration
+  return {
+    start: start,
+    duration: duration,
+    end: end,
+    runner: runnerInfo.runner
+  }
+}
+
+const defaultSource = function () {
+  const w = _utils_window_js__WEBPACK_IMPORTED_MODULE_0__.globals.window
+  return (w.performance || w.Date).now()
+}
+
+class Timeline extends _types_EventTarget_js__WEBPACK_IMPORTED_MODULE_3__["default"] {
+  // Construct a new timeline on the given element
+  constructor(timeSource = defaultSource) {
+    super()
+
+    this._timeSource = timeSource
+
+    // terminate resets all variables to their initial state
+    this.terminate()
+  }
+
+  active() {
+    return !!this._nextFrame
+  }
+
+  finish() {
+    // Go to end and pause
+    this.time(this.getEndTimeOfTimeline() + 1)
+    return this.pause()
+  }
+
+  // Calculates the end of the timeline
+  getEndTime() {
+    const lastRunnerInfo = this.getLastRunnerInfo()
+    const lastDuration = lastRunnerInfo ? lastRunnerInfo.runner.duration() : 0
+    const lastStartTime = lastRunnerInfo ? lastRunnerInfo.start : this._time
+    return lastStartTime + lastDuration
+  }
+
+  getEndTimeOfTimeline() {
+    const endTimes = this._runners.map((i) => i.start + i.runner.duration())
+    return Math.max(0, ...endTimes)
+  }
+
+  getLastRunnerInfo() {
+    return this.getRunnerInfoById(this._lastRunnerId)
+  }
+
+  getRunnerInfoById(id) {
+    return this._runners[this._runnerIds.indexOf(id)] || null
+  }
+
+  pause() {
+    this._paused = true
+    return this._continue()
+  }
+
+  persist(dtOrForever) {
+    if (dtOrForever == null) return this._persist
+    this._persist = dtOrForever
+    return this
+  }
+
+  play() {
+    // Now make sure we are not paused and continue the animation
+    this._paused = false
+    return this.updateTime()._continue()
+  }
+
+  reverse(yes) {
+    const currentSpeed = this.speed()
+    if (yes == null) return this.speed(-currentSpeed)
+
+    const positive = Math.abs(currentSpeed)
+    return this.speed(yes ? -positive : positive)
+  }
+
+  // schedules a runner on the timeline
+  schedule(runner, delay, when) {
+    if (runner == null) {
+      return this._runners.map(makeSchedule)
+    }
+
+    // The start time for the next animation can either be given explicitly,
+    // derived from the current timeline time or it can be relative to the
+    // last start time to chain animations directly
+
+    let absoluteStartTime = 0
+    const endTime = this.getEndTime()
+    delay = delay || 0
+
+    // Work out when to start the animation
+    if (when == null || when === 'last' || when === 'after') {
+      // Take the last time and increment
+      absoluteStartTime = endTime
+    } else if (when === 'absolute' || when === 'start') {
+      absoluteStartTime = delay
+      delay = 0
+    } else if (when === 'now') {
+      absoluteStartTime = this._time
+    } else if (when === 'relative') {
+      const runnerInfo = this.getRunnerInfoById(runner.id)
+      if (runnerInfo) {
+        absoluteStartTime = runnerInfo.start + delay
+        delay = 0
+      }
+    } else if (when === 'with-last') {
+      const lastRunnerInfo = this.getLastRunnerInfo()
+      const lastStartTime = lastRunnerInfo ? lastRunnerInfo.start : this._time
+      absoluteStartTime = lastStartTime
+    } else {
+      throw new Error('Invalid value for the "when" parameter')
+    }
+
+    // Manage runner
+    runner.unschedule()
+    runner.timeline(this)
+
+    const persist = runner.persist()
+    const runnerInfo = {
+      persist: persist === null ? this._persist : persist,
+      start: absoluteStartTime + delay,
+      runner
+    }
+
+    this._lastRunnerId = runner.id
+
+    this._runners.push(runnerInfo)
+    this._runners.sort((a, b) => a.start - b.start)
+    this._runnerIds = this._runners.map((info) => info.runner.id)
+
+    this.updateTime()._continue()
+    return this
+  }
+
+  seek(dt) {
+    return this.time(this._time + dt)
+  }
+
+  source(fn) {
+    if (fn == null) return this._timeSource
+    this._timeSource = fn
+    return this
+  }
+
+  speed(speed) {
+    if (speed == null) return this._speed
+    this._speed = speed
+    return this
+  }
+
+  stop() {
+    // Go to start and pause
+    this.time(0)
+    return this.pause()
+  }
+
+  time(time) {
+    if (time == null) return this._time
+    this._time = time
+    return this._continue(true)
+  }
+
+  // Remove the runner from this timeline
+  unschedule(runner) {
+    const index = this._runnerIds.indexOf(runner.id)
+    if (index < 0) return this
+
+    this._runners.splice(index, 1)
+    this._runnerIds.splice(index, 1)
+
+    runner.timeline(null)
+    return this
+  }
+
+  // Makes sure, that after pausing the time doesn't jump
+  updateTime() {
+    if (!this.active()) {
+      this._lastSourceTime = this._timeSource()
+    }
+    return this
+  }
+
+  // Checks if we are running and continues the animation
+  _continue(immediateStep = false) {
+    _Animator_js__WEBPACK_IMPORTED_MODULE_2__["default"].cancelFrame(this._nextFrame)
+    this._nextFrame = null
+
+    if (immediateStep) return this._stepImmediate()
+    if (this._paused) return this
+
+    this._nextFrame = _Animator_js__WEBPACK_IMPORTED_MODULE_2__["default"].frame(this._step)
+    return this
+  }
+
+  _stepFn(immediateStep = false) {
+    // Get the time delta from the last time and update the time
+    const time = this._timeSource()
+    let dtSource = time - this._lastSourceTime
+
+    if (immediateStep) dtSource = 0
+
+    const dtTime = this._speed * dtSource + (this._time - this._lastStepTime)
+    this._lastSourceTime = time
+
+    // Only update the time if we use the timeSource.
+    // Otherwise use the current time
+    if (!immediateStep) {
+      // Update the time
+      this._time += dtTime
+      this._time = this._time < 0 ? 0 : this._time
+    }
+    this._lastStepTime = this._time
+    this.fire('time', this._time)
+
+    // This is for the case that the timeline was seeked so that the time
+    // is now before the startTime of the runner. That is why we need to set
+    // the runner to position 0
+
+    // FIXME:
+    // However, resetting in insertion order leads to bugs. Considering the case,
+    // where 2 runners change the same attribute but in different times,
+    // resetting both of them will lead to the case where the later defined
+    // runner always wins the reset even if the other runner started earlier
+    // and therefore should win the attribute battle
+    // this can be solved by resetting them backwards
+    for (let k = this._runners.length; k--; ) {
+      // Get and run the current runner and ignore it if its inactive
+      const runnerInfo = this._runners[k]
+      const runner = runnerInfo.runner
+
+      // Make sure that we give the actual difference
+      // between runner start time and now
+      const dtToStart = this._time - runnerInfo.start
+
+      // Dont run runner if not started yet
+      // and try to reset it
+      if (dtToStart <= 0) {
+        runner.reset()
+      }
+    }
+
+    // Run all of the runners directly
+    let runnersLeft = false
+    for (let i = 0, len = this._runners.length; i < len; i++) {
+      // Get and run the current runner and ignore it if its inactive
+      const runnerInfo = this._runners[i]
+      const runner = runnerInfo.runner
+      let dt = dtTime
+
+      // Make sure that we give the actual difference
+      // between runner start time and now
+      const dtToStart = this._time - runnerInfo.start
+
+      // Dont run runner if not started yet
+      if (dtToStart <= 0) {
+        runnersLeft = true
+        continue
+      } else if (dtToStart < dt) {
+        // Adjust dt to make sure that animation is on point
+        dt = dtToStart
+      }
+
+      if (!runner.active()) continue
+
+      // If this runner is still going, signal that we need another animation
+      // frame, otherwise, remove the completed runner
+      const finished = runner.step(dt).done
+      if (!finished) {
+        runnersLeft = true
+        // continue
+      } else if (runnerInfo.persist !== true) {
+        // runner is finished. And runner might get removed
+        const endTime = runner.duration() - runner.time() + this._time
+
+        if (endTime + runnerInfo.persist < this._time) {
+          // Delete runner and correct index
+          runner.unschedule()
+          --i
+          --len
+        }
+      }
+    }
+
+    // Basically: we continue when there are runners right from us in time
+    // when -->, and when runners are left from us when <--
+    if (
+      (runnersLeft && !(this._speed < 0 && this._time === 0)) ||
+      (this._runnerIds.length && this._speed < 0 && this._time > 0)
+    ) {
+      this._continue()
+    } else {
+      this.pause()
+      this.fire('finished')
+    }
+
+    return this
+  }
+
+  terminate() {
+    // cleanup memory
+
+    // Store the timing variables
+    this._startTime = 0
+    this._speed = 1.0
+
+    // Determines how long a runner is hold in memory. Can be a dt or true/false
+    this._persist = 0
+
+    // Keep track of the running animations and their starting parameters
+    this._nextFrame = null
+    this._paused = true
+    this._runners = []
+    this._runnerIds = []
+    this._lastRunnerId = -1
+    this._time = 0
+    this._lastSourceTime = 0
+    this._lastStepTime = 0
+
+    // Make sure that step is always called in class context
+    this._step = this._stepFn.bind(this, false)
+    this._stepImmediate = this._stepFn.bind(this, true)
+  }
+}
+
+(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({
+  Element: {
+    timeline: function (timeline) {
+      if (timeline == null) {
+        this._timeline = this._timeline || new Timeline()
+        return this._timeline
+      } else {
+        this._timeline = timeline
+        return this
+      }
+    }
+  }
+})
+
 
 /***/ }),
 
@@ -86,7 +2296,94 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ A)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../modules/core/namespaces.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/namespaces.js\");\n/* harmony import */ var _Container_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Container.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Container.js\");\n/* harmony import */ var _modules_core_containerGeometry_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../modules/core/containerGeometry.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/containerGeometry.js\");\n\n\n\n\n\n\nclass A extends _Container_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"] {\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('a', node), attrs)\n  }\n\n  // Link target attribute\n  target(target) {\n    return this.attr('target', target)\n  }\n\n  // Link url\n  to(url) {\n    return this.attr('href', url, _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_2__.xlink)\n  }\n}\n\n(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(A, _modules_core_containerGeometry_js__WEBPACK_IMPORTED_MODULE_4__)\n\n;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({\n  Container: {\n    // Create a hyperlink element\n    link: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (url) {\n      return this.put(new A()).to(url)\n    })\n  },\n  Element: {\n    unlink() {\n      const link = this.linker()\n\n      if (!link) return this\n\n      const parent = link.parent()\n\n      if (!parent) {\n        return this.remove()\n      }\n\n      const index = parent.index(link)\n      parent.add(this, index)\n\n      link.remove()\n      return this\n    },\n    linkTo(url) {\n      // reuse old link if possible\n      let link = this.linker()\n\n      if (!link) {\n        link = new A()\n        this.wrap(link)\n      }\n\n      if (typeof url === 'function') {\n        url.call(link, link)\n      } else {\n        link.to(url)\n      }\n\n      return this\n    },\n    linker() {\n      const link = this.parent()\n      if (link && link.node.nodeName.toLowerCase() === 'a') {\n        return link\n      }\n\n      return null\n    }\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(A, 'A')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/A.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ A)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../modules/core/namespaces.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/namespaces.js");
+/* harmony import */ var _Container_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Container.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Container.js");
+/* harmony import */ var _modules_core_containerGeometry_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../modules/core/containerGeometry.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/containerGeometry.js");
+
+
+
+
+
+
+class A extends _Container_js__WEBPACK_IMPORTED_MODULE_3__["default"] {
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('a', node), attrs)
+  }
+
+  // Link target attribute
+  target(target) {
+    return this.attr('target', target)
+  }
+
+  // Link url
+  to(url) {
+    return this.attr('href', url, _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_2__.xlink)
+  }
+}
+
+(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(A, _modules_core_containerGeometry_js__WEBPACK_IMPORTED_MODULE_4__)
+
+;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({
+  Container: {
+    // Create a hyperlink element
+    link: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (url) {
+      return this.put(new A()).to(url)
+    })
+  },
+  Element: {
+    unlink() {
+      const link = this.linker()
+
+      if (!link) return this
+
+      const parent = link.parent()
+
+      if (!parent) {
+        return this.remove()
+      }
+
+      const index = parent.index(link)
+      parent.add(this, index)
+
+      link.remove()
+      return this
+    },
+    linkTo(url) {
+      // reuse old link if possible
+      let link = this.linker()
+
+      if (!link) {
+        link = new A()
+        this.wrap(link)
+      }
+
+      if (typeof url === 'function') {
+        url.call(link, link)
+      } else {
+        link.to(url)
+      }
+
+      return this
+    },
+    linker() {
+      const link = this.parent()
+      if (link && link.node.nodeName.toLowerCase() === 'a') {
+        return link
+      }
+
+      return null
+    }
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(A, 'A')
+
 
 /***/ }),
 
@@ -96,7 +2393,58 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \**************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Circle)\n/* harmony export */ });\n/* harmony import */ var _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../modules/core/circled.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/circled.js\");\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../types/SVGNumber.js */ \"./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js\");\n/* harmony import */ var _Shape_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Shape.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Shape.js\");\n\n\n\n\n\n\nclass Circle extends _Shape_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"] {\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.nodeOrNew)('circle', node), attrs)\n  }\n\n  radius(r) {\n    return this.attr('r', r)\n  }\n\n  // Radius x value\n  rx(rx) {\n    return this.attr('r', rx)\n  }\n\n  // Alias radius x value\n  ry(ry) {\n    return this.rx(ry)\n  }\n\n  size(size) {\n    return this.radius(new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"](size).divide(2))\n  }\n}\n\n(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.extend)(Circle, { x: _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_0__.x, y: _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_0__.y, cx: _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_0__.cx, cy: _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_0__.cy, width: _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_0__.width, height: _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_0__.height })\n\n;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_2__.registerMethods)({\n  Container: {\n    // Create circle element\n    circle: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.wrapWithAttrCheck)(function (size = 0) {\n      return this.put(new Circle()).size(size).move(0, 0)\n    })\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.register)(Circle, 'Circle')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Circle.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Circle)
+/* harmony export */ });
+/* harmony import */ var _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../modules/core/circled.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/circled.js");
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../types/SVGNumber.js */ "./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js");
+/* harmony import */ var _Shape_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Shape.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Shape.js");
+
+
+
+
+
+
+class Circle extends _Shape_js__WEBPACK_IMPORTED_MODULE_4__["default"] {
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.nodeOrNew)('circle', node), attrs)
+  }
+
+  radius(r) {
+    return this.attr('r', r)
+  }
+
+  // Radius x value
+  rx(rx) {
+    return this.attr('r', rx)
+  }
+
+  // Alias radius x value
+  ry(ry) {
+    return this.rx(ry)
+  }
+
+  size(size) {
+    return this.radius(new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_3__["default"](size).divide(2))
+  }
+}
+
+(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.extend)(Circle, { x: _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_0__.x, y: _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_0__.y, cx: _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_0__.cx, cy: _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_0__.cy, width: _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_0__.width, height: _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_0__.height })
+
+;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_2__.registerMethods)({
+  Container: {
+    // Create circle element
+    circle: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.wrapWithAttrCheck)(function (size = 0) {
+      return this.put(new Circle()).size(size).move(0, 0)
+    })
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.register)(Circle, 'Circle')
+
 
 /***/ }),
 
@@ -106,7 +2454,73 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \****************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ ClipPath)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _Container_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Container.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Container.js\");\n/* harmony import */ var _modules_core_selector_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../modules/core/selector.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/selector.js\");\n\n\n\n\n\nclass ClipPath extends _Container_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"] {\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('clipPath', node), attrs)\n  }\n\n  // Unclip all clipped elements and remove itself\n  remove() {\n    // unclip all targets\n    this.targets().forEach(function (el) {\n      el.unclip()\n    })\n\n    // remove clipPath from parent\n    return super.remove()\n  }\n\n  targets() {\n    return (0,_modules_core_selector_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"])('svg [clip-path*=' + this.id() + ']')\n  }\n}\n\n(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({\n  Container: {\n    // Create clipping element\n    clip: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function () {\n      return this.defs().put(new ClipPath())\n    })\n  },\n  Element: {\n    // Distribute clipPath to svg element\n    clipper() {\n      return this.reference('clip-path')\n    },\n\n    clipWith(element) {\n      // use given clip or create a new one\n      const clipper =\n        element instanceof ClipPath\n          ? element\n          : this.parent().clip().add(element)\n\n      // apply mask\n      return this.attr('clip-path', 'url(#' + clipper.id() + ')')\n    },\n\n    // Unclip element\n    unclip() {\n      return this.attr('clip-path', null)\n    }\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(ClipPath, 'ClipPath')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/ClipPath.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ ClipPath)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _Container_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Container.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Container.js");
+/* harmony import */ var _modules_core_selector_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../modules/core/selector.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/selector.js");
+
+
+
+
+
+class ClipPath extends _Container_js__WEBPACK_IMPORTED_MODULE_2__["default"] {
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('clipPath', node), attrs)
+  }
+
+  // Unclip all clipped elements and remove itself
+  remove() {
+    // unclip all targets
+    this.targets().forEach(function (el) {
+      el.unclip()
+    })
+
+    // remove clipPath from parent
+    return super.remove()
+  }
+
+  targets() {
+    return (0,_modules_core_selector_js__WEBPACK_IMPORTED_MODULE_3__["default"])('svg [clip-path*=' + this.id() + ']')
+  }
+}
+
+(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({
+  Container: {
+    // Create clipping element
+    clip: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function () {
+      return this.defs().put(new ClipPath())
+    })
+  },
+  Element: {
+    // Distribute clipPath to svg element
+    clipper() {
+      return this.reference('clip-path')
+    },
+
+    clipWith(element) {
+      // use given clip or create a new one
+      const clipper =
+        element instanceof ClipPath
+          ? element
+          : this.parent().clip().add(element)
+
+      // apply mask
+      return this.attr('clip-path', 'url(#' + clipper.id() + ')')
+    },
+
+    // Unclip element
+    unclip() {
+      return this.attr('clip-path', null)
+    }
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(ClipPath, 'ClipPath')
+
 
 /***/ }),
 
@@ -116,7 +2530,41 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*****************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Container)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _Element_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Element.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Element.js\");\n\n\n\nclass Container extends _Element_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"] {\n  flatten() {\n    this.each(function () {\n      if (this instanceof Container) {\n        return this.flatten().ungroup()\n      }\n    })\n\n    return this\n  }\n\n  ungroup(parent = this.parent(), index = parent.index(this)) {\n    // when parent != this, we want append all elements to the end\n    index = index === -1 ? parent.children().length : index\n\n    this.each(function (i, children) {\n      // reverse each\n      return children[children.length - i - 1].toParent(parent, index)\n    })\n\n    return this.remove()\n  }\n}\n\n(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Container, 'Container')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Container.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Container)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _Element_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Element.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Element.js");
+
+
+
+class Container extends _Element_js__WEBPACK_IMPORTED_MODULE_1__["default"] {
+  flatten() {
+    this.each(function () {
+      if (this instanceof Container) {
+        return this.flatten().ungroup()
+      }
+    })
+
+    return this
+  }
+
+  ungroup(parent = this.parent(), index = parent.index(this)) {
+    // when parent != this, we want append all elements to the end
+    index = index === -1 ? parent.children().length : index
+
+    this.each(function (i, children) {
+      // reverse each
+      return children[children.length - i - 1].toParent(parent, index)
+    })
+
+    return this.remove()
+  }
+}
+
+(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Container, 'Container')
+
 
 /***/ }),
 
@@ -126,7 +2574,31 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Defs)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _Container_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Container.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Container.js\");\n\n\n\nclass Defs extends _Container_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"] {\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('defs', node), attrs)\n  }\n\n  flatten() {\n    return this\n  }\n\n  ungroup() {\n    return this\n  }\n}\n\n(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Defs, 'Defs')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Defs.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Defs)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _Container_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Container.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Container.js");
+
+
+
+class Defs extends _Container_js__WEBPACK_IMPORTED_MODULE_1__["default"] {
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('defs', node), attrs)
+  }
+
+  flatten() {
+    return this
+  }
+
+  ungroup() {
+    return this
+  }
+}
+
+(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Defs, 'Defs')
+
 
 /***/ }),
 
@@ -136,7 +2608,369 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \***********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Dom)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _modules_core_selector_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../modules/core/selector.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/selector.js\");\n/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/window.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/window.js\");\n/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/utils.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/utils.js\");\n/* harmony import */ var _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../modules/core/namespaces.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/namespaces.js\");\n/* harmony import */ var _types_EventTarget_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../types/EventTarget.js */ \"./node_modules/@svgdotjs/svg.js/src/types/EventTarget.js\");\n/* harmony import */ var _types_List_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../types/List.js */ \"./node_modules/@svgdotjs/svg.js/src/types/List.js\");\n/* harmony import */ var _modules_core_attr_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../modules/core/attr.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/attr.js\");\n\n\n\n\n\n\n\n\n\nclass Dom extends _types_EventTarget_js__WEBPACK_IMPORTED_MODULE_5__[\"default\"] {\n  constructor(node, attrs) {\n    super()\n    this.node = node\n    this.type = node.nodeName\n\n    if (attrs && node !== attrs) {\n      this.attr(attrs)\n    }\n  }\n\n  // Add given element at a position\n  add(element, i) {\n    element = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.makeInstance)(element)\n\n    // If non-root svg nodes are added we have to remove their namespaces\n    if (\n      element.removeNamespace &&\n      this.node instanceof _utils_window_js__WEBPACK_IMPORTED_MODULE_2__.globals.window.SVGElement\n    ) {\n      element.removeNamespace()\n    }\n\n    if (i == null) {\n      this.node.appendChild(element.node)\n    } else if (element.node !== this.node.childNodes[i]) {\n      this.node.insertBefore(element.node, this.node.childNodes[i])\n    }\n\n    return this\n  }\n\n  // Add element to given container and return self\n  addTo(parent, i) {\n    return (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.makeInstance)(parent).put(this, i)\n  }\n\n  // Returns all child elements\n  children() {\n    return new _types_List_js__WEBPACK_IMPORTED_MODULE_6__[\"default\"](\n      (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_3__.map)(this.node.children, function (node) {\n        return (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.adopt)(node)\n      })\n    )\n  }\n\n  // Remove all elements in this container\n  clear() {\n    // remove children\n    while (this.node.hasChildNodes()) {\n      this.node.removeChild(this.node.lastChild)\n    }\n\n    return this\n  }\n\n  // Clone element\n  clone(deep = true, assignNewIds = true) {\n    // write dom data to the dom so the clone can pickup the data\n    this.writeDataToDom()\n\n    // clone element\n    let nodeClone = this.node.cloneNode(deep)\n    if (assignNewIds) {\n      // assign new id\n      nodeClone = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.assignNewId)(nodeClone)\n    }\n    return new this.constructor(nodeClone)\n  }\n\n  // Iterates over all children and invokes a given block\n  each(block, deep) {\n    const children = this.children()\n    let i, il\n\n    for (i = 0, il = children.length; i < il; i++) {\n      block.apply(children[i], [i, children])\n\n      if (deep) {\n        children[i].each(block, deep)\n      }\n    }\n\n    return this\n  }\n\n  element(nodeName, attrs) {\n    return this.put(new Dom((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.create)(nodeName), attrs))\n  }\n\n  // Get first child\n  first() {\n    return (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.adopt)(this.node.firstChild)\n  }\n\n  // Get a element at the given index\n  get(i) {\n    return (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.adopt)(this.node.childNodes[i])\n  }\n\n  getEventHolder() {\n    return this.node\n  }\n\n  getEventTarget() {\n    return this.node\n  }\n\n  // Checks if the given element is a child\n  has(element) {\n    return this.index(element) >= 0\n  }\n\n  html(htmlOrFn, outerHTML) {\n    return this.xml(htmlOrFn, outerHTML, _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_4__.html)\n  }\n\n  // Get / set id\n  id(id) {\n    // generate new id if no id set\n    if (typeof id === 'undefined' && !this.node.id) {\n      this.node.id = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.eid)(this.type)\n    }\n\n    // don't set directly with this.node.id to make `null` work correctly\n    return this.attr('id', id)\n  }\n\n  // Gets index of given element\n  index(element) {\n    return [].slice.call(this.node.childNodes).indexOf(element.node)\n  }\n\n  // Get the last child\n  last() {\n    return (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.adopt)(this.node.lastChild)\n  }\n\n  // matches the element vs a css selector\n  matches(selector) {\n    const el = this.node\n    const matcher =\n      el.matches ||\n      el.matchesSelector ||\n      el.msMatchesSelector ||\n      el.mozMatchesSelector ||\n      el.webkitMatchesSelector ||\n      el.oMatchesSelector ||\n      null\n    return matcher && matcher.call(el, selector)\n  }\n\n  // Returns the parent element instance\n  parent(type) {\n    let parent = this\n\n    // check for parent\n    if (!parent.node.parentNode) return null\n\n    // get parent element\n    parent = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.adopt)(parent.node.parentNode)\n\n    if (!type) return parent\n\n    // loop through ancestors if type is given\n    do {\n      if (\n        typeof type === 'string' ? parent.matches(type) : parent instanceof type\n      )\n        return parent\n    } while ((parent = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.adopt)(parent.node.parentNode)))\n\n    return parent\n  }\n\n  // Basically does the same as `add()` but returns the added element instead\n  put(element, i) {\n    element = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.makeInstance)(element)\n    this.add(element, i)\n    return element\n  }\n\n  // Add element to given container and return container\n  putIn(parent, i) {\n    return (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.makeInstance)(parent).add(this, i)\n  }\n\n  // Remove element\n  remove() {\n    if (this.parent()) {\n      this.parent().removeElement(this)\n    }\n\n    return this\n  }\n\n  // Remove a given child\n  removeElement(element) {\n    this.node.removeChild(element.node)\n\n    return this\n  }\n\n  // Replace this with element\n  replace(element) {\n    element = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.makeInstance)(element)\n\n    if (this.node.parentNode) {\n      this.node.parentNode.replaceChild(element.node, this.node)\n    }\n\n    return element\n  }\n\n  round(precision = 2, map = null) {\n    const factor = 10 ** precision\n    const attrs = this.attr(map)\n\n    for (const i in attrs) {\n      if (typeof attrs[i] === 'number') {\n        attrs[i] = Math.round(attrs[i] * factor) / factor\n      }\n    }\n\n    this.attr(attrs)\n    return this\n  }\n\n  // Import / Export raw svg\n  svg(svgOrFn, outerSVG) {\n    return this.xml(svgOrFn, outerSVG, _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_4__.svg)\n  }\n\n  // Return id on string conversion\n  toString() {\n    return this.id()\n  }\n\n  words(text) {\n    // This is faster than removing all children and adding a new one\n    this.node.textContent = text\n    return this\n  }\n\n  wrap(node) {\n    const parent = this.parent()\n\n    if (!parent) {\n      return this.addTo(node)\n    }\n\n    const position = parent.index(this)\n    return parent.put(node, position).put(this)\n  }\n\n  // write svgjs data to the dom\n  writeDataToDom() {\n    // dump variables recursively\n    this.each(function () {\n      this.writeDataToDom()\n    })\n\n    return this\n  }\n\n  // Import / Export raw svg\n  xml(xmlOrFn, outerXML, ns) {\n    if (typeof xmlOrFn === 'boolean') {\n      ns = outerXML\n      outerXML = xmlOrFn\n      xmlOrFn = null\n    }\n\n    // act as getter if no svg string is given\n    if (xmlOrFn == null || typeof xmlOrFn === 'function') {\n      // The default for exports is, that the outerNode is included\n      outerXML = outerXML == null ? true : outerXML\n\n      // write svgjs data to the dom\n      this.writeDataToDom()\n      let current = this\n\n      // An export modifier was passed\n      if (xmlOrFn != null) {\n        current = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.adopt)(current.node.cloneNode(true))\n\n        // If the user wants outerHTML we need to process this node, too\n        if (outerXML) {\n          const result = xmlOrFn(current)\n          current = result || current\n\n          // The user does not want this node? Well, then he gets nothing\n          if (result === false) return ''\n        }\n\n        // Deep loop through all children and apply modifier\n        current.each(function () {\n          const result = xmlOrFn(this)\n          const _this = result || this\n\n          // If modifier returns false, discard node\n          if (result === false) {\n            this.remove()\n\n            // If modifier returns new node, use it\n          } else if (result && this !== _this) {\n            this.replace(_this)\n          }\n        }, true)\n      }\n\n      // Return outer or inner content\n      return outerXML ? current.node.outerHTML : current.node.innerHTML\n    }\n\n    // Act as setter if we got a string\n\n    // The default for import is, that the current node is not replaced\n    outerXML = outerXML == null ? false : outerXML\n\n    // Create temporary holder\n    const well = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.create)('wrapper', ns)\n    const fragment = _utils_window_js__WEBPACK_IMPORTED_MODULE_2__.globals.document.createDocumentFragment()\n\n    // Dump raw svg\n    well.innerHTML = xmlOrFn\n\n    // Transplant nodes into the fragment\n    for (let len = well.children.length; len--; ) {\n      fragment.appendChild(well.firstElementChild)\n    }\n\n    const parent = this.parent()\n\n    // Add the whole fragment at once\n    return outerXML ? this.replace(fragment) && parent : this.add(fragment)\n  }\n}\n\n(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(Dom, { attr: _modules_core_attr_js__WEBPACK_IMPORTED_MODULE_7__[\"default\"], find: _modules_core_selector_js__WEBPACK_IMPORTED_MODULE_1__.find, findOne: _modules_core_selector_js__WEBPACK_IMPORTED_MODULE_1__.findOne })\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Dom, 'Dom')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Dom.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Dom)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _modules_core_selector_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../modules/core/selector.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/selector.js");
+/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/window.js */ "./node_modules/@svgdotjs/svg.js/src/utils/window.js");
+/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/utils.js */ "./node_modules/@svgdotjs/svg.js/src/utils/utils.js");
+/* harmony import */ var _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../modules/core/namespaces.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/namespaces.js");
+/* harmony import */ var _types_EventTarget_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../types/EventTarget.js */ "./node_modules/@svgdotjs/svg.js/src/types/EventTarget.js");
+/* harmony import */ var _types_List_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../types/List.js */ "./node_modules/@svgdotjs/svg.js/src/types/List.js");
+/* harmony import */ var _modules_core_attr_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../modules/core/attr.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/attr.js");
+
+
+
+
+
+
+
+
+
+class Dom extends _types_EventTarget_js__WEBPACK_IMPORTED_MODULE_5__["default"] {
+  constructor(node, attrs) {
+    super()
+    this.node = node
+    this.type = node.nodeName
+
+    if (attrs && node !== attrs) {
+      this.attr(attrs)
+    }
+  }
+
+  // Add given element at a position
+  add(element, i) {
+    element = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.makeInstance)(element)
+
+    // If non-root svg nodes are added we have to remove their namespaces
+    if (
+      element.removeNamespace &&
+      this.node instanceof _utils_window_js__WEBPACK_IMPORTED_MODULE_2__.globals.window.SVGElement
+    ) {
+      element.removeNamespace()
+    }
+
+    if (i == null) {
+      this.node.appendChild(element.node)
+    } else if (element.node !== this.node.childNodes[i]) {
+      this.node.insertBefore(element.node, this.node.childNodes[i])
+    }
+
+    return this
+  }
+
+  // Add element to given container and return self
+  addTo(parent, i) {
+    return (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.makeInstance)(parent).put(this, i)
+  }
+
+  // Returns all child elements
+  children() {
+    return new _types_List_js__WEBPACK_IMPORTED_MODULE_6__["default"](
+      (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_3__.map)(this.node.children, function (node) {
+        return (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.adopt)(node)
+      })
+    )
+  }
+
+  // Remove all elements in this container
+  clear() {
+    // remove children
+    while (this.node.hasChildNodes()) {
+      this.node.removeChild(this.node.lastChild)
+    }
+
+    return this
+  }
+
+  // Clone element
+  clone(deep = true, assignNewIds = true) {
+    // write dom data to the dom so the clone can pickup the data
+    this.writeDataToDom()
+
+    // clone element
+    let nodeClone = this.node.cloneNode(deep)
+    if (assignNewIds) {
+      // assign new id
+      nodeClone = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.assignNewId)(nodeClone)
+    }
+    return new this.constructor(nodeClone)
+  }
+
+  // Iterates over all children and invokes a given block
+  each(block, deep) {
+    const children = this.children()
+    let i, il
+
+    for (i = 0, il = children.length; i < il; i++) {
+      block.apply(children[i], [i, children])
+
+      if (deep) {
+        children[i].each(block, deep)
+      }
+    }
+
+    return this
+  }
+
+  element(nodeName, attrs) {
+    return this.put(new Dom((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.create)(nodeName), attrs))
+  }
+
+  // Get first child
+  first() {
+    return (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.adopt)(this.node.firstChild)
+  }
+
+  // Get a element at the given index
+  get(i) {
+    return (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.adopt)(this.node.childNodes[i])
+  }
+
+  getEventHolder() {
+    return this.node
+  }
+
+  getEventTarget() {
+    return this.node
+  }
+
+  // Checks if the given element is a child
+  has(element) {
+    return this.index(element) >= 0
+  }
+
+  html(htmlOrFn, outerHTML) {
+    return this.xml(htmlOrFn, outerHTML, _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_4__.html)
+  }
+
+  // Get / set id
+  id(id) {
+    // generate new id if no id set
+    if (typeof id === 'undefined' && !this.node.id) {
+      this.node.id = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.eid)(this.type)
+    }
+
+    // don't set directly with this.node.id to make `null` work correctly
+    return this.attr('id', id)
+  }
+
+  // Gets index of given element
+  index(element) {
+    return [].slice.call(this.node.childNodes).indexOf(element.node)
+  }
+
+  // Get the last child
+  last() {
+    return (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.adopt)(this.node.lastChild)
+  }
+
+  // matches the element vs a css selector
+  matches(selector) {
+    const el = this.node
+    const matcher =
+      el.matches ||
+      el.matchesSelector ||
+      el.msMatchesSelector ||
+      el.mozMatchesSelector ||
+      el.webkitMatchesSelector ||
+      el.oMatchesSelector ||
+      null
+    return matcher && matcher.call(el, selector)
+  }
+
+  // Returns the parent element instance
+  parent(type) {
+    let parent = this
+
+    // check for parent
+    if (!parent.node.parentNode) return null
+
+    // get parent element
+    parent = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.adopt)(parent.node.parentNode)
+
+    if (!type) return parent
+
+    // loop through ancestors if type is given
+    do {
+      if (
+        typeof type === 'string' ? parent.matches(type) : parent instanceof type
+      )
+        return parent
+    } while ((parent = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.adopt)(parent.node.parentNode)))
+
+    return parent
+  }
+
+  // Basically does the same as `add()` but returns the added element instead
+  put(element, i) {
+    element = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.makeInstance)(element)
+    this.add(element, i)
+    return element
+  }
+
+  // Add element to given container and return container
+  putIn(parent, i) {
+    return (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.makeInstance)(parent).add(this, i)
+  }
+
+  // Remove element
+  remove() {
+    if (this.parent()) {
+      this.parent().removeElement(this)
+    }
+
+    return this
+  }
+
+  // Remove a given child
+  removeElement(element) {
+    this.node.removeChild(element.node)
+
+    return this
+  }
+
+  // Replace this with element
+  replace(element) {
+    element = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.makeInstance)(element)
+
+    if (this.node.parentNode) {
+      this.node.parentNode.replaceChild(element.node, this.node)
+    }
+
+    return element
+  }
+
+  round(precision = 2, map = null) {
+    const factor = 10 ** precision
+    const attrs = this.attr(map)
+
+    for (const i in attrs) {
+      if (typeof attrs[i] === 'number') {
+        attrs[i] = Math.round(attrs[i] * factor) / factor
+      }
+    }
+
+    this.attr(attrs)
+    return this
+  }
+
+  // Import / Export raw svg
+  svg(svgOrFn, outerSVG) {
+    return this.xml(svgOrFn, outerSVG, _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_4__.svg)
+  }
+
+  // Return id on string conversion
+  toString() {
+    return this.id()
+  }
+
+  words(text) {
+    // This is faster than removing all children and adding a new one
+    this.node.textContent = text
+    return this
+  }
+
+  wrap(node) {
+    const parent = this.parent()
+
+    if (!parent) {
+      return this.addTo(node)
+    }
+
+    const position = parent.index(this)
+    return parent.put(node, position).put(this)
+  }
+
+  // write svgjs data to the dom
+  writeDataToDom() {
+    // dump variables recursively
+    this.each(function () {
+      this.writeDataToDom()
+    })
+
+    return this
+  }
+
+  // Import / Export raw svg
+  xml(xmlOrFn, outerXML, ns) {
+    if (typeof xmlOrFn === 'boolean') {
+      ns = outerXML
+      outerXML = xmlOrFn
+      xmlOrFn = null
+    }
+
+    // act as getter if no svg string is given
+    if (xmlOrFn == null || typeof xmlOrFn === 'function') {
+      // The default for exports is, that the outerNode is included
+      outerXML = outerXML == null ? true : outerXML
+
+      // write svgjs data to the dom
+      this.writeDataToDom()
+      let current = this
+
+      // An export modifier was passed
+      if (xmlOrFn != null) {
+        current = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.adopt)(current.node.cloneNode(true))
+
+        // If the user wants outerHTML we need to process this node, too
+        if (outerXML) {
+          const result = xmlOrFn(current)
+          current = result || current
+
+          // The user does not want this node? Well, then he gets nothing
+          if (result === false) return ''
+        }
+
+        // Deep loop through all children and apply modifier
+        current.each(function () {
+          const result = xmlOrFn(this)
+          const _this = result || this
+
+          // If modifier returns false, discard node
+          if (result === false) {
+            this.remove()
+
+            // If modifier returns new node, use it
+          } else if (result && this !== _this) {
+            this.replace(_this)
+          }
+        }, true)
+      }
+
+      // Return outer or inner content
+      return outerXML ? current.node.outerHTML : current.node.innerHTML
+    }
+
+    // Act as setter if we got a string
+
+    // The default for import is, that the current node is not replaced
+    outerXML = outerXML == null ? false : outerXML
+
+    // Create temporary holder
+    const well = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.create)('wrapper', ns)
+    const fragment = _utils_window_js__WEBPACK_IMPORTED_MODULE_2__.globals.document.createDocumentFragment()
+
+    // Dump raw svg
+    well.innerHTML = xmlOrFn
+
+    // Transplant nodes into the fragment
+    for (let len = well.children.length; len--; ) {
+      fragment.appendChild(well.firstElementChild)
+    }
+
+    const parent = this.parent()
+
+    // Add the whole fragment at once
+    return outerXML ? this.replace(fragment) && parent : this.add(fragment)
+  }
+}
+
+(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(Dom, { attr: _modules_core_attr_js__WEBPACK_IMPORTED_MODULE_7__["default"], find: _modules_core_selector_js__WEBPACK_IMPORTED_MODULE_1__.find, findOne: _modules_core_selector_js__WEBPACK_IMPORTED_MODULE_1__.findOne })
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Dom, 'Dom')
+
 
 /***/ }),
 
@@ -146,7 +2980,197 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \***************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Element)\n/* harmony export */ });\n/* harmony import */ var _types_Box_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../types/Box.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Box.js\");\n/* harmony import */ var _types_Matrix_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../types/Matrix.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Matrix.js\");\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/window.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/window.js\");\n/* harmony import */ var _types_Point_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../types/Point.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Point.js\");\n/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utils/utils.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/utils.js\");\n/* harmony import */ var _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../modules/core/regex.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js\");\n/* harmony import */ var _Dom_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Dom.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Dom.js\");\n/* harmony import */ var _types_List_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../types/List.js */ \"./node_modules/@svgdotjs/svg.js/src/types/List.js\");\n/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../types/SVGNumber.js */ \"./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js\");\n\n\n\n\n\n\n\n\n\n\n\nclass Element extends _Dom_js__WEBPACK_IMPORTED_MODULE_7__[\"default\"] {\n  constructor(node, attrs) {\n    super(node, attrs)\n\n    // initialize data object\n    this.dom = {}\n\n    // create circular reference\n    this.node.instance = this\n\n    if (node.hasAttribute('data-svgjs') || node.hasAttribute('svgjs:data')) {\n      // pull svgjs data from the dom (getAttributeNS doesn't work in html5)\n      this.setData(\n        JSON.parse(node.getAttribute('data-svgjs')) ??\n          JSON.parse(node.getAttribute('svgjs:data')) ??\n          {}\n      )\n    }\n  }\n\n  // Move element by its center\n  center(x, y) {\n    return this.cx(x).cy(y)\n  }\n\n  // Move by center over x-axis\n  cx(x) {\n    return x == null\n      ? this.x() + this.width() / 2\n      : this.x(x - this.width() / 2)\n  }\n\n  // Move by center over y-axis\n  cy(y) {\n    return y == null\n      ? this.y() + this.height() / 2\n      : this.y(y - this.height() / 2)\n  }\n\n  // Get defs\n  defs() {\n    const root = this.root()\n    return root && root.defs()\n  }\n\n  // Relative move over x and y axes\n  dmove(x, y) {\n    return this.dx(x).dy(y)\n  }\n\n  // Relative move over x axis\n  dx(x = 0) {\n    return this.x(new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_9__[\"default\"](x).plus(this.x()))\n  }\n\n  // Relative move over y axis\n  dy(y = 0) {\n    return this.y(new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_9__[\"default\"](y).plus(this.y()))\n  }\n\n  getEventHolder() {\n    return this\n  }\n\n  // Set height of element\n  height(height) {\n    return this.attr('height', height)\n  }\n\n  // Move element to given x and y values\n  move(x, y) {\n    return this.x(x).y(y)\n  }\n\n  // return array of all ancestors of given type up to the root svg\n  parents(until = this.root()) {\n    const isSelector = typeof until === 'string'\n    if (!isSelector) {\n      until = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__.makeInstance)(until)\n    }\n    const parents = new _types_List_js__WEBPACK_IMPORTED_MODULE_8__[\"default\"]()\n    let parent = this\n\n    while (\n      (parent = parent.parent()) &&\n      parent.node !== _utils_window_js__WEBPACK_IMPORTED_MODULE_3__.globals.document &&\n      parent.nodeName !== '#document-fragment'\n    ) {\n      parents.push(parent)\n\n      if (!isSelector && parent.node === until.node) {\n        break\n      }\n      if (isSelector && parent.matches(until)) {\n        break\n      }\n      if (parent.node === this.root().node) {\n        // We worked our way to the root and didn't match `until`\n        return null\n      }\n    }\n\n    return parents\n  }\n\n  // Get referenced element form attribute value\n  reference(attr) {\n    attr = this.attr(attr)\n    if (!attr) return null\n\n    const m = (attr + '').match(_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_6__.reference)\n    return m ? (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__.makeInstance)(m[1]) : null\n  }\n\n  // Get parent document\n  root() {\n    const p = this.parent((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__.getClass)(_utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__.root))\n    return p && p.root()\n  }\n\n  // set given data to the elements data property\n  setData(o) {\n    this.dom = o\n    return this\n  }\n\n  // Set element size to given width and height\n  size(width, height) {\n    const p = (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_5__.proportionalSize)(this, width, height)\n\n    return this.width(new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_9__[\"default\"](p.width)).height(new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_9__[\"default\"](p.height))\n  }\n\n  // Set width of element\n  width(width) {\n    return this.attr('width', width)\n  }\n\n  // write svgjs data to the dom\n  writeDataToDom() {\n    (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_5__.writeDataToDom)(this, this.dom)\n    return super.writeDataToDom()\n  }\n\n  // Move over x-axis\n  x(x) {\n    return this.attr('x', x)\n  }\n\n  // Move over y-axis\n  y(y) {\n    return this.attr('y', y)\n  }\n}\n\n(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__.extend)(Element, {\n  bbox: _types_Box_js__WEBPACK_IMPORTED_MODULE_0__.bbox,\n  rbox: _types_Box_js__WEBPACK_IMPORTED_MODULE_0__.rbox,\n  inside: _types_Box_js__WEBPACK_IMPORTED_MODULE_0__.inside,\n  point: _types_Point_js__WEBPACK_IMPORTED_MODULE_4__.point,\n  ctm: _types_Matrix_js__WEBPACK_IMPORTED_MODULE_1__.ctm,\n  screenCTM: _types_Matrix_js__WEBPACK_IMPORTED_MODULE_1__.screenCTM\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__.register)(Element, 'Element')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Element.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Element)
+/* harmony export */ });
+/* harmony import */ var _types_Box_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../types/Box.js */ "./node_modules/@svgdotjs/svg.js/src/types/Box.js");
+/* harmony import */ var _types_Matrix_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../types/Matrix.js */ "./node_modules/@svgdotjs/svg.js/src/types/Matrix.js");
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/window.js */ "./node_modules/@svgdotjs/svg.js/src/utils/window.js");
+/* harmony import */ var _types_Point_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../types/Point.js */ "./node_modules/@svgdotjs/svg.js/src/types/Point.js");
+/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utils/utils.js */ "./node_modules/@svgdotjs/svg.js/src/utils/utils.js");
+/* harmony import */ var _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../modules/core/regex.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js");
+/* harmony import */ var _Dom_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Dom.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Dom.js");
+/* harmony import */ var _types_List_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../types/List.js */ "./node_modules/@svgdotjs/svg.js/src/types/List.js");
+/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../types/SVGNumber.js */ "./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js");
+
+
+
+
+
+
+
+
+
+
+
+class Element extends _Dom_js__WEBPACK_IMPORTED_MODULE_7__["default"] {
+  constructor(node, attrs) {
+    super(node, attrs)
+
+    // initialize data object
+    this.dom = {}
+
+    // create circular reference
+    this.node.instance = this
+
+    if (node.hasAttribute('data-svgjs') || node.hasAttribute('svgjs:data')) {
+      // pull svgjs data from the dom (getAttributeNS doesn't work in html5)
+      this.setData(
+        JSON.parse(node.getAttribute('data-svgjs')) ??
+          JSON.parse(node.getAttribute('svgjs:data')) ??
+          {}
+      )
+    }
+  }
+
+  // Move element by its center
+  center(x, y) {
+    return this.cx(x).cy(y)
+  }
+
+  // Move by center over x-axis
+  cx(x) {
+    return x == null
+      ? this.x() + this.width() / 2
+      : this.x(x - this.width() / 2)
+  }
+
+  // Move by center over y-axis
+  cy(y) {
+    return y == null
+      ? this.y() + this.height() / 2
+      : this.y(y - this.height() / 2)
+  }
+
+  // Get defs
+  defs() {
+    const root = this.root()
+    return root && root.defs()
+  }
+
+  // Relative move over x and y axes
+  dmove(x, y) {
+    return this.dx(x).dy(y)
+  }
+
+  // Relative move over x axis
+  dx(x = 0) {
+    return this.x(new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_9__["default"](x).plus(this.x()))
+  }
+
+  // Relative move over y axis
+  dy(y = 0) {
+    return this.y(new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_9__["default"](y).plus(this.y()))
+  }
+
+  getEventHolder() {
+    return this
+  }
+
+  // Set height of element
+  height(height) {
+    return this.attr('height', height)
+  }
+
+  // Move element to given x and y values
+  move(x, y) {
+    return this.x(x).y(y)
+  }
+
+  // return array of all ancestors of given type up to the root svg
+  parents(until = this.root()) {
+    const isSelector = typeof until === 'string'
+    if (!isSelector) {
+      until = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__.makeInstance)(until)
+    }
+    const parents = new _types_List_js__WEBPACK_IMPORTED_MODULE_8__["default"]()
+    let parent = this
+
+    while (
+      (parent = parent.parent()) &&
+      parent.node !== _utils_window_js__WEBPACK_IMPORTED_MODULE_3__.globals.document &&
+      parent.nodeName !== '#document-fragment'
+    ) {
+      parents.push(parent)
+
+      if (!isSelector && parent.node === until.node) {
+        break
+      }
+      if (isSelector && parent.matches(until)) {
+        break
+      }
+      if (parent.node === this.root().node) {
+        // We worked our way to the root and didn't match `until`
+        return null
+      }
+    }
+
+    return parents
+  }
+
+  // Get referenced element form attribute value
+  reference(attr) {
+    attr = this.attr(attr)
+    if (!attr) return null
+
+    const m = (attr + '').match(_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_6__.reference)
+    return m ? (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__.makeInstance)(m[1]) : null
+  }
+
+  // Get parent document
+  root() {
+    const p = this.parent((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__.getClass)(_utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__.root))
+    return p && p.root()
+  }
+
+  // set given data to the elements data property
+  setData(o) {
+    this.dom = o
+    return this
+  }
+
+  // Set element size to given width and height
+  size(width, height) {
+    const p = (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_5__.proportionalSize)(this, width, height)
+
+    return this.width(new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_9__["default"](p.width)).height(new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_9__["default"](p.height))
+  }
+
+  // Set width of element
+  width(width) {
+    return this.attr('width', width)
+  }
+
+  // write svgjs data to the dom
+  writeDataToDom() {
+    (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_5__.writeDataToDom)(this, this.dom)
+    return super.writeDataToDom()
+  }
+
+  // Move over x-axis
+  x(x) {
+    return this.attr('x', x)
+  }
+
+  // Move over y-axis
+  y(y) {
+    return this.attr('y', y)
+  }
+}
+
+(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__.extend)(Element, {
+  bbox: _types_Box_js__WEBPACK_IMPORTED_MODULE_0__.bbox,
+  rbox: _types_Box_js__WEBPACK_IMPORTED_MODULE_0__.rbox,
+  inside: _types_Box_js__WEBPACK_IMPORTED_MODULE_0__.inside,
+  point: _types_Point_js__WEBPACK_IMPORTED_MODULE_4__.point,
+  ctm: _types_Matrix_js__WEBPACK_IMPORTED_MODULE_1__.ctm,
+  screenCTM: _types_Matrix_js__WEBPACK_IMPORTED_MODULE_1__.screenCTM
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__.register)(Element, 'Element')
+
 
 /***/ }),
 
@@ -156,7 +3180,48 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \***************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Ellipse)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/utils.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/utils.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../types/SVGNumber.js */ \"./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js\");\n/* harmony import */ var _Shape_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Shape.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Shape.js\");\n/* harmony import */ var _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../modules/core/circled.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/circled.js\");\n\n\n\n\n\n\n\nclass Ellipse extends _Shape_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"] {\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('ellipse', node), attrs)\n  }\n\n  size(width, height) {\n    const p = (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_1__.proportionalSize)(this, width, height)\n\n    return this.rx(new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"](p.width).divide(2)).ry(\n      new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"](p.height).divide(2)\n    )\n  }\n}\n\n(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(Ellipse, _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_5__)\n\n;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_2__.registerMethods)('Container', {\n  // Create an ellipse\n  ellipse: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (width = 0, height = width) {\n    return this.put(new Ellipse()).size(width, height).move(0, 0)\n  })\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Ellipse, 'Ellipse')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Ellipse.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Ellipse)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/utils.js */ "./node_modules/@svgdotjs/svg.js/src/utils/utils.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../types/SVGNumber.js */ "./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js");
+/* harmony import */ var _Shape_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Shape.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Shape.js");
+/* harmony import */ var _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../modules/core/circled.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/circled.js");
+
+
+
+
+
+
+
+class Ellipse extends _Shape_js__WEBPACK_IMPORTED_MODULE_4__["default"] {
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('ellipse', node), attrs)
+  }
+
+  size(width, height) {
+    const p = (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_1__.proportionalSize)(this, width, height)
+
+    return this.rx(new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_3__["default"](p.width).divide(2)).ry(
+      new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_3__["default"](p.height).divide(2)
+    )
+  }
+}
+
+(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(Ellipse, _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_5__)
+
+;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_2__.registerMethods)('Container', {
+  // Create an ellipse
+  ellipse: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (width = 0, height = width) {
+    return this.put(new Ellipse()).size(width, height).move(0, 0)
+  })
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Ellipse, 'Ellipse')
+
 
 /***/ }),
 
@@ -166,7 +3231,33 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*********************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ ForeignObject)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _Element_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Element.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Element.js\");\n\n\n\n\nclass ForeignObject extends _Element_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"] {\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('foreignObject', node), attrs)\n  }\n}\n\n(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({\n  Container: {\n    foreignObject: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (width, height) {\n      return this.put(new ForeignObject()).size(width, height)\n    })\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(ForeignObject, 'ForeignObject')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/ForeignObject.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ ForeignObject)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _Element_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Element.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Element.js");
+
+
+
+
+class ForeignObject extends _Element_js__WEBPACK_IMPORTED_MODULE_2__["default"] {
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('foreignObject', node), attrs)
+  }
+}
+
+(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({
+  Container: {
+    foreignObject: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (width, height) {
+      return this.put(new ForeignObject()).size(width, height)
+    })
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(ForeignObject, 'ForeignObject')
+
 
 /***/ }),
 
@@ -176,7 +3267,48 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \****************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _Dom_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Dom.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Dom.js\");\n/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/window.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/window.js\");\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n\n\n\n\nclass Fragment extends _Dom_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"] {\n  constructor(node = _utils_window_js__WEBPACK_IMPORTED_MODULE_1__.globals.document.createDocumentFragment()) {\n    super(node)\n  }\n\n  // Import / Export raw xml\n  xml(xmlOrFn, outerXML, ns) {\n    if (typeof xmlOrFn === 'boolean') {\n      ns = outerXML\n      outerXML = xmlOrFn\n      xmlOrFn = null\n    }\n\n    // because this is a fragment we have to put all elements into a wrapper first\n    // before we can get the innerXML from it\n    if (xmlOrFn == null || typeof xmlOrFn === 'function') {\n      const wrapper = new _Dom_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"]((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__.create)('wrapper', ns))\n      wrapper.add(this.node.cloneNode(true))\n\n      return wrapper.xml(false, ns)\n    }\n\n    // Act as setter if we got a string\n    return super.xml(xmlOrFn, false, ns)\n  }\n}\n\n(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__.register)(Fragment, 'Fragment')\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Fragment);\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Fragment.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Dom_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Dom.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Dom.js");
+/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/window.js */ "./node_modules/@svgdotjs/svg.js/src/utils/window.js");
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+
+
+
+
+class Fragment extends _Dom_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  constructor(node = _utils_window_js__WEBPACK_IMPORTED_MODULE_1__.globals.document.createDocumentFragment()) {
+    super(node)
+  }
+
+  // Import / Export raw xml
+  xml(xmlOrFn, outerXML, ns) {
+    if (typeof xmlOrFn === 'boolean') {
+      ns = outerXML
+      outerXML = xmlOrFn
+      xmlOrFn = null
+    }
+
+    // because this is a fragment we have to put all elements into a wrapper first
+    // before we can get the innerXML from it
+    if (xmlOrFn == null || typeof xmlOrFn === 'function') {
+      const wrapper = new _Dom_js__WEBPACK_IMPORTED_MODULE_0__["default"]((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__.create)('wrapper', ns))
+      wrapper.add(this.node.cloneNode(true))
+
+      return wrapper.xml(false, ns)
+    }
+
+    // Act as setter if we got a string
+    return super.xml(xmlOrFn, false, ns)
+  }
+}
+
+(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__.register)(Fragment, 'Fragment')
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Fragment);
+
 
 /***/ }),
 
@@ -186,7 +3318,38 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ G)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _Container_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Container.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Container.js\");\n/* harmony import */ var _modules_core_containerGeometry_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../modules/core/containerGeometry.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/containerGeometry.js\");\n\n\n\n\n\nclass G extends _Container_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"] {\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('g', node), attrs)\n  }\n}\n\n(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(G, _modules_core_containerGeometry_js__WEBPACK_IMPORTED_MODULE_3__)\n\n;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({\n  Container: {\n    // Create a group element\n    group: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function () {\n      return this.put(new G())\n    })\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(G, 'G')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/G.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ G)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _Container_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Container.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Container.js");
+/* harmony import */ var _modules_core_containerGeometry_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../modules/core/containerGeometry.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/containerGeometry.js");
+
+
+
+
+
+class G extends _Container_js__WEBPACK_IMPORTED_MODULE_2__["default"] {
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('g', node), attrs)
+  }
+}
+
+(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(G, _modules_core_containerGeometry_js__WEBPACK_IMPORTED_MODULE_3__)
+
+;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({
+  Container: {
+    // Create a group element
+    group: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function () {
+      return this.put(new G())
+    })
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(G, 'G')
+
 
 /***/ }),
 
@@ -196,7 +3359,88 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \****************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Gradient)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _types_Box_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../types/Box.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Box.js\");\n/* harmony import */ var _Container_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Container.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Container.js\");\n/* harmony import */ var _modules_core_selector_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../modules/core/selector.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/selector.js\");\n/* harmony import */ var _modules_core_gradiented_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../modules/core/gradiented.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/gradiented.js\");\n\n\n\n\n\n\n\nclass Gradient extends _Container_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"] {\n  constructor(type, attrs) {\n    super(\n      (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)(type + 'Gradient', typeof type === 'string' ? null : type),\n      attrs\n    )\n  }\n\n  // custom attr to handle transform\n  attr(a, b, c) {\n    if (a === 'transform') a = 'gradientTransform'\n    return super.attr(a, b, c)\n  }\n\n  bbox() {\n    return new _types_Box_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"]()\n  }\n\n  targets() {\n    return (0,_modules_core_selector_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"])('svg [fill*=' + this.id() + ']')\n  }\n\n  // Alias string conversion to fill\n  toString() {\n    return this.url()\n  }\n\n  // Update gradient\n  update(block) {\n    // remove all stops\n    this.clear()\n\n    // invoke passed block\n    if (typeof block === 'function') {\n      block.call(this, this)\n    }\n\n    return this\n  }\n\n  // Return the fill id\n  url() {\n    return 'url(#' + this.id() + ')'\n  }\n}\n\n(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(Gradient, _modules_core_gradiented_js__WEBPACK_IMPORTED_MODULE_5__)\n\n;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({\n  Container: {\n    // Create gradient element in defs\n    gradient(...args) {\n      return this.defs().gradient(...args)\n    }\n  },\n  // define gradient\n  Defs: {\n    gradient: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (type, block) {\n      return this.put(new Gradient(type)).update(block)\n    })\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Gradient, 'Gradient')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Gradient.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Gradient)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _types_Box_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../types/Box.js */ "./node_modules/@svgdotjs/svg.js/src/types/Box.js");
+/* harmony import */ var _Container_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Container.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Container.js");
+/* harmony import */ var _modules_core_selector_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../modules/core/selector.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/selector.js");
+/* harmony import */ var _modules_core_gradiented_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../modules/core/gradiented.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/gradiented.js");
+
+
+
+
+
+
+
+class Gradient extends _Container_js__WEBPACK_IMPORTED_MODULE_3__["default"] {
+  constructor(type, attrs) {
+    super(
+      (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)(type + 'Gradient', typeof type === 'string' ? null : type),
+      attrs
+    )
+  }
+
+  // custom attr to handle transform
+  attr(a, b, c) {
+    if (a === 'transform') a = 'gradientTransform'
+    return super.attr(a, b, c)
+  }
+
+  bbox() {
+    return new _types_Box_js__WEBPACK_IMPORTED_MODULE_2__["default"]()
+  }
+
+  targets() {
+    return (0,_modules_core_selector_js__WEBPACK_IMPORTED_MODULE_4__["default"])('svg [fill*=' + this.id() + ']')
+  }
+
+  // Alias string conversion to fill
+  toString() {
+    return this.url()
+  }
+
+  // Update gradient
+  update(block) {
+    // remove all stops
+    this.clear()
+
+    // invoke passed block
+    if (typeof block === 'function') {
+      block.call(this, this)
+    }
+
+    return this
+  }
+
+  // Return the fill id
+  url() {
+    return 'url(#' + this.id() + ')'
+  }
+}
+
+(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(Gradient, _modules_core_gradiented_js__WEBPACK_IMPORTED_MODULE_5__)
+
+;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({
+  Container: {
+    // Create gradient element in defs
+    gradient(...args) {
+      return this.defs().gradient(...args)
+    }
+  },
+  // define gradient
+  Defs: {
+    gradient: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (type, block) {
+      return this.put(new Gradient(type)).update(block)
+    })
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Gradient, 'Gradient')
+
 
 /***/ }),
 
@@ -206,7 +3450,105 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Image)\n/* harmony export */ });\n/* harmony import */ var _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../modules/core/regex.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js\");\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _modules_core_event_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../modules/core/event.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/event.js\");\n/* harmony import */ var _modules_core_attr_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../modules/core/attr.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/attr.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../modules/core/namespaces.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/namespaces.js\");\n/* harmony import */ var _Pattern_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Pattern.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Pattern.js\");\n/* harmony import */ var _Shape_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Shape.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Shape.js\");\n/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../utils/window.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/window.js\");\n\n\n\n\n\n\n\n\n\n\nclass Image extends _Shape_js__WEBPACK_IMPORTED_MODULE_7__[\"default\"] {\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.nodeOrNew)('image', node), attrs)\n  }\n\n  // (re)load image\n  load(url, callback) {\n    if (!url) return this\n\n    const img = new _utils_window_js__WEBPACK_IMPORTED_MODULE_8__.globals.window.Image()\n\n    ;(0,_modules_core_event_js__WEBPACK_IMPORTED_MODULE_2__.on)(\n      img,\n      'load',\n      function (e) {\n        const p = this.parent(_Pattern_js__WEBPACK_IMPORTED_MODULE_6__[\"default\"])\n\n        // ensure image size\n        if (this.width() === 0 && this.height() === 0) {\n          this.size(img.width, img.height)\n        }\n\n        if (p instanceof _Pattern_js__WEBPACK_IMPORTED_MODULE_6__[\"default\"]) {\n          // ensure pattern size if not set\n          if (p.width() === 0 && p.height() === 0) {\n            p.size(this.width(), this.height())\n          }\n        }\n\n        if (typeof callback === 'function') {\n          callback.call(this, e)\n        }\n      },\n      this\n    )\n\n    ;(0,_modules_core_event_js__WEBPACK_IMPORTED_MODULE_2__.on)(img, 'load error', function () {\n      // dont forget to unbind memory leaking events\n      ;(0,_modules_core_event_js__WEBPACK_IMPORTED_MODULE_2__.off)(img)\n    })\n\n    return this.attr('href', (img.src = url), _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_5__.xlink)\n  }\n}\n\n(0,_modules_core_attr_js__WEBPACK_IMPORTED_MODULE_3__.registerAttrHook)(function (attr, val, _this) {\n  // convert image fill and stroke to patterns\n  if (attr === 'fill' || attr === 'stroke') {\n    if (_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.isImage.test(val)) {\n      val = _this.root().defs().image(val)\n    }\n  }\n\n  if (val instanceof Image) {\n    val = _this\n      .root()\n      .defs()\n      .pattern(0, 0, (pattern) => {\n        pattern.add(val)\n      })\n  }\n\n  return val\n})\n\n;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_4__.registerMethods)({\n  Container: {\n    // create image element, load image and set its size\n    image: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.wrapWithAttrCheck)(function (source, callback) {\n      return this.put(new Image()).size(0, 0).load(source, callback)\n    })\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.register)(Image, 'Image')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Image.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Image)
+/* harmony export */ });
+/* harmony import */ var _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../modules/core/regex.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js");
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _modules_core_event_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../modules/core/event.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/event.js");
+/* harmony import */ var _modules_core_attr_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../modules/core/attr.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/attr.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../modules/core/namespaces.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/namespaces.js");
+/* harmony import */ var _Pattern_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Pattern.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Pattern.js");
+/* harmony import */ var _Shape_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Shape.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Shape.js");
+/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../utils/window.js */ "./node_modules/@svgdotjs/svg.js/src/utils/window.js");
+
+
+
+
+
+
+
+
+
+
+class Image extends _Shape_js__WEBPACK_IMPORTED_MODULE_7__["default"] {
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.nodeOrNew)('image', node), attrs)
+  }
+
+  // (re)load image
+  load(url, callback) {
+    if (!url) return this
+
+    const img = new _utils_window_js__WEBPACK_IMPORTED_MODULE_8__.globals.window.Image()
+
+    ;(0,_modules_core_event_js__WEBPACK_IMPORTED_MODULE_2__.on)(
+      img,
+      'load',
+      function (e) {
+        const p = this.parent(_Pattern_js__WEBPACK_IMPORTED_MODULE_6__["default"])
+
+        // ensure image size
+        if (this.width() === 0 && this.height() === 0) {
+          this.size(img.width, img.height)
+        }
+
+        if (p instanceof _Pattern_js__WEBPACK_IMPORTED_MODULE_6__["default"]) {
+          // ensure pattern size if not set
+          if (p.width() === 0 && p.height() === 0) {
+            p.size(this.width(), this.height())
+          }
+        }
+
+        if (typeof callback === 'function') {
+          callback.call(this, e)
+        }
+      },
+      this
+    )
+
+    ;(0,_modules_core_event_js__WEBPACK_IMPORTED_MODULE_2__.on)(img, 'load error', function () {
+      // dont forget to unbind memory leaking events
+      ;(0,_modules_core_event_js__WEBPACK_IMPORTED_MODULE_2__.off)(img)
+    })
+
+    return this.attr('href', (img.src = url), _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_5__.xlink)
+  }
+}
+
+(0,_modules_core_attr_js__WEBPACK_IMPORTED_MODULE_3__.registerAttrHook)(function (attr, val, _this) {
+  // convert image fill and stroke to patterns
+  if (attr === 'fill' || attr === 'stroke') {
+    if (_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.isImage.test(val)) {
+      val = _this.root().defs().image(val)
+    }
+  }
+
+  if (val instanceof Image) {
+    val = _this
+      .root()
+      .defs()
+      .pattern(0, 0, (pattern) => {
+        pattern.add(val)
+      })
+  }
+
+  return val
+})
+
+;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_4__.registerMethods)({
+  Container: {
+    // create image element, load image and set its size
+    image: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.wrapWithAttrCheck)(function (source, callback) {
+      return this.put(new Image()).size(0, 0).load(source, callback)
+    })
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.register)(Image, 'Image')
+
 
 /***/ }),
 
@@ -216,7 +3558,80 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Line)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/utils.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/utils.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _types_PointArray_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../types/PointArray.js */ \"./node_modules/@svgdotjs/svg.js/src/types/PointArray.js\");\n/* harmony import */ var _Shape_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Shape.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Shape.js\");\n/* harmony import */ var _modules_core_pointed_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../modules/core/pointed.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/pointed.js\");\n\n\n\n\n\n\n\nclass Line extends _Shape_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"] {\n  // Initialize node\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('line', node), attrs)\n  }\n\n  // Get array\n  array() {\n    return new _types_PointArray_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"]([\n      [this.attr('x1'), this.attr('y1')],\n      [this.attr('x2'), this.attr('y2')]\n    ])\n  }\n\n  // Move by left top corner\n  move(x, y) {\n    return this.attr(this.array().move(x, y).toLine())\n  }\n\n  // Overwrite native plot() method\n  plot(x1, y1, x2, y2) {\n    if (x1 == null) {\n      return this.array()\n    } else if (typeof y1 !== 'undefined') {\n      x1 = { x1, y1, x2, y2 }\n    } else {\n      x1 = new _types_PointArray_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"](x1).toLine()\n    }\n\n    return this.attr(x1)\n  }\n\n  // Set element size to given width and height\n  size(width, height) {\n    const p = (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_1__.proportionalSize)(this, width, height)\n    return this.attr(this.array().size(p.width, p.height).toLine())\n  }\n}\n\n(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(Line, _modules_core_pointed_js__WEBPACK_IMPORTED_MODULE_5__)\n\n;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_2__.registerMethods)({\n  Container: {\n    // Create a line element\n    line: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (...args) {\n      // make sure plot is called as a setter\n      // x1 is not necessarily a number, it can also be an array, a string and a PointArray\n      return Line.prototype.plot.apply(\n        this.put(new Line()),\n        args[0] != null ? args : [0, 0, 0, 0]\n      )\n    })\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Line, 'Line')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Line.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Line)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/utils.js */ "./node_modules/@svgdotjs/svg.js/src/utils/utils.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _types_PointArray_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../types/PointArray.js */ "./node_modules/@svgdotjs/svg.js/src/types/PointArray.js");
+/* harmony import */ var _Shape_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Shape.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Shape.js");
+/* harmony import */ var _modules_core_pointed_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../modules/core/pointed.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/pointed.js");
+
+
+
+
+
+
+
+class Line extends _Shape_js__WEBPACK_IMPORTED_MODULE_4__["default"] {
+  // Initialize node
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('line', node), attrs)
+  }
+
+  // Get array
+  array() {
+    return new _types_PointArray_js__WEBPACK_IMPORTED_MODULE_3__["default"]([
+      [this.attr('x1'), this.attr('y1')],
+      [this.attr('x2'), this.attr('y2')]
+    ])
+  }
+
+  // Move by left top corner
+  move(x, y) {
+    return this.attr(this.array().move(x, y).toLine())
+  }
+
+  // Overwrite native plot() method
+  plot(x1, y1, x2, y2) {
+    if (x1 == null) {
+      return this.array()
+    } else if (typeof y1 !== 'undefined') {
+      x1 = { x1, y1, x2, y2 }
+    } else {
+      x1 = new _types_PointArray_js__WEBPACK_IMPORTED_MODULE_3__["default"](x1).toLine()
+    }
+
+    return this.attr(x1)
+  }
+
+  // Set element size to given width and height
+  size(width, height) {
+    const p = (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_1__.proportionalSize)(this, width, height)
+    return this.attr(this.array().size(p.width, p.height).toLine())
+  }
+}
+
+(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(Line, _modules_core_pointed_js__WEBPACK_IMPORTED_MODULE_5__)
+
+;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_2__.registerMethods)({
+  Container: {
+    // Create a line element
+    line: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (...args) {
+      // make sure plot is called as a setter
+      // x1 is not necessarily a number, it can also be an array, a string and a PointArray
+      return Line.prototype.plot.apply(
+        this.put(new Line()),
+        args[0] != null ? args : [0, 0, 0, 0]
+      )
+    })
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Line, 'Line')
+
 
 /***/ }),
 
@@ -226,7 +3641,102 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \**************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Marker)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _Container_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Container.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Container.js\");\n\n\n\n\nclass Marker extends _Container_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"] {\n  // Initialize node\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('marker', node), attrs)\n  }\n\n  // Set height of element\n  height(height) {\n    return this.attr('markerHeight', height)\n  }\n\n  orient(orient) {\n    return this.attr('orient', orient)\n  }\n\n  // Set marker refX and refY\n  ref(x, y) {\n    return this.attr('refX', x).attr('refY', y)\n  }\n\n  // Return the fill id\n  toString() {\n    return 'url(#' + this.id() + ')'\n  }\n\n  // Update marker\n  update(block) {\n    // remove all content\n    this.clear()\n\n    // invoke passed block\n    if (typeof block === 'function') {\n      block.call(this, this)\n    }\n\n    return this\n  }\n\n  // Set width of element\n  width(width) {\n    return this.attr('markerWidth', width)\n  }\n}\n\n(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({\n  Container: {\n    marker(...args) {\n      // Create marker element in defs\n      return this.defs().marker(...args)\n    }\n  },\n  Defs: {\n    // Create marker\n    marker: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (width, height, block) {\n      // Set default viewbox to match the width and height, set ref to cx and cy and set orient to auto\n      return this.put(new Marker())\n        .size(width, height)\n        .ref(width / 2, height / 2)\n        .viewbox(0, 0, width, height)\n        .attr('orient', 'auto')\n        .update(block)\n    })\n  },\n  marker: {\n    // Create and attach markers\n    marker(marker, width, height, block) {\n      let attr = ['marker']\n\n      // Build attribute name\n      if (marker !== 'all') attr.push(marker)\n      attr = attr.join('-')\n\n      // Set marker attribute\n      marker =\n        arguments[1] instanceof Marker\n          ? arguments[1]\n          : this.defs().marker(width, height, block)\n\n      return this.attr(attr, marker)\n    }\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Marker, 'Marker')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Marker.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Marker)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _Container_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Container.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Container.js");
+
+
+
+
+class Marker extends _Container_js__WEBPACK_IMPORTED_MODULE_2__["default"] {
+  // Initialize node
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('marker', node), attrs)
+  }
+
+  // Set height of element
+  height(height) {
+    return this.attr('markerHeight', height)
+  }
+
+  orient(orient) {
+    return this.attr('orient', orient)
+  }
+
+  // Set marker refX and refY
+  ref(x, y) {
+    return this.attr('refX', x).attr('refY', y)
+  }
+
+  // Return the fill id
+  toString() {
+    return 'url(#' + this.id() + ')'
+  }
+
+  // Update marker
+  update(block) {
+    // remove all content
+    this.clear()
+
+    // invoke passed block
+    if (typeof block === 'function') {
+      block.call(this, this)
+    }
+
+    return this
+  }
+
+  // Set width of element
+  width(width) {
+    return this.attr('markerWidth', width)
+  }
+}
+
+(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({
+  Container: {
+    marker(...args) {
+      // Create marker element in defs
+      return this.defs().marker(...args)
+    }
+  },
+  Defs: {
+    // Create marker
+    marker: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (width, height, block) {
+      // Set default viewbox to match the width and height, set ref to cx and cy and set orient to auto
+      return this.put(new Marker())
+        .size(width, height)
+        .ref(width / 2, height / 2)
+        .viewbox(0, 0, width, height)
+        .attr('orient', 'auto')
+        .update(block)
+    })
+  },
+  marker: {
+    // Create and attach markers
+    marker(marker, width, height, block) {
+      let attr = ['marker']
+
+      // Build attribute name
+      if (marker !== 'all') attr.push(marker)
+      attr = attr.join('-')
+
+      // Set marker attribute
+      marker =
+        arguments[1] instanceof Marker
+          ? arguments[1]
+          : this.defs().marker(width, height, block)
+
+      return this.attr(attr, marker)
+    }
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Marker, 'Marker')
+
 
 /***/ }),
 
@@ -236,7 +3746,71 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Mask)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _Container_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Container.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Container.js\");\n/* harmony import */ var _modules_core_selector_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../modules/core/selector.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/selector.js\");\n\n\n\n\n\nclass Mask extends _Container_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"] {\n  // Initialize node\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('mask', node), attrs)\n  }\n\n  // Unmask all masked elements and remove itself\n  remove() {\n    // unmask all targets\n    this.targets().forEach(function (el) {\n      el.unmask()\n    })\n\n    // remove mask from parent\n    return super.remove()\n  }\n\n  targets() {\n    return (0,_modules_core_selector_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"])('svg [mask*=' + this.id() + ']')\n  }\n}\n\n(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({\n  Container: {\n    mask: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function () {\n      return this.defs().put(new Mask())\n    })\n  },\n  Element: {\n    // Distribute mask to svg element\n    masker() {\n      return this.reference('mask')\n    },\n\n    maskWith(element) {\n      // use given mask or create a new one\n      const masker =\n        element instanceof Mask ? element : this.parent().mask().add(element)\n\n      // apply mask\n      return this.attr('mask', 'url(#' + masker.id() + ')')\n    },\n\n    // Unmask element\n    unmask() {\n      return this.attr('mask', null)\n    }\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Mask, 'Mask')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Mask.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Mask)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _Container_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Container.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Container.js");
+/* harmony import */ var _modules_core_selector_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../modules/core/selector.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/selector.js");
+
+
+
+
+
+class Mask extends _Container_js__WEBPACK_IMPORTED_MODULE_2__["default"] {
+  // Initialize node
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('mask', node), attrs)
+  }
+
+  // Unmask all masked elements and remove itself
+  remove() {
+    // unmask all targets
+    this.targets().forEach(function (el) {
+      el.unmask()
+    })
+
+    // remove mask from parent
+    return super.remove()
+  }
+
+  targets() {
+    return (0,_modules_core_selector_js__WEBPACK_IMPORTED_MODULE_3__["default"])('svg [mask*=' + this.id() + ']')
+  }
+}
+
+(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({
+  Container: {
+    mask: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function () {
+      return this.defs().put(new Mask())
+    })
+  },
+  Element: {
+    // Distribute mask to svg element
+    masker() {
+      return this.reference('mask')
+    },
+
+    maskWith(element) {
+      // use given mask or create a new one
+      const masker =
+        element instanceof Mask ? element : this.parent().mask().add(element)
+
+      // apply mask
+      return this.attr('mask', 'url(#' + masker.id() + ')')
+    },
+
+    // Unmask element
+    unmask() {
+      return this.attr('mask', null)
+    }
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Mask, 'Mask')
+
 
 /***/ }),
 
@@ -246,7 +3820,100 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Path)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/utils.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/utils.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _types_PathArray_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../types/PathArray.js */ \"./node_modules/@svgdotjs/svg.js/src/types/PathArray.js\");\n/* harmony import */ var _Shape_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Shape.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Shape.js\");\n\n\n\n\n\n\nclass Path extends _Shape_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"] {\n  // Initialize node\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('path', node), attrs)\n  }\n\n  // Get array\n  array() {\n    return this._array || (this._array = new _types_PathArray_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"](this.attr('d')))\n  }\n\n  // Clear array cache\n  clear() {\n    delete this._array\n    return this\n  }\n\n  // Set height of element\n  height(height) {\n    return height == null\n      ? this.bbox().height\n      : this.size(this.bbox().width, height)\n  }\n\n  // Move by left top corner\n  move(x, y) {\n    return this.attr('d', this.array().move(x, y))\n  }\n\n  // Plot new path\n  plot(d) {\n    return d == null\n      ? this.array()\n      : this.clear().attr(\n          'd',\n          typeof d === 'string' ? d : (this._array = new _types_PathArray_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"](d))\n        )\n  }\n\n  // Set element size to given width and height\n  size(width, height) {\n    const p = (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_1__.proportionalSize)(this, width, height)\n    return this.attr('d', this.array().size(p.width, p.height))\n  }\n\n  // Set width of element\n  width(width) {\n    return width == null\n      ? this.bbox().width\n      : this.size(width, this.bbox().height)\n  }\n\n  // Move by left top corner over x-axis\n  x(x) {\n    return x == null ? this.bbox().x : this.move(x, this.bbox().y)\n  }\n\n  // Move by left top corner over y-axis\n  y(y) {\n    return y == null ? this.bbox().y : this.move(this.bbox().x, y)\n  }\n}\n\n// Define morphable array\nPath.prototype.MorphArray = _types_PathArray_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"]\n\n// Add parent method\n;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_2__.registerMethods)({\n  Container: {\n    // Create a wrapped path element\n    path: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (d) {\n      // make sure plot is called as a setter\n      return this.put(new Path()).plot(d || new _types_PathArray_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"]())\n    })\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Path, 'Path')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Path.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Path)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/utils.js */ "./node_modules/@svgdotjs/svg.js/src/utils/utils.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _types_PathArray_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../types/PathArray.js */ "./node_modules/@svgdotjs/svg.js/src/types/PathArray.js");
+/* harmony import */ var _Shape_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Shape.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Shape.js");
+
+
+
+
+
+
+class Path extends _Shape_js__WEBPACK_IMPORTED_MODULE_4__["default"] {
+  // Initialize node
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('path', node), attrs)
+  }
+
+  // Get array
+  array() {
+    return this._array || (this._array = new _types_PathArray_js__WEBPACK_IMPORTED_MODULE_3__["default"](this.attr('d')))
+  }
+
+  // Clear array cache
+  clear() {
+    delete this._array
+    return this
+  }
+
+  // Set height of element
+  height(height) {
+    return height == null
+      ? this.bbox().height
+      : this.size(this.bbox().width, height)
+  }
+
+  // Move by left top corner
+  move(x, y) {
+    return this.attr('d', this.array().move(x, y))
+  }
+
+  // Plot new path
+  plot(d) {
+    return d == null
+      ? this.array()
+      : this.clear().attr(
+          'd',
+          typeof d === 'string' ? d : (this._array = new _types_PathArray_js__WEBPACK_IMPORTED_MODULE_3__["default"](d))
+        )
+  }
+
+  // Set element size to given width and height
+  size(width, height) {
+    const p = (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_1__.proportionalSize)(this, width, height)
+    return this.attr('d', this.array().size(p.width, p.height))
+  }
+
+  // Set width of element
+  width(width) {
+    return width == null
+      ? this.bbox().width
+      : this.size(width, this.bbox().height)
+  }
+
+  // Move by left top corner over x-axis
+  x(x) {
+    return x == null ? this.bbox().x : this.move(x, this.bbox().y)
+  }
+
+  // Move by left top corner over y-axis
+  y(y) {
+    return y == null ? this.bbox().y : this.move(this.bbox().x, y)
+  }
+}
+
+// Define morphable array
+Path.prototype.MorphArray = _types_PathArray_js__WEBPACK_IMPORTED_MODULE_3__["default"]
+
+// Add parent method
+;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_2__.registerMethods)({
+  Container: {
+    // Create a wrapped path element
+    path: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (d) {
+      // make sure plot is called as a setter
+      return this.put(new Path()).plot(d || new _types_PathArray_js__WEBPACK_IMPORTED_MODULE_3__["default"]())
+    })
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Path, 'Path')
+
 
 /***/ }),
 
@@ -256,7 +3923,87 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \***************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Pattern)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _types_Box_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../types/Box.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Box.js\");\n/* harmony import */ var _Container_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Container.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Container.js\");\n/* harmony import */ var _modules_core_selector_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../modules/core/selector.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/selector.js\");\n\n\n\n\n\n\nclass Pattern extends _Container_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"] {\n  // Initialize node\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('pattern', node), attrs)\n  }\n\n  // custom attr to handle transform\n  attr(a, b, c) {\n    if (a === 'transform') a = 'patternTransform'\n    return super.attr(a, b, c)\n  }\n\n  bbox() {\n    return new _types_Box_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"]()\n  }\n\n  targets() {\n    return (0,_modules_core_selector_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"])('svg [fill*=' + this.id() + ']')\n  }\n\n  // Alias string conversion to fill\n  toString() {\n    return this.url()\n  }\n\n  // Update pattern by rebuilding\n  update(block) {\n    // remove content\n    this.clear()\n\n    // invoke passed block\n    if (typeof block === 'function') {\n      block.call(this, this)\n    }\n\n    return this\n  }\n\n  // Return the fill id\n  url() {\n    return 'url(#' + this.id() + ')'\n  }\n}\n\n(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({\n  Container: {\n    // Create pattern element in defs\n    pattern(...args) {\n      return this.defs().pattern(...args)\n    }\n  },\n  Defs: {\n    pattern: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (width, height, block) {\n      return this.put(new Pattern()).update(block).attr({\n        x: 0,\n        y: 0,\n        width: width,\n        height: height,\n        patternUnits: 'userSpaceOnUse'\n      })\n    })\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Pattern, 'Pattern')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Pattern.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Pattern)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _types_Box_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../types/Box.js */ "./node_modules/@svgdotjs/svg.js/src/types/Box.js");
+/* harmony import */ var _Container_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Container.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Container.js");
+/* harmony import */ var _modules_core_selector_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../modules/core/selector.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/selector.js");
+
+
+
+
+
+
+class Pattern extends _Container_js__WEBPACK_IMPORTED_MODULE_3__["default"] {
+  // Initialize node
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('pattern', node), attrs)
+  }
+
+  // custom attr to handle transform
+  attr(a, b, c) {
+    if (a === 'transform') a = 'patternTransform'
+    return super.attr(a, b, c)
+  }
+
+  bbox() {
+    return new _types_Box_js__WEBPACK_IMPORTED_MODULE_2__["default"]()
+  }
+
+  targets() {
+    return (0,_modules_core_selector_js__WEBPACK_IMPORTED_MODULE_4__["default"])('svg [fill*=' + this.id() + ']')
+  }
+
+  // Alias string conversion to fill
+  toString() {
+    return this.url()
+  }
+
+  // Update pattern by rebuilding
+  update(block) {
+    // remove content
+    this.clear()
+
+    // invoke passed block
+    if (typeof block === 'function') {
+      block.call(this, this)
+    }
+
+    return this
+  }
+
+  // Return the fill id
+  url() {
+    return 'url(#' + this.id() + ')'
+  }
+}
+
+(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({
+  Container: {
+    // Create pattern element in defs
+    pattern(...args) {
+      return this.defs().pattern(...args)
+    }
+  },
+  Defs: {
+    pattern: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (width, height, block) {
+      return this.put(new Pattern()).update(block).attr({
+        x: 0,
+        y: 0,
+        width: width,
+        height: height,
+        patternUnits: 'userSpaceOnUse'
+      })
+    })
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Pattern, 'Pattern')
+
 
 /***/ }),
 
@@ -266,7 +4013,44 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \***************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Polygon)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _types_PointArray_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../types/PointArray.js */ \"./node_modules/@svgdotjs/svg.js/src/types/PointArray.js\");\n/* harmony import */ var _Shape_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Shape.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Shape.js\");\n/* harmony import */ var _modules_core_pointed_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../modules/core/pointed.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/pointed.js\");\n/* harmony import */ var _modules_core_poly_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../modules/core/poly.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/poly.js\");\n\n\n\n\n\n\n\nclass Polygon extends _Shape_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"] {\n  // Initialize node\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('polygon', node), attrs)\n  }\n}\n\n(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({\n  Container: {\n    // Create a wrapped polygon element\n    polygon: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (p) {\n      // make sure plot is called as a setter\n      return this.put(new Polygon()).plot(p || new _types_PointArray_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"]())\n    })\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(Polygon, _modules_core_pointed_js__WEBPACK_IMPORTED_MODULE_4__)\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(Polygon, _modules_core_poly_js__WEBPACK_IMPORTED_MODULE_5__)\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Polygon, 'Polygon')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Polygon.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Polygon)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _types_PointArray_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../types/PointArray.js */ "./node_modules/@svgdotjs/svg.js/src/types/PointArray.js");
+/* harmony import */ var _Shape_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Shape.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Shape.js");
+/* harmony import */ var _modules_core_pointed_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../modules/core/pointed.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/pointed.js");
+/* harmony import */ var _modules_core_poly_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../modules/core/poly.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/poly.js");
+
+
+
+
+
+
+
+class Polygon extends _Shape_js__WEBPACK_IMPORTED_MODULE_3__["default"] {
+  // Initialize node
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('polygon', node), attrs)
+  }
+}
+
+(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({
+  Container: {
+    // Create a wrapped polygon element
+    polygon: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (p) {
+      // make sure plot is called as a setter
+      return this.put(new Polygon()).plot(p || new _types_PointArray_js__WEBPACK_IMPORTED_MODULE_2__["default"]())
+    })
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(Polygon, _modules_core_pointed_js__WEBPACK_IMPORTED_MODULE_4__)
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(Polygon, _modules_core_poly_js__WEBPACK_IMPORTED_MODULE_5__)
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Polygon, 'Polygon')
+
 
 /***/ }),
 
@@ -276,7 +4060,44 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \****************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Polyline)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _types_PointArray_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../types/PointArray.js */ \"./node_modules/@svgdotjs/svg.js/src/types/PointArray.js\");\n/* harmony import */ var _Shape_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Shape.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Shape.js\");\n/* harmony import */ var _modules_core_pointed_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../modules/core/pointed.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/pointed.js\");\n/* harmony import */ var _modules_core_poly_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../modules/core/poly.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/poly.js\");\n\n\n\n\n\n\n\nclass Polyline extends _Shape_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"] {\n  // Initialize node\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('polyline', node), attrs)\n  }\n}\n\n(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({\n  Container: {\n    // Create a wrapped polygon element\n    polyline: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (p) {\n      // make sure plot is called as a setter\n      return this.put(new Polyline()).plot(p || new _types_PointArray_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"]())\n    })\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(Polyline, _modules_core_pointed_js__WEBPACK_IMPORTED_MODULE_4__)\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(Polyline, _modules_core_poly_js__WEBPACK_IMPORTED_MODULE_5__)\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Polyline, 'Polyline')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Polyline.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Polyline)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _types_PointArray_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../types/PointArray.js */ "./node_modules/@svgdotjs/svg.js/src/types/PointArray.js");
+/* harmony import */ var _Shape_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Shape.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Shape.js");
+/* harmony import */ var _modules_core_pointed_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../modules/core/pointed.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/pointed.js");
+/* harmony import */ var _modules_core_poly_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../modules/core/poly.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/poly.js");
+
+
+
+
+
+
+
+class Polyline extends _Shape_js__WEBPACK_IMPORTED_MODULE_3__["default"] {
+  // Initialize node
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('polyline', node), attrs)
+  }
+}
+
+(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({
+  Container: {
+    // Create a wrapped polygon element
+    polyline: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (p) {
+      // make sure plot is called as a setter
+      return this.put(new Polyline()).plot(p || new _types_PointArray_js__WEBPACK_IMPORTED_MODULE_2__["default"]())
+    })
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(Polyline, _modules_core_pointed_js__WEBPACK_IMPORTED_MODULE_4__)
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(Polyline, _modules_core_poly_js__WEBPACK_IMPORTED_MODULE_5__)
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Polyline, 'Polyline')
+
 
 /***/ }),
 
@@ -286,7 +4107,39 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Rect)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../modules/core/circled.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/circled.js\");\n/* harmony import */ var _Shape_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Shape.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Shape.js\");\n\n\n\n\n\nclass Rect extends _Shape_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"] {\n  // Initialize node\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('rect', node), attrs)\n  }\n}\n\n(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(Rect, { rx: _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_2__.rx, ry: _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_2__.ry })\n\n;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({\n  Container: {\n    // Create a rect element\n    rect: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (width, height) {\n      return this.put(new Rect()).size(width, height)\n    })\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Rect, 'Rect')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Rect.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Rect)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../modules/core/circled.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/circled.js");
+/* harmony import */ var _Shape_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Shape.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Shape.js");
+
+
+
+
+
+class Rect extends _Shape_js__WEBPACK_IMPORTED_MODULE_3__["default"] {
+  // Initialize node
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('rect', node), attrs)
+  }
+}
+
+(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(Rect, { rx: _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_2__.rx, ry: _modules_core_circled_js__WEBPACK_IMPORTED_MODULE_2__.ry })
+
+;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({
+  Container: {
+    // Create a rect element
+    rect: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (width, height) {
+      return this.put(new Rect()).size(width, height)
+    })
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Rect, 'Rect')
+
 
 /***/ }),
 
@@ -296,7 +4149,19 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Shape)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _Element_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Element.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Element.js\");\n\n\n\nclass Shape extends _Element_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"] {}\n\n(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Shape, 'Shape')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Shape.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Shape)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _Element_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Element.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Element.js");
+
+
+
+class Shape extends _Element_js__WEBPACK_IMPORTED_MODULE_1__["default"] {}
+
+(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Shape, 'Shape')
+
 
 /***/ }),
 
@@ -306,7 +4171,54 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Stop)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _Element_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Element.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Element.js\");\n/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../types/SVGNumber.js */ \"./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n\n\n\n\n\nclass Stop extends _Element_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"] {\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('stop', node), attrs)\n  }\n\n  // add color stops\n  update(o) {\n    if (typeof o === 'number' || o instanceof _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"]) {\n      o = {\n        offset: arguments[0],\n        color: arguments[1],\n        opacity: arguments[2]\n      }\n    }\n\n    // set attributes\n    if (o.opacity != null) this.attr('stop-opacity', o.opacity)\n    if (o.color != null) this.attr('stop-color', o.color)\n    if (o.offset != null) this.attr('offset', new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"](o.offset))\n\n    return this\n  }\n}\n\n(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_3__.registerMethods)({\n  Gradient: {\n    // Add a color stop\n    stop: function (offset, color, opacity) {\n      return this.put(new Stop()).update(offset, color, opacity)\n    }\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Stop, 'Stop')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Stop.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Stop)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _Element_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Element.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Element.js");
+/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../types/SVGNumber.js */ "./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+
+
+
+
+
+class Stop extends _Element_js__WEBPACK_IMPORTED_MODULE_1__["default"] {
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('stop', node), attrs)
+  }
+
+  // add color stops
+  update(o) {
+    if (typeof o === 'number' || o instanceof _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+      o = {
+        offset: arguments[0],
+        color: arguments[1],
+        opacity: arguments[2]
+      }
+    }
+
+    // set attributes
+    if (o.opacity != null) this.attr('stop-opacity', o.opacity)
+    if (o.color != null) this.attr('stop-color', o.color)
+    if (o.offset != null) this.attr('offset', new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_2__["default"](o.offset))
+
+    return this
+  }
+}
+
+(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_3__.registerMethods)({
+  Gradient: {
+    // Add a color stop
+    stop: function (offset, color, opacity) {
+      return this.put(new Stop()).update(offset, color, opacity)
+    }
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Stop, 'Stop')
+
 
 /***/ }),
 
@@ -316,7 +4228,68 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Style)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/utils.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/utils.js\");\n/* harmony import */ var _Element_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Element.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Element.js\");\n\n\n\n\n\nfunction cssRule(selector, rule) {\n  if (!selector) return ''\n  if (!rule) return selector\n\n  let ret = selector + '{'\n\n  for (const i in rule) {\n    ret += (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_2__.unCamelCase)(i) + ':' + rule[i] + ';'\n  }\n\n  ret += '}'\n\n  return ret\n}\n\nclass Style extends _Element_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"] {\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('style', node), attrs)\n  }\n\n  addText(w = '') {\n    this.node.textContent += w\n    return this\n  }\n\n  font(name, src, params = {}) {\n    return this.rule('@font-face', {\n      fontFamily: name,\n      src: src,\n      ...params\n    })\n  }\n\n  rule(selector, obj) {\n    return this.addText(cssRule(selector, obj))\n  }\n}\n\n(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)('Dom', {\n  style(selector, obj) {\n    return this.put(new Style()).rule(selector, obj)\n  },\n  fontface(name, src, params) {\n    return this.put(new Style()).font(name, src, params)\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Style, 'Style')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Style.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Style)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/utils.js */ "./node_modules/@svgdotjs/svg.js/src/utils/utils.js");
+/* harmony import */ var _Element_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Element.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Element.js");
+
+
+
+
+
+function cssRule(selector, rule) {
+  if (!selector) return ''
+  if (!rule) return selector
+
+  let ret = selector + '{'
+
+  for (const i in rule) {
+    ret += (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_2__.unCamelCase)(i) + ':' + rule[i] + ';'
+  }
+
+  ret += '}'
+
+  return ret
+}
+
+class Style extends _Element_js__WEBPACK_IMPORTED_MODULE_3__["default"] {
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('style', node), attrs)
+  }
+
+  addText(w = '') {
+    this.node.textContent += w
+    return this
+  }
+
+  font(name, src, params = {}) {
+    return this.rule('@font-face', {
+      fontFamily: name,
+      src: src,
+      ...params
+    })
+  }
+
+  rule(selector, obj) {
+    return this.addText(cssRule(selector, obj))
+  }
+}
+
+(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)('Dom', {
+  style(selector, obj) {
+    return this.put(new Style()).rule(selector, obj)
+  },
+  fontface(name, src, params) {
+    return this.put(new Style()).font(name, src, params)
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Style, 'Style')
+
 
 /***/ }),
 
@@ -326,7 +4299,79 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \***********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Svg)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../modules/core/namespaces.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/namespaces.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _Container_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Container.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Container.js\");\n/* harmony import */ var _Defs_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Defs.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Defs.js\");\n/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utils/window.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/window.js\");\n\n\n\n\n\n\n\nclass Svg extends _Container_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"] {\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('svg', node), attrs)\n    this.namespace()\n  }\n\n  // Creates and returns defs element\n  defs() {\n    if (!this.isRoot()) return this.root().defs()\n\n    return (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.adopt)(this.node.querySelector('defs')) || this.put(new _Defs_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"]())\n  }\n\n  isRoot() {\n    return (\n      !this.node.parentNode ||\n      (!(this.node.parentNode instanceof _utils_window_js__WEBPACK_IMPORTED_MODULE_5__.globals.window.SVGElement) &&\n        this.node.parentNode.nodeName !== '#document-fragment')\n    )\n  }\n\n  // Add namespaces\n  namespace() {\n    if (!this.isRoot()) return this.root().namespace()\n    return this.attr({ xmlns: _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_1__.svg, version: '1.1' }).attr(\n      'xmlns:xlink',\n      _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_1__.xlink,\n      _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_1__.xmlns\n    )\n  }\n\n  removeNamespace() {\n    return this.attr({ xmlns: null, version: null })\n      .attr('xmlns:xlink', null, _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_1__.xmlns)\n      .attr('xmlns:svgjs', null, _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_1__.xmlns)\n  }\n\n  // Check if this is a root svg\n  // If not, call root() from this element\n  root() {\n    if (this.isRoot()) return this\n    return super.root()\n  }\n}\n\n(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_2__.registerMethods)({\n  Container: {\n    // Create nested svg document\n    nested: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function () {\n      return this.put(new Svg())\n    })\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Svg, 'Svg', true)\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Svg.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Svg)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../modules/core/namespaces.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/namespaces.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _Container_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Container.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Container.js");
+/* harmony import */ var _Defs_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Defs.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Defs.js");
+/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utils/window.js */ "./node_modules/@svgdotjs/svg.js/src/utils/window.js");
+
+
+
+
+
+
+
+class Svg extends _Container_js__WEBPACK_IMPORTED_MODULE_3__["default"] {
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('svg', node), attrs)
+    this.namespace()
+  }
+
+  // Creates and returns defs element
+  defs() {
+    if (!this.isRoot()) return this.root().defs()
+
+    return (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.adopt)(this.node.querySelector('defs')) || this.put(new _Defs_js__WEBPACK_IMPORTED_MODULE_4__["default"]())
+  }
+
+  isRoot() {
+    return (
+      !this.node.parentNode ||
+      (!(this.node.parentNode instanceof _utils_window_js__WEBPACK_IMPORTED_MODULE_5__.globals.window.SVGElement) &&
+        this.node.parentNode.nodeName !== '#document-fragment')
+    )
+  }
+
+  // Add namespaces
+  namespace() {
+    if (!this.isRoot()) return this.root().namespace()
+    return this.attr({ xmlns: _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_1__.svg, version: '1.1' }).attr(
+      'xmlns:xlink',
+      _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_1__.xlink,
+      _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_1__.xmlns
+    )
+  }
+
+  removeNamespace() {
+    return this.attr({ xmlns: null, version: null })
+      .attr('xmlns:xlink', null, _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_1__.xmlns)
+      .attr('xmlns:svgjs', null, _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_1__.xmlns)
+  }
+
+  // Check if this is a root svg
+  // If not, call root() from this element
+  root() {
+    if (this.isRoot()) return this
+    return super.root()
+  }
+}
+
+(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_2__.registerMethods)({
+  Container: {
+    // Create nested svg document
+    nested: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function () {
+      return this.put(new Svg())
+    })
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Svg, 'Svg', true)
+
 
 /***/ }),
 
@@ -336,7 +4381,34 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \**************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Symbol)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _Container_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Container.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Container.js\");\n\n\n\n\nclass Symbol extends _Container_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"] {\n  // Initialize node\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('symbol', node), attrs)\n  }\n}\n\n(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({\n  Container: {\n    symbol: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function () {\n      return this.put(new Symbol())\n    })\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Symbol, 'Symbol')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Symbol.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Symbol)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _Container_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Container.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Container.js");
+
+
+
+
+class Symbol extends _Container_js__WEBPACK_IMPORTED_MODULE_2__["default"] {
+  // Initialize node
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('symbol', node), attrs)
+  }
+}
+
+(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({
+  Container: {
+    symbol: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function () {
+      return this.put(new Symbol())
+    })
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Symbol, 'Symbol')
+
 
 /***/ }),
 
@@ -346,7 +4418,170 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Text)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../types/SVGNumber.js */ \"./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js\");\n/* harmony import */ var _Shape_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Shape.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Shape.js\");\n/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/window.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/window.js\");\n/* harmony import */ var _modules_core_textable_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../modules/core/textable.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/textable.js\");\n/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utils/utils.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/utils.js\");\n\n\n\n\n\n\n\n\nclass Text extends _Shape_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"] {\n  // Initialize node\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('text', node), attrs)\n\n    this.dom.leading = this.dom.leading ?? new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"](1.3) // store leading value for rebuilding\n    this._rebuild = true // enable automatic updating of dy values\n    this._build = false // disable build mode for adding multiple lines\n  }\n\n  // Set / get leading\n  leading(value) {\n    // act as getter\n    if (value == null) {\n      return this.dom.leading\n    }\n\n    // act as setter\n    this.dom.leading = new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"](value)\n\n    return this.rebuild()\n  }\n\n  // Rebuild appearance type\n  rebuild(rebuild) {\n    // store new rebuild flag if given\n    if (typeof rebuild === 'boolean') {\n      this._rebuild = rebuild\n    }\n\n    // define position of all lines\n    if (this._rebuild) {\n      const self = this\n      let blankLineOffset = 0\n      const leading = this.dom.leading\n\n      this.each(function (i) {\n        if ((0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_6__.isDescriptive)(this.node)) return\n\n        const fontSize = _utils_window_js__WEBPACK_IMPORTED_MODULE_4__.globals.window\n          .getComputedStyle(this.node)\n          .getPropertyValue('font-size')\n\n        const dy = leading * new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"](fontSize)\n\n        if (this.dom.newLined) {\n          this.attr('x', self.attr('x'))\n\n          if (this.text() === '\\n') {\n            blankLineOffset += dy\n          } else {\n            this.attr('dy', i ? dy + blankLineOffset : 0)\n            blankLineOffset = 0\n          }\n        }\n      })\n\n      this.fire('rebuild')\n    }\n\n    return this\n  }\n\n  // overwrite method from parent to set data properly\n  setData(o) {\n    this.dom = o\n    this.dom.leading = new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"](o.leading || 1.3)\n    return this\n  }\n\n  writeDataToDom() {\n    (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_6__.writeDataToDom)(this, this.dom, { leading: 1.3 })\n    return this\n  }\n\n  // Set the text content\n  text(text) {\n    // act as getter\n    if (text === undefined) {\n      const children = this.node.childNodes\n      let firstLine = 0\n      text = ''\n\n      for (let i = 0, len = children.length; i < len; ++i) {\n        // skip textPaths - they are no lines\n        if (children[i].nodeName === 'textPath' || (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_6__.isDescriptive)(children[i])) {\n          if (i === 0) firstLine = i + 1\n          continue\n        }\n\n        // add newline if its not the first child and newLined is set to true\n        if (\n          i !== firstLine &&\n          children[i].nodeType !== 3 &&\n          (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.adopt)(children[i]).dom.newLined === true\n        ) {\n          text += '\\n'\n        }\n\n        // add content of this node\n        text += children[i].textContent\n      }\n\n      return text\n    }\n\n    // remove existing content\n    this.clear().build(true)\n\n    if (typeof text === 'function') {\n      // call block\n      text.call(this, this)\n    } else {\n      // store text and make sure text is not blank\n      text = (text + '').split('\\n')\n\n      // build new lines\n      for (let j = 0, jl = text.length; j < jl; j++) {\n        this.newLine(text[j])\n      }\n    }\n\n    // disable build mode and rebuild lines\n    return this.build(false).rebuild()\n  }\n}\n\n(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(Text, _modules_core_textable_js__WEBPACK_IMPORTED_MODULE_5__)\n\n;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({\n  Container: {\n    // Create text element\n    text: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (text = '') {\n      return this.put(new Text()).text(text)\n    }),\n\n    // Create plain text element\n    plain: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (text = '') {\n      return this.put(new Text()).plain(text)\n    })\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Text, 'Text')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Text.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Text)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../types/SVGNumber.js */ "./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js");
+/* harmony import */ var _Shape_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Shape.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Shape.js");
+/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/window.js */ "./node_modules/@svgdotjs/svg.js/src/utils/window.js");
+/* harmony import */ var _modules_core_textable_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../modules/core/textable.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/textable.js");
+/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utils/utils.js */ "./node_modules/@svgdotjs/svg.js/src/utils/utils.js");
+
+
+
+
+
+
+
+
+class Text extends _Shape_js__WEBPACK_IMPORTED_MODULE_3__["default"] {
+  // Initialize node
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('text', node), attrs)
+
+    this.dom.leading = this.dom.leading ?? new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_2__["default"](1.3) // store leading value for rebuilding
+    this._rebuild = true // enable automatic updating of dy values
+    this._build = false // disable build mode for adding multiple lines
+  }
+
+  // Set / get leading
+  leading(value) {
+    // act as getter
+    if (value == null) {
+      return this.dom.leading
+    }
+
+    // act as setter
+    this.dom.leading = new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_2__["default"](value)
+
+    return this.rebuild()
+  }
+
+  // Rebuild appearance type
+  rebuild(rebuild) {
+    // store new rebuild flag if given
+    if (typeof rebuild === 'boolean') {
+      this._rebuild = rebuild
+    }
+
+    // define position of all lines
+    if (this._rebuild) {
+      const self = this
+      let blankLineOffset = 0
+      const leading = this.dom.leading
+
+      this.each(function (i) {
+        if ((0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_6__.isDescriptive)(this.node)) return
+
+        const fontSize = _utils_window_js__WEBPACK_IMPORTED_MODULE_4__.globals.window
+          .getComputedStyle(this.node)
+          .getPropertyValue('font-size')
+
+        const dy = leading * new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_2__["default"](fontSize)
+
+        if (this.dom.newLined) {
+          this.attr('x', self.attr('x'))
+
+          if (this.text() === '\n') {
+            blankLineOffset += dy
+          } else {
+            this.attr('dy', i ? dy + blankLineOffset : 0)
+            blankLineOffset = 0
+          }
+        }
+      })
+
+      this.fire('rebuild')
+    }
+
+    return this
+  }
+
+  // overwrite method from parent to set data properly
+  setData(o) {
+    this.dom = o
+    this.dom.leading = new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_2__["default"](o.leading || 1.3)
+    return this
+  }
+
+  writeDataToDom() {
+    (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_6__.writeDataToDom)(this, this.dom, { leading: 1.3 })
+    return this
+  }
+
+  // Set the text content
+  text(text) {
+    // act as getter
+    if (text === undefined) {
+      const children = this.node.childNodes
+      let firstLine = 0
+      text = ''
+
+      for (let i = 0, len = children.length; i < len; ++i) {
+        // skip textPaths - they are no lines
+        if (children[i].nodeName === 'textPath' || (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_6__.isDescriptive)(children[i])) {
+          if (i === 0) firstLine = i + 1
+          continue
+        }
+
+        // add newline if its not the first child and newLined is set to true
+        if (
+          i !== firstLine &&
+          children[i].nodeType !== 3 &&
+          (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.adopt)(children[i]).dom.newLined === true
+        ) {
+          text += '\n'
+        }
+
+        // add content of this node
+        text += children[i].textContent
+      }
+
+      return text
+    }
+
+    // remove existing content
+    this.clear().build(true)
+
+    if (typeof text === 'function') {
+      // call block
+      text.call(this, this)
+    } else {
+      // store text and make sure text is not blank
+      text = (text + '').split('\n')
+
+      // build new lines
+      for (let j = 0, jl = text.length; j < jl; j++) {
+        this.newLine(text[j])
+      }
+    }
+
+    // disable build mode and rebuild lines
+    return this.build(false).rebuild()
+  }
+}
+
+(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(Text, _modules_core_textable_js__WEBPACK_IMPORTED_MODULE_5__)
+
+;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({
+  Container: {
+    // Create text element
+    text: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (text = '') {
+      return this.put(new Text()).text(text)
+    }),
+
+    // Create plain text element
+    plain: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (text = '') {
+      return this.put(new Text()).plain(text)
+    })
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Text, 'Text')
+
 
 /***/ }),
 
@@ -356,7 +4591,124 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \****************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ TextPath)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../modules/core/namespaces.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/namespaces.js\");\n/* harmony import */ var _Path_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Path.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Path.js\");\n/* harmony import */ var _types_PathArray_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../types/PathArray.js */ \"./node_modules/@svgdotjs/svg.js/src/types/PathArray.js\");\n/* harmony import */ var _Text_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Text.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Text.js\");\n/* harmony import */ var _modules_core_selector_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../modules/core/selector.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/selector.js\");\n\n\n\n\n\n\n\n\nclass TextPath extends _Text_js__WEBPACK_IMPORTED_MODULE_5__[\"default\"] {\n  // Initialize node\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('textPath', node), attrs)\n  }\n\n  // return the array of the path track element\n  array() {\n    const track = this.track()\n\n    return track ? track.array() : null\n  }\n\n  // Plot path if any\n  plot(d) {\n    const track = this.track()\n    let pathArray = null\n\n    if (track) {\n      pathArray = track.plot(d)\n    }\n\n    return d == null ? pathArray : this\n  }\n\n  // Get the path element\n  track() {\n    return this.reference('href')\n  }\n}\n\n(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({\n  Container: {\n    textPath: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (text, path) {\n      // Convert text to instance if needed\n      if (!(text instanceof _Text_js__WEBPACK_IMPORTED_MODULE_5__[\"default\"])) {\n        text = this.text(text)\n      }\n\n      return text.path(path)\n    })\n  },\n  Text: {\n    // Create path for text to run on\n    path: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (track, importNodes = true) {\n      const textPath = new TextPath()\n\n      // if track is a path, reuse it\n      if (!(track instanceof _Path_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"])) {\n        // create path element\n        track = this.defs().path(track)\n      }\n\n      // link textPath to path and add content\n      textPath.attr('href', '#' + track, _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_2__.xlink)\n\n      // Transplant all nodes from text to textPath\n      let node\n      if (importNodes) {\n        while ((node = this.node.firstChild)) {\n          textPath.node.appendChild(node)\n        }\n      }\n\n      // add textPath element as child node and return textPath\n      return this.put(textPath)\n    }),\n\n    // Get the textPath children\n    textPath() {\n      return this.findOne('textPath')\n    }\n  },\n  Path: {\n    // creates a textPath from this path\n    text: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (text) {\n      // Convert text to instance if needed\n      if (!(text instanceof _Text_js__WEBPACK_IMPORTED_MODULE_5__[\"default\"])) {\n        text = new _Text_js__WEBPACK_IMPORTED_MODULE_5__[\"default\"]().addTo(this.parent()).text(text)\n      }\n\n      // Create textPath from text and path and return\n      return text.path(this)\n    }),\n\n    targets() {\n      return (0,_modules_core_selector_js__WEBPACK_IMPORTED_MODULE_6__[\"default\"])('svg textPath').filter((node) => {\n        return (node.attr('href') || '').includes(this.id())\n      })\n\n      // Does not work in IE11. Use when IE support is dropped\n      // return baseFind('svg textPath[*|href*=' + this.id() + ']')\n    }\n  }\n})\n\nTextPath.prototype.MorphArray = _types_PathArray_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"]\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(TextPath, 'TextPath')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/TextPath.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ TextPath)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../modules/core/namespaces.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/namespaces.js");
+/* harmony import */ var _Path_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Path.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Path.js");
+/* harmony import */ var _types_PathArray_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../types/PathArray.js */ "./node_modules/@svgdotjs/svg.js/src/types/PathArray.js");
+/* harmony import */ var _Text_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Text.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Text.js");
+/* harmony import */ var _modules_core_selector_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../modules/core/selector.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/selector.js");
+
+
+
+
+
+
+
+
+class TextPath extends _Text_js__WEBPACK_IMPORTED_MODULE_5__["default"] {
+  // Initialize node
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('textPath', node), attrs)
+  }
+
+  // return the array of the path track element
+  array() {
+    const track = this.track()
+
+    return track ? track.array() : null
+  }
+
+  // Plot path if any
+  plot(d) {
+    const track = this.track()
+    let pathArray = null
+
+    if (track) {
+      pathArray = track.plot(d)
+    }
+
+    return d == null ? pathArray : this
+  }
+
+  // Get the path element
+  track() {
+    return this.reference('href')
+  }
+}
+
+(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({
+  Container: {
+    textPath: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (text, path) {
+      // Convert text to instance if needed
+      if (!(text instanceof _Text_js__WEBPACK_IMPORTED_MODULE_5__["default"])) {
+        text = this.text(text)
+      }
+
+      return text.path(path)
+    })
+  },
+  Text: {
+    // Create path for text to run on
+    path: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (track, importNodes = true) {
+      const textPath = new TextPath()
+
+      // if track is a path, reuse it
+      if (!(track instanceof _Path_js__WEBPACK_IMPORTED_MODULE_3__["default"])) {
+        // create path element
+        track = this.defs().path(track)
+      }
+
+      // link textPath to path and add content
+      textPath.attr('href', '#' + track, _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_2__.xlink)
+
+      // Transplant all nodes from text to textPath
+      let node
+      if (importNodes) {
+        while ((node = this.node.firstChild)) {
+          textPath.node.appendChild(node)
+        }
+      }
+
+      // add textPath element as child node and return textPath
+      return this.put(textPath)
+    }),
+
+    // Get the textPath children
+    textPath() {
+      return this.findOne('textPath')
+    }
+  },
+  Path: {
+    // creates a textPath from this path
+    text: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (text) {
+      // Convert text to instance if needed
+      if (!(text instanceof _Text_js__WEBPACK_IMPORTED_MODULE_5__["default"])) {
+        text = new _Text_js__WEBPACK_IMPORTED_MODULE_5__["default"]().addTo(this.parent()).text(text)
+      }
+
+      // Create textPath from text and path and return
+      return text.path(this)
+    }),
+
+    targets() {
+      return (0,_modules_core_selector_js__WEBPACK_IMPORTED_MODULE_6__["default"])('svg textPath').filter((node) => {
+        return (node.attr('href') || '').includes(this.id())
+      })
+
+      // Does not work in IE11. Use when IE support is dropped
+      // return baseFind('svg textPath[*|href*=' + this.id() + ']')
+    }
+  }
+})
+
+TextPath.prototype.MorphArray = _types_PathArray_js__WEBPACK_IMPORTED_MODULE_4__["default"]
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(TextPath, 'TextPath')
+
 
 /***/ }),
 
@@ -366,7 +4718,108 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Tspan)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/window.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/window.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../types/SVGNumber.js */ \"./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js\");\n/* harmony import */ var _Shape_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Shape.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Shape.js\");\n/* harmony import */ var _Text_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Text.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Text.js\");\n/* harmony import */ var _modules_core_textable_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../modules/core/textable.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/textable.js\");\n\n\n\n\n\n\n\n\nclass Tspan extends _Shape_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"] {\n  // Initialize node\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('tspan', node), attrs)\n    this._build = false // disable build mode for adding multiple lines\n  }\n\n  // Shortcut dx\n  dx(dx) {\n    return this.attr('dx', dx)\n  }\n\n  // Shortcut dy\n  dy(dy) {\n    return this.attr('dy', dy)\n  }\n\n  // Create new line\n  newLine() {\n    // mark new line\n    this.dom.newLined = true\n\n    // fetch parent\n    const text = this.parent()\n\n    // early return in case we are not in a text element\n    if (!(text instanceof _Text_js__WEBPACK_IMPORTED_MODULE_5__[\"default\"])) {\n      return this\n    }\n\n    const i = text.index(this)\n\n    const fontSize = _utils_window_js__WEBPACK_IMPORTED_MODULE_1__.globals.window\n      .getComputedStyle(this.node)\n      .getPropertyValue('font-size')\n    const dy = text.dom.leading * new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"](fontSize)\n\n    // apply new position\n    return this.dy(i ? dy : 0).attr('x', text.x())\n  }\n\n  // Set text content\n  text(text) {\n    if (text == null)\n      return this.node.textContent + (this.dom.newLined ? '\\n' : '')\n\n    if (typeof text === 'function') {\n      this.clear().build(true)\n      text.call(this, this)\n      this.build(false)\n    } else {\n      this.plain(text)\n    }\n\n    return this\n  }\n}\n\n(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(Tspan, _modules_core_textable_js__WEBPACK_IMPORTED_MODULE_6__)\n\n;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_2__.registerMethods)({\n  Tspan: {\n    tspan: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (text = '') {\n      const tspan = new Tspan()\n\n      // clear if build mode is disabled\n      if (!this._build) {\n        this.clear()\n      }\n\n      // add new tspan\n      return this.put(tspan).text(text)\n    })\n  },\n  Text: {\n    newLine: function (text = '') {\n      return this.tspan(text).newLine()\n    }\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Tspan, 'Tspan')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Tspan.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Tspan)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/window.js */ "./node_modules/@svgdotjs/svg.js/src/utils/window.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../types/SVGNumber.js */ "./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js");
+/* harmony import */ var _Shape_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Shape.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Shape.js");
+/* harmony import */ var _Text_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Text.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Text.js");
+/* harmony import */ var _modules_core_textable_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../modules/core/textable.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/textable.js");
+
+
+
+
+
+
+
+
+class Tspan extends _Shape_js__WEBPACK_IMPORTED_MODULE_4__["default"] {
+  // Initialize node
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('tspan', node), attrs)
+    this._build = false // disable build mode for adding multiple lines
+  }
+
+  // Shortcut dx
+  dx(dx) {
+    return this.attr('dx', dx)
+  }
+
+  // Shortcut dy
+  dy(dy) {
+    return this.attr('dy', dy)
+  }
+
+  // Create new line
+  newLine() {
+    // mark new line
+    this.dom.newLined = true
+
+    // fetch parent
+    const text = this.parent()
+
+    // early return in case we are not in a text element
+    if (!(text instanceof _Text_js__WEBPACK_IMPORTED_MODULE_5__["default"])) {
+      return this
+    }
+
+    const i = text.index(this)
+
+    const fontSize = _utils_window_js__WEBPACK_IMPORTED_MODULE_1__.globals.window
+      .getComputedStyle(this.node)
+      .getPropertyValue('font-size')
+    const dy = text.dom.leading * new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_3__["default"](fontSize)
+
+    // apply new position
+    return this.dy(i ? dy : 0).attr('x', text.x())
+  }
+
+  // Set text content
+  text(text) {
+    if (text == null)
+      return this.node.textContent + (this.dom.newLined ? '\n' : '')
+
+    if (typeof text === 'function') {
+      this.clear().build(true)
+      text.call(this, this)
+      this.build(false)
+    } else {
+      this.plain(text)
+    }
+
+    return this
+  }
+}
+
+(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)(Tspan, _modules_core_textable_js__WEBPACK_IMPORTED_MODULE_6__)
+
+;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_2__.registerMethods)({
+  Tspan: {
+    tspan: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (text = '') {
+      const tspan = new Tspan()
+
+      // clear if build mode is disabled
+      if (!this._build) {
+        this.clear()
+      }
+
+      // add new tspan
+      return this.put(tspan).text(text)
+    })
+  },
+  Text: {
+    newLine: function (text = '') {
+      return this.tspan(text).newLine()
+    }
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Tspan, 'Tspan')
+
 
 /***/ }),
 
@@ -376,7 +4829,42 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \***********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Use)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../modules/core/namespaces.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/namespaces.js\");\n/* harmony import */ var _Shape_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Shape.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Shape.js\");\n\n\n\n\n\nclass Use extends _Shape_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"] {\n  constructor(node, attrs = node) {\n    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('use', node), attrs)\n  }\n\n  // Use element as a reference\n  use(element, file) {\n    // Set lined element\n    return this.attr('href', (file || '') + '#' + element, _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_2__.xlink)\n  }\n}\n\n(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({\n  Container: {\n    // Create a use element\n    use: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (element, file) {\n      return this.put(new Use()).use(element, file)\n    })\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Use, 'Use')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/elements/Use.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Use)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../modules/core/namespaces.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/namespaces.js");
+/* harmony import */ var _Shape_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Shape.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Shape.js");
+
+
+
+
+
+class Use extends _Shape_js__WEBPACK_IMPORTED_MODULE_3__["default"] {
+  constructor(node, attrs = node) {
+    super((0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.nodeOrNew)('use', node), attrs)
+  }
+
+  // Use element as a reference
+  use(element, file) {
+    // Set lined element
+    return this.attr('href', (file || '') + '#' + element, _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_2__.xlink)
+  }
+}
+
+(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)({
+  Container: {
+    // Create a use element
+    use: (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.wrapWithAttrCheck)(function (element, file) {
+      return this.put(new Use()).use(element, file)
+    })
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.register)(Use, 'Use')
+
 
 /***/ }),
 
@@ -386,7 +4874,304 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \***************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   A: () => (/* reexport safe */ _elements_A_js__WEBPACK_IMPORTED_MODULE_57__[\"default\"]),\n/* harmony export */   Animator: () => (/* reexport safe */ _animation_Animator_js__WEBPACK_IMPORTED_MODULE_49__[\"default\"]),\n/* harmony export */   Array: () => (/* reexport safe */ _types_SVGArray_js__WEBPACK_IMPORTED_MODULE_34__[\"default\"]),\n/* harmony export */   Box: () => (/* reexport safe */ _types_Box_js__WEBPACK_IMPORTED_MODULE_9__[\"default\"]),\n/* harmony export */   Circle: () => (/* reexport safe */ _elements_Circle_js__WEBPACK_IMPORTED_MODULE_53__[\"default\"]),\n/* harmony export */   ClipPath: () => (/* reexport safe */ _elements_ClipPath_js__WEBPACK_IMPORTED_MODULE_54__[\"default\"]),\n/* harmony export */   Color: () => (/* reexport safe */ _types_Color_js__WEBPACK_IMPORTED_MODULE_10__[\"default\"]),\n/* harmony export */   Container: () => (/* reexport safe */ _elements_Container_js__WEBPACK_IMPORTED_MODULE_11__[\"default\"]),\n/* harmony export */   Controller: () => (/* reexport safe */ _animation_Controller_js__WEBPACK_IMPORTED_MODULE_50__.Controller),\n/* harmony export */   Defs: () => (/* reexport safe */ _elements_Defs_js__WEBPACK_IMPORTED_MODULE_12__[\"default\"]),\n/* harmony export */   Dom: () => (/* reexport safe */ _elements_Dom_js__WEBPACK_IMPORTED_MODULE_13__[\"default\"]),\n/* harmony export */   Ease: () => (/* reexport safe */ _animation_Controller_js__WEBPACK_IMPORTED_MODULE_50__.Ease),\n/* harmony export */   Element: () => (/* reexport safe */ _elements_Element_js__WEBPACK_IMPORTED_MODULE_14__[\"default\"]),\n/* harmony export */   Ellipse: () => (/* reexport safe */ _elements_Ellipse_js__WEBPACK_IMPORTED_MODULE_15__[\"default\"]),\n/* harmony export */   EventTarget: () => (/* reexport safe */ _types_EventTarget_js__WEBPACK_IMPORTED_MODULE_16__[\"default\"]),\n/* harmony export */   ForeignObject: () => (/* reexport safe */ _elements_ForeignObject_js__WEBPACK_IMPORTED_MODULE_55__[\"default\"]),\n/* harmony export */   Fragment: () => (/* reexport safe */ _elements_Fragment_js__WEBPACK_IMPORTED_MODULE_17__[\"default\"]),\n/* harmony export */   G: () => (/* reexport safe */ _elements_G_js__WEBPACK_IMPORTED_MODULE_56__[\"default\"]),\n/* harmony export */   Gradient: () => (/* reexport safe */ _elements_Gradient_js__WEBPACK_IMPORTED_MODULE_18__[\"default\"]),\n/* harmony export */   Image: () => (/* reexport safe */ _elements_Image_js__WEBPACK_IMPORTED_MODULE_19__[\"default\"]),\n/* harmony export */   Line: () => (/* reexport safe */ _elements_Line_js__WEBPACK_IMPORTED_MODULE_20__[\"default\"]),\n/* harmony export */   List: () => (/* reexport safe */ _types_List_js__WEBPACK_IMPORTED_MODULE_21__[\"default\"]),\n/* harmony export */   Marker: () => (/* reexport safe */ _elements_Marker_js__WEBPACK_IMPORTED_MODULE_22__[\"default\"]),\n/* harmony export */   Mask: () => (/* reexport safe */ _elements_Mask_js__WEBPACK_IMPORTED_MODULE_58__[\"default\"]),\n/* harmony export */   Matrix: () => (/* reexport safe */ _types_Matrix_js__WEBPACK_IMPORTED_MODULE_23__[\"default\"]),\n/* harmony export */   Morphable: () => (/* reexport safe */ _animation_Morphable_js__WEBPACK_IMPORTED_MODULE_24__[\"default\"]),\n/* harmony export */   NonMorphable: () => (/* reexport safe */ _animation_Morphable_js__WEBPACK_IMPORTED_MODULE_24__.NonMorphable),\n/* harmony export */   Number: () => (/* reexport safe */ _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_35__[\"default\"]),\n/* harmony export */   ObjectBag: () => (/* reexport safe */ _animation_Morphable_js__WEBPACK_IMPORTED_MODULE_24__.ObjectBag),\n/* harmony export */   PID: () => (/* reexport safe */ _animation_Controller_js__WEBPACK_IMPORTED_MODULE_50__.PID),\n/* harmony export */   Path: () => (/* reexport safe */ _elements_Path_js__WEBPACK_IMPORTED_MODULE_25__[\"default\"]),\n/* harmony export */   PathArray: () => (/* reexport safe */ _types_PathArray_js__WEBPACK_IMPORTED_MODULE_26__[\"default\"]),\n/* harmony export */   Pattern: () => (/* reexport safe */ _elements_Pattern_js__WEBPACK_IMPORTED_MODULE_27__[\"default\"]),\n/* harmony export */   Point: () => (/* reexport safe */ _types_Point_js__WEBPACK_IMPORTED_MODULE_29__[\"default\"]),\n/* harmony export */   PointArray: () => (/* reexport safe */ _types_PointArray_js__WEBPACK_IMPORTED_MODULE_28__[\"default\"]),\n/* harmony export */   Polygon: () => (/* reexport safe */ _elements_Polygon_js__WEBPACK_IMPORTED_MODULE_30__[\"default\"]),\n/* harmony export */   Polyline: () => (/* reexport safe */ _elements_Polyline_js__WEBPACK_IMPORTED_MODULE_31__[\"default\"]),\n/* harmony export */   Queue: () => (/* reexport safe */ _animation_Queue_js__WEBPACK_IMPORTED_MODULE_51__[\"default\"]),\n/* harmony export */   Rect: () => (/* reexport safe */ _elements_Rect_js__WEBPACK_IMPORTED_MODULE_32__[\"default\"]),\n/* harmony export */   Runner: () => (/* reexport safe */ _animation_Runner_js__WEBPACK_IMPORTED_MODULE_33__[\"default\"]),\n/* harmony export */   SVG: () => (/* binding */ SVG),\n/* harmony export */   Shape: () => (/* reexport safe */ _elements_Shape_js__WEBPACK_IMPORTED_MODULE_36__[\"default\"]),\n/* harmony export */   Spring: () => (/* reexport safe */ _animation_Controller_js__WEBPACK_IMPORTED_MODULE_50__.Spring),\n/* harmony export */   Stop: () => (/* reexport safe */ _elements_Stop_js__WEBPACK_IMPORTED_MODULE_59__[\"default\"]),\n/* harmony export */   Style: () => (/* reexport safe */ _elements_Style_js__WEBPACK_IMPORTED_MODULE_60__[\"default\"]),\n/* harmony export */   Svg: () => (/* reexport safe */ _elements_Svg_js__WEBPACK_IMPORTED_MODULE_37__[\"default\"]),\n/* harmony export */   Symbol: () => (/* reexport safe */ _elements_Symbol_js__WEBPACK_IMPORTED_MODULE_38__[\"default\"]),\n/* harmony export */   Text: () => (/* reexport safe */ _elements_Text_js__WEBPACK_IMPORTED_MODULE_39__[\"default\"]),\n/* harmony export */   TextPath: () => (/* reexport safe */ _elements_TextPath_js__WEBPACK_IMPORTED_MODULE_61__[\"default\"]),\n/* harmony export */   Timeline: () => (/* reexport safe */ _animation_Timeline_js__WEBPACK_IMPORTED_MODULE_52__[\"default\"]),\n/* harmony export */   TransformBag: () => (/* reexport safe */ _animation_Morphable_js__WEBPACK_IMPORTED_MODULE_24__.TransformBag),\n/* harmony export */   Tspan: () => (/* reexport safe */ _elements_Tspan_js__WEBPACK_IMPORTED_MODULE_40__[\"default\"]),\n/* harmony export */   Use: () => (/* reexport safe */ _elements_Use_js__WEBPACK_IMPORTED_MODULE_62__[\"default\"]),\n/* harmony export */   adopt: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.adopt),\n/* harmony export */   assignNewId: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.assignNewId),\n/* harmony export */   clearEvents: () => (/* reexport safe */ _modules_core_event_js__WEBPACK_IMPORTED_MODULE_47__.clearEvents),\n/* harmony export */   create: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.create),\n/* harmony export */   defaults: () => (/* reexport module object */ _modules_core_defaults_js__WEBPACK_IMPORTED_MODULE_41__),\n/* harmony export */   dispatch: () => (/* reexport safe */ _modules_core_event_js__WEBPACK_IMPORTED_MODULE_47__.dispatch),\n/* harmony export */   easing: () => (/* reexport safe */ _animation_Controller_js__WEBPACK_IMPORTED_MODULE_50__.easing),\n/* harmony export */   eid: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.eid),\n/* harmony export */   extend: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend),\n/* harmony export */   find: () => (/* reexport safe */ _modules_core_selector_js__WEBPACK_IMPORTED_MODULE_46__[\"default\"]),\n/* harmony export */   getClass: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.getClass),\n/* harmony export */   getEventTarget: () => (/* reexport safe */ _modules_core_event_js__WEBPACK_IMPORTED_MODULE_47__.getEventTarget),\n/* harmony export */   getEvents: () => (/* reexport safe */ _modules_core_event_js__WEBPACK_IMPORTED_MODULE_47__.getEvents),\n/* harmony export */   getWindow: () => (/* reexport safe */ _utils_window_js__WEBPACK_IMPORTED_MODULE_48__.getWindow),\n/* harmony export */   makeInstance: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.makeInstance),\n/* harmony export */   makeMorphable: () => (/* reexport safe */ _animation_Morphable_js__WEBPACK_IMPORTED_MODULE_24__.makeMorphable),\n/* harmony export */   mockAdopt: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.mockAdopt),\n/* harmony export */   namespaces: () => (/* reexport module object */ _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_43__),\n/* harmony export */   nodeOrNew: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.nodeOrNew),\n/* harmony export */   off: () => (/* reexport safe */ _modules_core_event_js__WEBPACK_IMPORTED_MODULE_47__.off),\n/* harmony export */   on: () => (/* reexport safe */ _modules_core_event_js__WEBPACK_IMPORTED_MODULE_47__.on),\n/* harmony export */   parser: () => (/* reexport safe */ _modules_core_parser_js__WEBPACK_IMPORTED_MODULE_45__[\"default\"]),\n/* harmony export */   regex: () => (/* reexport module object */ _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_44__),\n/* harmony export */   register: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.register),\n/* harmony export */   registerMorphableType: () => (/* reexport safe */ _animation_Morphable_js__WEBPACK_IMPORTED_MODULE_24__.registerMorphableType),\n/* harmony export */   registerWindow: () => (/* reexport safe */ _utils_window_js__WEBPACK_IMPORTED_MODULE_48__.registerWindow),\n/* harmony export */   restoreWindow: () => (/* reexport safe */ _utils_window_js__WEBPACK_IMPORTED_MODULE_48__.restoreWindow),\n/* harmony export */   root: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.root),\n/* harmony export */   saveWindow: () => (/* reexport safe */ _utils_window_js__WEBPACK_IMPORTED_MODULE_48__.saveWindow),\n/* harmony export */   utils: () => (/* reexport module object */ _utils_utils_js__WEBPACK_IMPORTED_MODULE_42__),\n/* harmony export */   windowEvents: () => (/* reexport safe */ _modules_core_event_js__WEBPACK_IMPORTED_MODULE_47__.windowEvents),\n/* harmony export */   withWindow: () => (/* reexport safe */ _utils_window_js__WEBPACK_IMPORTED_MODULE_48__.withWindow),\n/* harmony export */   wrapWithAttrCheck: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.wrapWithAttrCheck)\n/* harmony export */ });\n/* harmony import */ var _modules_optional_arrange_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/optional/arrange.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/optional/arrange.js\");\n/* harmony import */ var _modules_optional_class_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/optional/class.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/optional/class.js\");\n/* harmony import */ var _modules_optional_css_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/optional/css.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/optional/css.js\");\n/* harmony import */ var _modules_optional_data_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/optional/data.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/optional/data.js\");\n/* harmony import */ var _modules_optional_memory_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/optional/memory.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/optional/memory.js\");\n/* harmony import */ var _modules_optional_sugar_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/optional/sugar.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/optional/sugar.js\");\n/* harmony import */ var _modules_optional_transform_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/optional/transform.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/optional/transform.js\");\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _types_Box_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./types/Box.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Box.js\");\n/* harmony import */ var _types_Color_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./types/Color.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Color.js\");\n/* harmony import */ var _elements_Container_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./elements/Container.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Container.js\");\n/* harmony import */ var _elements_Defs_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./elements/Defs.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Defs.js\");\n/* harmony import */ var _elements_Dom_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./elements/Dom.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Dom.js\");\n/* harmony import */ var _elements_Element_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./elements/Element.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Element.js\");\n/* harmony import */ var _elements_Ellipse_js__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./elements/Ellipse.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Ellipse.js\");\n/* harmony import */ var _types_EventTarget_js__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./types/EventTarget.js */ \"./node_modules/@svgdotjs/svg.js/src/types/EventTarget.js\");\n/* harmony import */ var _elements_Fragment_js__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./elements/Fragment.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Fragment.js\");\n/* harmony import */ var _elements_Gradient_js__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./elements/Gradient.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Gradient.js\");\n/* harmony import */ var _elements_Image_js__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./elements/Image.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Image.js\");\n/* harmony import */ var _elements_Line_js__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./elements/Line.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Line.js\");\n/* harmony import */ var _types_List_js__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./types/List.js */ \"./node_modules/@svgdotjs/svg.js/src/types/List.js\");\n/* harmony import */ var _elements_Marker_js__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./elements/Marker.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Marker.js\");\n/* harmony import */ var _types_Matrix_js__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./types/Matrix.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Matrix.js\");\n/* harmony import */ var _animation_Morphable_js__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./animation/Morphable.js */ \"./node_modules/@svgdotjs/svg.js/src/animation/Morphable.js\");\n/* harmony import */ var _elements_Path_js__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./elements/Path.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Path.js\");\n/* harmony import */ var _types_PathArray_js__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./types/PathArray.js */ \"./node_modules/@svgdotjs/svg.js/src/types/PathArray.js\");\n/* harmony import */ var _elements_Pattern_js__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./elements/Pattern.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Pattern.js\");\n/* harmony import */ var _types_PointArray_js__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./types/PointArray.js */ \"./node_modules/@svgdotjs/svg.js/src/types/PointArray.js\");\n/* harmony import */ var _types_Point_js__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./types/Point.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Point.js\");\n/* harmony import */ var _elements_Polygon_js__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./elements/Polygon.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Polygon.js\");\n/* harmony import */ var _elements_Polyline_js__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./elements/Polyline.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Polyline.js\");\n/* harmony import */ var _elements_Rect_js__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./elements/Rect.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Rect.js\");\n/* harmony import */ var _animation_Runner_js__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ./animation/Runner.js */ \"./node_modules/@svgdotjs/svg.js/src/animation/Runner.js\");\n/* harmony import */ var _types_SVGArray_js__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! ./types/SVGArray.js */ \"./node_modules/@svgdotjs/svg.js/src/types/SVGArray.js\");\n/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(/*! ./types/SVGNumber.js */ \"./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js\");\n/* harmony import */ var _elements_Shape_js__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(/*! ./elements/Shape.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Shape.js\");\n/* harmony import */ var _elements_Svg_js__WEBPACK_IMPORTED_MODULE_37__ = __webpack_require__(/*! ./elements/Svg.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Svg.js\");\n/* harmony import */ var _elements_Symbol_js__WEBPACK_IMPORTED_MODULE_38__ = __webpack_require__(/*! ./elements/Symbol.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Symbol.js\");\n/* harmony import */ var _elements_Text_js__WEBPACK_IMPORTED_MODULE_39__ = __webpack_require__(/*! ./elements/Text.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Text.js\");\n/* harmony import */ var _elements_Tspan_js__WEBPACK_IMPORTED_MODULE_40__ = __webpack_require__(/*! ./elements/Tspan.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Tspan.js\");\n/* harmony import */ var _modules_core_defaults_js__WEBPACK_IMPORTED_MODULE_41__ = __webpack_require__(/*! ./modules/core/defaults.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/defaults.js\");\n/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_42__ = __webpack_require__(/*! ./utils/utils.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/utils.js\");\n/* harmony import */ var _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_43__ = __webpack_require__(/*! ./modules/core/namespaces.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/namespaces.js\");\n/* harmony import */ var _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_44__ = __webpack_require__(/*! ./modules/core/regex.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js\");\n/* harmony import */ var _modules_core_parser_js__WEBPACK_IMPORTED_MODULE_45__ = __webpack_require__(/*! ./modules/core/parser.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/parser.js\");\n/* harmony import */ var _modules_core_selector_js__WEBPACK_IMPORTED_MODULE_46__ = __webpack_require__(/*! ./modules/core/selector.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/selector.js\");\n/* harmony import */ var _modules_core_event_js__WEBPACK_IMPORTED_MODULE_47__ = __webpack_require__(/*! ./modules/core/event.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/event.js\");\n/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_48__ = __webpack_require__(/*! ./utils/window.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/window.js\");\n/* harmony import */ var _animation_Animator_js__WEBPACK_IMPORTED_MODULE_49__ = __webpack_require__(/*! ./animation/Animator.js */ \"./node_modules/@svgdotjs/svg.js/src/animation/Animator.js\");\n/* harmony import */ var _animation_Controller_js__WEBPACK_IMPORTED_MODULE_50__ = __webpack_require__(/*! ./animation/Controller.js */ \"./node_modules/@svgdotjs/svg.js/src/animation/Controller.js\");\n/* harmony import */ var _animation_Queue_js__WEBPACK_IMPORTED_MODULE_51__ = __webpack_require__(/*! ./animation/Queue.js */ \"./node_modules/@svgdotjs/svg.js/src/animation/Queue.js\");\n/* harmony import */ var _animation_Timeline_js__WEBPACK_IMPORTED_MODULE_52__ = __webpack_require__(/*! ./animation/Timeline.js */ \"./node_modules/@svgdotjs/svg.js/src/animation/Timeline.js\");\n/* harmony import */ var _elements_Circle_js__WEBPACK_IMPORTED_MODULE_53__ = __webpack_require__(/*! ./elements/Circle.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Circle.js\");\n/* harmony import */ var _elements_ClipPath_js__WEBPACK_IMPORTED_MODULE_54__ = __webpack_require__(/*! ./elements/ClipPath.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/ClipPath.js\");\n/* harmony import */ var _elements_ForeignObject_js__WEBPACK_IMPORTED_MODULE_55__ = __webpack_require__(/*! ./elements/ForeignObject.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/ForeignObject.js\");\n/* harmony import */ var _elements_G_js__WEBPACK_IMPORTED_MODULE_56__ = __webpack_require__(/*! ./elements/G.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/G.js\");\n/* harmony import */ var _elements_A_js__WEBPACK_IMPORTED_MODULE_57__ = __webpack_require__(/*! ./elements/A.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/A.js\");\n/* harmony import */ var _elements_Mask_js__WEBPACK_IMPORTED_MODULE_58__ = __webpack_require__(/*! ./elements/Mask.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Mask.js\");\n/* harmony import */ var _elements_Stop_js__WEBPACK_IMPORTED_MODULE_59__ = __webpack_require__(/*! ./elements/Stop.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Stop.js\");\n/* harmony import */ var _elements_Style_js__WEBPACK_IMPORTED_MODULE_60__ = __webpack_require__(/*! ./elements/Style.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Style.js\");\n/* harmony import */ var _elements_TextPath_js__WEBPACK_IMPORTED_MODULE_61__ = __webpack_require__(/*! ./elements/TextPath.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/TextPath.js\");\n/* harmony import */ var _elements_Use_js__WEBPACK_IMPORTED_MODULE_62__ = __webpack_require__(/*! ./elements/Use.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Use.js\");\n/* Optional Modules */\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nconst SVG = _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.makeInstance\n\n\n\n\n\n\n/* Animation Modules */\n\n\n\n\n\n\n/* Types */\n\n\n\n\n\n\n\n\n\n\n\n/* Elements */\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)([_elements_Svg_js__WEBPACK_IMPORTED_MODULE_37__[\"default\"], _elements_Symbol_js__WEBPACK_IMPORTED_MODULE_38__[\"default\"], _elements_Image_js__WEBPACK_IMPORTED_MODULE_19__[\"default\"], _elements_Pattern_js__WEBPACK_IMPORTED_MODULE_27__[\"default\"], _elements_Marker_js__WEBPACK_IMPORTED_MODULE_22__[\"default\"]], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('viewbox'))\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)([_elements_Line_js__WEBPACK_IMPORTED_MODULE_20__[\"default\"], _elements_Polyline_js__WEBPACK_IMPORTED_MODULE_31__[\"default\"], _elements_Polygon_js__WEBPACK_IMPORTED_MODULE_30__[\"default\"], _elements_Path_js__WEBPACK_IMPORTED_MODULE_25__[\"default\"]], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('marker'))\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)(_elements_Text_js__WEBPACK_IMPORTED_MODULE_39__[\"default\"], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('Text'))\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)(_elements_Path_js__WEBPACK_IMPORTED_MODULE_25__[\"default\"], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('Path'))\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)(_elements_Defs_js__WEBPACK_IMPORTED_MODULE_12__[\"default\"], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('Defs'))\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)([_elements_Text_js__WEBPACK_IMPORTED_MODULE_39__[\"default\"], _elements_Tspan_js__WEBPACK_IMPORTED_MODULE_40__[\"default\"]], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('Tspan'))\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)([_elements_Rect_js__WEBPACK_IMPORTED_MODULE_32__[\"default\"], _elements_Ellipse_js__WEBPACK_IMPORTED_MODULE_15__[\"default\"], _elements_Gradient_js__WEBPACK_IMPORTED_MODULE_18__[\"default\"], _animation_Runner_js__WEBPACK_IMPORTED_MODULE_33__[\"default\"]], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('radius'))\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)(_types_EventTarget_js__WEBPACK_IMPORTED_MODULE_16__[\"default\"], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('EventTarget'))\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)(_elements_Dom_js__WEBPACK_IMPORTED_MODULE_13__[\"default\"], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('Dom'))\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)(_elements_Element_js__WEBPACK_IMPORTED_MODULE_14__[\"default\"], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('Element'))\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)(_elements_Shape_js__WEBPACK_IMPORTED_MODULE_36__[\"default\"], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('Shape'))\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)([_elements_Container_js__WEBPACK_IMPORTED_MODULE_11__[\"default\"], _elements_Fragment_js__WEBPACK_IMPORTED_MODULE_17__[\"default\"]], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('Container'))\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)(_elements_Gradient_js__WEBPACK_IMPORTED_MODULE_18__[\"default\"], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('Gradient'))\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)(_animation_Runner_js__WEBPACK_IMPORTED_MODULE_33__[\"default\"], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('Runner'))\n\n_types_List_js__WEBPACK_IMPORTED_MODULE_21__[\"default\"].extend((0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodNames)())\n\n;(0,_animation_Morphable_js__WEBPACK_IMPORTED_MODULE_24__.registerMorphableType)([\n  _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_35__[\"default\"],\n  _types_Color_js__WEBPACK_IMPORTED_MODULE_10__[\"default\"],\n  _types_Box_js__WEBPACK_IMPORTED_MODULE_9__[\"default\"],\n  _types_Matrix_js__WEBPACK_IMPORTED_MODULE_23__[\"default\"],\n  _types_SVGArray_js__WEBPACK_IMPORTED_MODULE_34__[\"default\"],\n  _types_PointArray_js__WEBPACK_IMPORTED_MODULE_28__[\"default\"],\n  _types_PathArray_js__WEBPACK_IMPORTED_MODULE_26__[\"default\"],\n  _types_Point_js__WEBPACK_IMPORTED_MODULE_29__[\"default\"]\n])\n\n;(0,_animation_Morphable_js__WEBPACK_IMPORTED_MODULE_24__.makeMorphable)()\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/main.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   A: () => (/* reexport safe */ _elements_A_js__WEBPACK_IMPORTED_MODULE_57__["default"]),
+/* harmony export */   Animator: () => (/* reexport safe */ _animation_Animator_js__WEBPACK_IMPORTED_MODULE_49__["default"]),
+/* harmony export */   Array: () => (/* reexport safe */ _types_SVGArray_js__WEBPACK_IMPORTED_MODULE_34__["default"]),
+/* harmony export */   Box: () => (/* reexport safe */ _types_Box_js__WEBPACK_IMPORTED_MODULE_9__["default"]),
+/* harmony export */   Circle: () => (/* reexport safe */ _elements_Circle_js__WEBPACK_IMPORTED_MODULE_53__["default"]),
+/* harmony export */   ClipPath: () => (/* reexport safe */ _elements_ClipPath_js__WEBPACK_IMPORTED_MODULE_54__["default"]),
+/* harmony export */   Color: () => (/* reexport safe */ _types_Color_js__WEBPACK_IMPORTED_MODULE_10__["default"]),
+/* harmony export */   Container: () => (/* reexport safe */ _elements_Container_js__WEBPACK_IMPORTED_MODULE_11__["default"]),
+/* harmony export */   Controller: () => (/* reexport safe */ _animation_Controller_js__WEBPACK_IMPORTED_MODULE_50__.Controller),
+/* harmony export */   Defs: () => (/* reexport safe */ _elements_Defs_js__WEBPACK_IMPORTED_MODULE_12__["default"]),
+/* harmony export */   Dom: () => (/* reexport safe */ _elements_Dom_js__WEBPACK_IMPORTED_MODULE_13__["default"]),
+/* harmony export */   Ease: () => (/* reexport safe */ _animation_Controller_js__WEBPACK_IMPORTED_MODULE_50__.Ease),
+/* harmony export */   Element: () => (/* reexport safe */ _elements_Element_js__WEBPACK_IMPORTED_MODULE_14__["default"]),
+/* harmony export */   Ellipse: () => (/* reexport safe */ _elements_Ellipse_js__WEBPACK_IMPORTED_MODULE_15__["default"]),
+/* harmony export */   EventTarget: () => (/* reexport safe */ _types_EventTarget_js__WEBPACK_IMPORTED_MODULE_16__["default"]),
+/* harmony export */   ForeignObject: () => (/* reexport safe */ _elements_ForeignObject_js__WEBPACK_IMPORTED_MODULE_55__["default"]),
+/* harmony export */   Fragment: () => (/* reexport safe */ _elements_Fragment_js__WEBPACK_IMPORTED_MODULE_17__["default"]),
+/* harmony export */   G: () => (/* reexport safe */ _elements_G_js__WEBPACK_IMPORTED_MODULE_56__["default"]),
+/* harmony export */   Gradient: () => (/* reexport safe */ _elements_Gradient_js__WEBPACK_IMPORTED_MODULE_18__["default"]),
+/* harmony export */   Image: () => (/* reexport safe */ _elements_Image_js__WEBPACK_IMPORTED_MODULE_19__["default"]),
+/* harmony export */   Line: () => (/* reexport safe */ _elements_Line_js__WEBPACK_IMPORTED_MODULE_20__["default"]),
+/* harmony export */   List: () => (/* reexport safe */ _types_List_js__WEBPACK_IMPORTED_MODULE_21__["default"]),
+/* harmony export */   Marker: () => (/* reexport safe */ _elements_Marker_js__WEBPACK_IMPORTED_MODULE_22__["default"]),
+/* harmony export */   Mask: () => (/* reexport safe */ _elements_Mask_js__WEBPACK_IMPORTED_MODULE_58__["default"]),
+/* harmony export */   Matrix: () => (/* reexport safe */ _types_Matrix_js__WEBPACK_IMPORTED_MODULE_23__["default"]),
+/* harmony export */   Morphable: () => (/* reexport safe */ _animation_Morphable_js__WEBPACK_IMPORTED_MODULE_24__["default"]),
+/* harmony export */   NonMorphable: () => (/* reexport safe */ _animation_Morphable_js__WEBPACK_IMPORTED_MODULE_24__.NonMorphable),
+/* harmony export */   Number: () => (/* reexport safe */ _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_35__["default"]),
+/* harmony export */   ObjectBag: () => (/* reexport safe */ _animation_Morphable_js__WEBPACK_IMPORTED_MODULE_24__.ObjectBag),
+/* harmony export */   PID: () => (/* reexport safe */ _animation_Controller_js__WEBPACK_IMPORTED_MODULE_50__.PID),
+/* harmony export */   Path: () => (/* reexport safe */ _elements_Path_js__WEBPACK_IMPORTED_MODULE_25__["default"]),
+/* harmony export */   PathArray: () => (/* reexport safe */ _types_PathArray_js__WEBPACK_IMPORTED_MODULE_26__["default"]),
+/* harmony export */   Pattern: () => (/* reexport safe */ _elements_Pattern_js__WEBPACK_IMPORTED_MODULE_27__["default"]),
+/* harmony export */   Point: () => (/* reexport safe */ _types_Point_js__WEBPACK_IMPORTED_MODULE_29__["default"]),
+/* harmony export */   PointArray: () => (/* reexport safe */ _types_PointArray_js__WEBPACK_IMPORTED_MODULE_28__["default"]),
+/* harmony export */   Polygon: () => (/* reexport safe */ _elements_Polygon_js__WEBPACK_IMPORTED_MODULE_30__["default"]),
+/* harmony export */   Polyline: () => (/* reexport safe */ _elements_Polyline_js__WEBPACK_IMPORTED_MODULE_31__["default"]),
+/* harmony export */   Queue: () => (/* reexport safe */ _animation_Queue_js__WEBPACK_IMPORTED_MODULE_51__["default"]),
+/* harmony export */   Rect: () => (/* reexport safe */ _elements_Rect_js__WEBPACK_IMPORTED_MODULE_32__["default"]),
+/* harmony export */   Runner: () => (/* reexport safe */ _animation_Runner_js__WEBPACK_IMPORTED_MODULE_33__["default"]),
+/* harmony export */   SVG: () => (/* binding */ SVG),
+/* harmony export */   Shape: () => (/* reexport safe */ _elements_Shape_js__WEBPACK_IMPORTED_MODULE_36__["default"]),
+/* harmony export */   Spring: () => (/* reexport safe */ _animation_Controller_js__WEBPACK_IMPORTED_MODULE_50__.Spring),
+/* harmony export */   Stop: () => (/* reexport safe */ _elements_Stop_js__WEBPACK_IMPORTED_MODULE_59__["default"]),
+/* harmony export */   Style: () => (/* reexport safe */ _elements_Style_js__WEBPACK_IMPORTED_MODULE_60__["default"]),
+/* harmony export */   Svg: () => (/* reexport safe */ _elements_Svg_js__WEBPACK_IMPORTED_MODULE_37__["default"]),
+/* harmony export */   Symbol: () => (/* reexport safe */ _elements_Symbol_js__WEBPACK_IMPORTED_MODULE_38__["default"]),
+/* harmony export */   Text: () => (/* reexport safe */ _elements_Text_js__WEBPACK_IMPORTED_MODULE_39__["default"]),
+/* harmony export */   TextPath: () => (/* reexport safe */ _elements_TextPath_js__WEBPACK_IMPORTED_MODULE_61__["default"]),
+/* harmony export */   Timeline: () => (/* reexport safe */ _animation_Timeline_js__WEBPACK_IMPORTED_MODULE_52__["default"]),
+/* harmony export */   TransformBag: () => (/* reexport safe */ _animation_Morphable_js__WEBPACK_IMPORTED_MODULE_24__.TransformBag),
+/* harmony export */   Tspan: () => (/* reexport safe */ _elements_Tspan_js__WEBPACK_IMPORTED_MODULE_40__["default"]),
+/* harmony export */   Use: () => (/* reexport safe */ _elements_Use_js__WEBPACK_IMPORTED_MODULE_62__["default"]),
+/* harmony export */   adopt: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.adopt),
+/* harmony export */   assignNewId: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.assignNewId),
+/* harmony export */   clearEvents: () => (/* reexport safe */ _modules_core_event_js__WEBPACK_IMPORTED_MODULE_47__.clearEvents),
+/* harmony export */   create: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.create),
+/* harmony export */   defaults: () => (/* reexport module object */ _modules_core_defaults_js__WEBPACK_IMPORTED_MODULE_41__),
+/* harmony export */   dispatch: () => (/* reexport safe */ _modules_core_event_js__WEBPACK_IMPORTED_MODULE_47__.dispatch),
+/* harmony export */   easing: () => (/* reexport safe */ _animation_Controller_js__WEBPACK_IMPORTED_MODULE_50__.easing),
+/* harmony export */   eid: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.eid),
+/* harmony export */   extend: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend),
+/* harmony export */   find: () => (/* reexport safe */ _modules_core_selector_js__WEBPACK_IMPORTED_MODULE_46__["default"]),
+/* harmony export */   getClass: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.getClass),
+/* harmony export */   getEventTarget: () => (/* reexport safe */ _modules_core_event_js__WEBPACK_IMPORTED_MODULE_47__.getEventTarget),
+/* harmony export */   getEvents: () => (/* reexport safe */ _modules_core_event_js__WEBPACK_IMPORTED_MODULE_47__.getEvents),
+/* harmony export */   getWindow: () => (/* reexport safe */ _utils_window_js__WEBPACK_IMPORTED_MODULE_48__.getWindow),
+/* harmony export */   makeInstance: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.makeInstance),
+/* harmony export */   makeMorphable: () => (/* reexport safe */ _animation_Morphable_js__WEBPACK_IMPORTED_MODULE_24__.makeMorphable),
+/* harmony export */   mockAdopt: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.mockAdopt),
+/* harmony export */   namespaces: () => (/* reexport module object */ _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_43__),
+/* harmony export */   nodeOrNew: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.nodeOrNew),
+/* harmony export */   off: () => (/* reexport safe */ _modules_core_event_js__WEBPACK_IMPORTED_MODULE_47__.off),
+/* harmony export */   on: () => (/* reexport safe */ _modules_core_event_js__WEBPACK_IMPORTED_MODULE_47__.on),
+/* harmony export */   parser: () => (/* reexport safe */ _modules_core_parser_js__WEBPACK_IMPORTED_MODULE_45__["default"]),
+/* harmony export */   regex: () => (/* reexport module object */ _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_44__),
+/* harmony export */   register: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.register),
+/* harmony export */   registerMorphableType: () => (/* reexport safe */ _animation_Morphable_js__WEBPACK_IMPORTED_MODULE_24__.registerMorphableType),
+/* harmony export */   registerWindow: () => (/* reexport safe */ _utils_window_js__WEBPACK_IMPORTED_MODULE_48__.registerWindow),
+/* harmony export */   restoreWindow: () => (/* reexport safe */ _utils_window_js__WEBPACK_IMPORTED_MODULE_48__.restoreWindow),
+/* harmony export */   root: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.root),
+/* harmony export */   saveWindow: () => (/* reexport safe */ _utils_window_js__WEBPACK_IMPORTED_MODULE_48__.saveWindow),
+/* harmony export */   utils: () => (/* reexport module object */ _utils_utils_js__WEBPACK_IMPORTED_MODULE_42__),
+/* harmony export */   windowEvents: () => (/* reexport safe */ _modules_core_event_js__WEBPACK_IMPORTED_MODULE_47__.windowEvents),
+/* harmony export */   withWindow: () => (/* reexport safe */ _utils_window_js__WEBPACK_IMPORTED_MODULE_48__.withWindow),
+/* harmony export */   wrapWithAttrCheck: () => (/* reexport safe */ _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.wrapWithAttrCheck)
+/* harmony export */ });
+/* harmony import */ var _modules_optional_arrange_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/optional/arrange.js */ "./node_modules/@svgdotjs/svg.js/src/modules/optional/arrange.js");
+/* harmony import */ var _modules_optional_class_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/optional/class.js */ "./node_modules/@svgdotjs/svg.js/src/modules/optional/class.js");
+/* harmony import */ var _modules_optional_css_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/optional/css.js */ "./node_modules/@svgdotjs/svg.js/src/modules/optional/css.js");
+/* harmony import */ var _modules_optional_data_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/optional/data.js */ "./node_modules/@svgdotjs/svg.js/src/modules/optional/data.js");
+/* harmony import */ var _modules_optional_memory_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/optional/memory.js */ "./node_modules/@svgdotjs/svg.js/src/modules/optional/memory.js");
+/* harmony import */ var _modules_optional_sugar_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/optional/sugar.js */ "./node_modules/@svgdotjs/svg.js/src/modules/optional/sugar.js");
+/* harmony import */ var _modules_optional_transform_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/optional/transform.js */ "./node_modules/@svgdotjs/svg.js/src/modules/optional/transform.js");
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _types_Box_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./types/Box.js */ "./node_modules/@svgdotjs/svg.js/src/types/Box.js");
+/* harmony import */ var _types_Color_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./types/Color.js */ "./node_modules/@svgdotjs/svg.js/src/types/Color.js");
+/* harmony import */ var _elements_Container_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./elements/Container.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Container.js");
+/* harmony import */ var _elements_Defs_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./elements/Defs.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Defs.js");
+/* harmony import */ var _elements_Dom_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./elements/Dom.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Dom.js");
+/* harmony import */ var _elements_Element_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./elements/Element.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Element.js");
+/* harmony import */ var _elements_Ellipse_js__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./elements/Ellipse.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Ellipse.js");
+/* harmony import */ var _types_EventTarget_js__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./types/EventTarget.js */ "./node_modules/@svgdotjs/svg.js/src/types/EventTarget.js");
+/* harmony import */ var _elements_Fragment_js__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./elements/Fragment.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Fragment.js");
+/* harmony import */ var _elements_Gradient_js__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./elements/Gradient.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Gradient.js");
+/* harmony import */ var _elements_Image_js__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./elements/Image.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Image.js");
+/* harmony import */ var _elements_Line_js__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./elements/Line.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Line.js");
+/* harmony import */ var _types_List_js__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./types/List.js */ "./node_modules/@svgdotjs/svg.js/src/types/List.js");
+/* harmony import */ var _elements_Marker_js__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./elements/Marker.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Marker.js");
+/* harmony import */ var _types_Matrix_js__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./types/Matrix.js */ "./node_modules/@svgdotjs/svg.js/src/types/Matrix.js");
+/* harmony import */ var _animation_Morphable_js__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./animation/Morphable.js */ "./node_modules/@svgdotjs/svg.js/src/animation/Morphable.js");
+/* harmony import */ var _elements_Path_js__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./elements/Path.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Path.js");
+/* harmony import */ var _types_PathArray_js__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./types/PathArray.js */ "./node_modules/@svgdotjs/svg.js/src/types/PathArray.js");
+/* harmony import */ var _elements_Pattern_js__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./elements/Pattern.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Pattern.js");
+/* harmony import */ var _types_PointArray_js__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./types/PointArray.js */ "./node_modules/@svgdotjs/svg.js/src/types/PointArray.js");
+/* harmony import */ var _types_Point_js__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./types/Point.js */ "./node_modules/@svgdotjs/svg.js/src/types/Point.js");
+/* harmony import */ var _elements_Polygon_js__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./elements/Polygon.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Polygon.js");
+/* harmony import */ var _elements_Polyline_js__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./elements/Polyline.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Polyline.js");
+/* harmony import */ var _elements_Rect_js__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./elements/Rect.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Rect.js");
+/* harmony import */ var _animation_Runner_js__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ./animation/Runner.js */ "./node_modules/@svgdotjs/svg.js/src/animation/Runner.js");
+/* harmony import */ var _types_SVGArray_js__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! ./types/SVGArray.js */ "./node_modules/@svgdotjs/svg.js/src/types/SVGArray.js");
+/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(/*! ./types/SVGNumber.js */ "./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js");
+/* harmony import */ var _elements_Shape_js__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(/*! ./elements/Shape.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Shape.js");
+/* harmony import */ var _elements_Svg_js__WEBPACK_IMPORTED_MODULE_37__ = __webpack_require__(/*! ./elements/Svg.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Svg.js");
+/* harmony import */ var _elements_Symbol_js__WEBPACK_IMPORTED_MODULE_38__ = __webpack_require__(/*! ./elements/Symbol.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Symbol.js");
+/* harmony import */ var _elements_Text_js__WEBPACK_IMPORTED_MODULE_39__ = __webpack_require__(/*! ./elements/Text.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Text.js");
+/* harmony import */ var _elements_Tspan_js__WEBPACK_IMPORTED_MODULE_40__ = __webpack_require__(/*! ./elements/Tspan.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Tspan.js");
+/* harmony import */ var _modules_core_defaults_js__WEBPACK_IMPORTED_MODULE_41__ = __webpack_require__(/*! ./modules/core/defaults.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/defaults.js");
+/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_42__ = __webpack_require__(/*! ./utils/utils.js */ "./node_modules/@svgdotjs/svg.js/src/utils/utils.js");
+/* harmony import */ var _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_43__ = __webpack_require__(/*! ./modules/core/namespaces.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/namespaces.js");
+/* harmony import */ var _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_44__ = __webpack_require__(/*! ./modules/core/regex.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js");
+/* harmony import */ var _modules_core_parser_js__WEBPACK_IMPORTED_MODULE_45__ = __webpack_require__(/*! ./modules/core/parser.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/parser.js");
+/* harmony import */ var _modules_core_selector_js__WEBPACK_IMPORTED_MODULE_46__ = __webpack_require__(/*! ./modules/core/selector.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/selector.js");
+/* harmony import */ var _modules_core_event_js__WEBPACK_IMPORTED_MODULE_47__ = __webpack_require__(/*! ./modules/core/event.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/event.js");
+/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_48__ = __webpack_require__(/*! ./utils/window.js */ "./node_modules/@svgdotjs/svg.js/src/utils/window.js");
+/* harmony import */ var _animation_Animator_js__WEBPACK_IMPORTED_MODULE_49__ = __webpack_require__(/*! ./animation/Animator.js */ "./node_modules/@svgdotjs/svg.js/src/animation/Animator.js");
+/* harmony import */ var _animation_Controller_js__WEBPACK_IMPORTED_MODULE_50__ = __webpack_require__(/*! ./animation/Controller.js */ "./node_modules/@svgdotjs/svg.js/src/animation/Controller.js");
+/* harmony import */ var _animation_Queue_js__WEBPACK_IMPORTED_MODULE_51__ = __webpack_require__(/*! ./animation/Queue.js */ "./node_modules/@svgdotjs/svg.js/src/animation/Queue.js");
+/* harmony import */ var _animation_Timeline_js__WEBPACK_IMPORTED_MODULE_52__ = __webpack_require__(/*! ./animation/Timeline.js */ "./node_modules/@svgdotjs/svg.js/src/animation/Timeline.js");
+/* harmony import */ var _elements_Circle_js__WEBPACK_IMPORTED_MODULE_53__ = __webpack_require__(/*! ./elements/Circle.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Circle.js");
+/* harmony import */ var _elements_ClipPath_js__WEBPACK_IMPORTED_MODULE_54__ = __webpack_require__(/*! ./elements/ClipPath.js */ "./node_modules/@svgdotjs/svg.js/src/elements/ClipPath.js");
+/* harmony import */ var _elements_ForeignObject_js__WEBPACK_IMPORTED_MODULE_55__ = __webpack_require__(/*! ./elements/ForeignObject.js */ "./node_modules/@svgdotjs/svg.js/src/elements/ForeignObject.js");
+/* harmony import */ var _elements_G_js__WEBPACK_IMPORTED_MODULE_56__ = __webpack_require__(/*! ./elements/G.js */ "./node_modules/@svgdotjs/svg.js/src/elements/G.js");
+/* harmony import */ var _elements_A_js__WEBPACK_IMPORTED_MODULE_57__ = __webpack_require__(/*! ./elements/A.js */ "./node_modules/@svgdotjs/svg.js/src/elements/A.js");
+/* harmony import */ var _elements_Mask_js__WEBPACK_IMPORTED_MODULE_58__ = __webpack_require__(/*! ./elements/Mask.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Mask.js");
+/* harmony import */ var _elements_Stop_js__WEBPACK_IMPORTED_MODULE_59__ = __webpack_require__(/*! ./elements/Stop.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Stop.js");
+/* harmony import */ var _elements_Style_js__WEBPACK_IMPORTED_MODULE_60__ = __webpack_require__(/*! ./elements/Style.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Style.js");
+/* harmony import */ var _elements_TextPath_js__WEBPACK_IMPORTED_MODULE_61__ = __webpack_require__(/*! ./elements/TextPath.js */ "./node_modules/@svgdotjs/svg.js/src/elements/TextPath.js");
+/* harmony import */ var _elements_Use_js__WEBPACK_IMPORTED_MODULE_62__ = __webpack_require__(/*! ./elements/Use.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Use.js");
+/* Optional Modules */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const SVG = _utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.makeInstance
+
+
+
+
+
+
+/* Animation Modules */
+
+
+
+
+
+
+/* Types */
+
+
+
+
+
+
+
+
+
+
+
+/* Elements */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)([_elements_Svg_js__WEBPACK_IMPORTED_MODULE_37__["default"], _elements_Symbol_js__WEBPACK_IMPORTED_MODULE_38__["default"], _elements_Image_js__WEBPACK_IMPORTED_MODULE_19__["default"], _elements_Pattern_js__WEBPACK_IMPORTED_MODULE_27__["default"], _elements_Marker_js__WEBPACK_IMPORTED_MODULE_22__["default"]], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('viewbox'))
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)([_elements_Line_js__WEBPACK_IMPORTED_MODULE_20__["default"], _elements_Polyline_js__WEBPACK_IMPORTED_MODULE_31__["default"], _elements_Polygon_js__WEBPACK_IMPORTED_MODULE_30__["default"], _elements_Path_js__WEBPACK_IMPORTED_MODULE_25__["default"]], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('marker'))
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)(_elements_Text_js__WEBPACK_IMPORTED_MODULE_39__["default"], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('Text'))
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)(_elements_Path_js__WEBPACK_IMPORTED_MODULE_25__["default"], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('Path'))
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)(_elements_Defs_js__WEBPACK_IMPORTED_MODULE_12__["default"], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('Defs'))
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)([_elements_Text_js__WEBPACK_IMPORTED_MODULE_39__["default"], _elements_Tspan_js__WEBPACK_IMPORTED_MODULE_40__["default"]], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('Tspan'))
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)([_elements_Rect_js__WEBPACK_IMPORTED_MODULE_32__["default"], _elements_Ellipse_js__WEBPACK_IMPORTED_MODULE_15__["default"], _elements_Gradient_js__WEBPACK_IMPORTED_MODULE_18__["default"], _animation_Runner_js__WEBPACK_IMPORTED_MODULE_33__["default"]], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('radius'))
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)(_types_EventTarget_js__WEBPACK_IMPORTED_MODULE_16__["default"], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('EventTarget'))
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)(_elements_Dom_js__WEBPACK_IMPORTED_MODULE_13__["default"], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('Dom'))
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)(_elements_Element_js__WEBPACK_IMPORTED_MODULE_14__["default"], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('Element'))
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)(_elements_Shape_js__WEBPACK_IMPORTED_MODULE_36__["default"], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('Shape'))
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)([_elements_Container_js__WEBPACK_IMPORTED_MODULE_11__["default"], _elements_Fragment_js__WEBPACK_IMPORTED_MODULE_17__["default"]], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('Container'))
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)(_elements_Gradient_js__WEBPACK_IMPORTED_MODULE_18__["default"], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('Gradient'))
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_7__.extend)(_animation_Runner_js__WEBPACK_IMPORTED_MODULE_33__["default"], (0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodsFor)('Runner'))
+
+_types_List_js__WEBPACK_IMPORTED_MODULE_21__["default"].extend((0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_8__.getMethodNames)())
+
+;(0,_animation_Morphable_js__WEBPACK_IMPORTED_MODULE_24__.registerMorphableType)([
+  _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_35__["default"],
+  _types_Color_js__WEBPACK_IMPORTED_MODULE_10__["default"],
+  _types_Box_js__WEBPACK_IMPORTED_MODULE_9__["default"],
+  _types_Matrix_js__WEBPACK_IMPORTED_MODULE_23__["default"],
+  _types_SVGArray_js__WEBPACK_IMPORTED_MODULE_34__["default"],
+  _types_PointArray_js__WEBPACK_IMPORTED_MODULE_28__["default"],
+  _types_PathArray_js__WEBPACK_IMPORTED_MODULE_26__["default"],
+  _types_Point_js__WEBPACK_IMPORTED_MODULE_29__["default"]
+])
+
+;(0,_animation_Morphable_js__WEBPACK_IMPORTED_MODULE_24__.makeMorphable)()
+
 
 /***/ }),
 
@@ -396,7 +5181,111 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \****************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ attr),\n/* harmony export */   registerAttrHook: () => (/* binding */ registerAttrHook)\n/* harmony export */ });\n/* harmony import */ var _defaults_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./defaults.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/defaults.js\");\n/* harmony import */ var _regex_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./regex.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js\");\n/* harmony import */ var _types_Color_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../types/Color.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Color.js\");\n/* harmony import */ var _types_SVGArray_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../types/SVGArray.js */ \"./node_modules/@svgdotjs/svg.js/src/types/SVGArray.js\");\n/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../types/SVGNumber.js */ \"./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js\");\n\n\n\n\n\n\nconst colorAttributes = new Set([\n  'fill',\n  'stroke',\n  'color',\n  'bgcolor',\n  'stop-color',\n  'flood-color',\n  'lighting-color'\n])\n\nconst hooks = []\nfunction registerAttrHook(fn) {\n  hooks.push(fn)\n}\n\n// Set svg element attribute\nfunction attr(attr, val, ns) {\n  // act as full getter\n  if (attr == null) {\n    // get an object of attributes\n    attr = {}\n    val = this.node.attributes\n\n    for (const node of val) {\n      attr[node.nodeName] = _regex_js__WEBPACK_IMPORTED_MODULE_1__.isNumber.test(node.nodeValue)\n        ? parseFloat(node.nodeValue)\n        : node.nodeValue\n    }\n\n    return attr\n  } else if (attr instanceof Array) {\n    // loop through array and get all values\n    return attr.reduce((last, curr) => {\n      last[curr] = this.attr(curr)\n      return last\n    }, {})\n  } else if (typeof attr === 'object' && attr.constructor === Object) {\n    // apply every attribute individually if an object is passed\n    for (val in attr) this.attr(val, attr[val])\n  } else if (val === null) {\n    // remove value\n    this.node.removeAttribute(attr)\n  } else if (val == null) {\n    // act as a getter if the first and only argument is not an object\n    val = this.node.getAttribute(attr)\n    return val == null\n      ? _defaults_js__WEBPACK_IMPORTED_MODULE_0__.attrs[attr]\n      : _regex_js__WEBPACK_IMPORTED_MODULE_1__.isNumber.test(val)\n        ? parseFloat(val)\n        : val\n  } else {\n    // Loop through hooks and execute them to convert value\n    val = hooks.reduce((_val, hook) => {\n      return hook(attr, _val, this)\n    }, val)\n\n    // ensure correct numeric values (also accepts NaN and Infinity)\n    if (typeof val === 'number') {\n      val = new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"](val)\n    } else if (colorAttributes.has(attr) && _types_Color_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"].isColor(val)) {\n      // ensure full hex color\n      val = new _types_Color_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"](val)\n    } else if (val.constructor === Array) {\n      // Check for plain arrays and parse array values\n      val = new _types_SVGArray_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"](val)\n    }\n\n    // if the passed attribute is leading...\n    if (attr === 'leading') {\n      // ... call the leading method instead\n      if (this.leading) {\n        this.leading(val)\n      }\n    } else {\n      // set given attribute on node\n      typeof ns === 'string'\n        ? this.node.setAttributeNS(ns, attr, val.toString())\n        : this.node.setAttribute(attr, val.toString())\n    }\n\n    // rebuild if required\n    if (this.rebuild && (attr === 'font-size' || attr === 'x')) {\n      this.rebuild()\n    }\n  }\n\n  return this\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/modules/core/attr.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ attr),
+/* harmony export */   registerAttrHook: () => (/* binding */ registerAttrHook)
+/* harmony export */ });
+/* harmony import */ var _defaults_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./defaults.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/defaults.js");
+/* harmony import */ var _regex_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./regex.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js");
+/* harmony import */ var _types_Color_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../types/Color.js */ "./node_modules/@svgdotjs/svg.js/src/types/Color.js");
+/* harmony import */ var _types_SVGArray_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../types/SVGArray.js */ "./node_modules/@svgdotjs/svg.js/src/types/SVGArray.js");
+/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../types/SVGNumber.js */ "./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js");
+
+
+
+
+
+
+const colorAttributes = new Set([
+  'fill',
+  'stroke',
+  'color',
+  'bgcolor',
+  'stop-color',
+  'flood-color',
+  'lighting-color'
+])
+
+const hooks = []
+function registerAttrHook(fn) {
+  hooks.push(fn)
+}
+
+// Set svg element attribute
+function attr(attr, val, ns) {
+  // act as full getter
+  if (attr == null) {
+    // get an object of attributes
+    attr = {}
+    val = this.node.attributes
+
+    for (const node of val) {
+      attr[node.nodeName] = _regex_js__WEBPACK_IMPORTED_MODULE_1__.isNumber.test(node.nodeValue)
+        ? parseFloat(node.nodeValue)
+        : node.nodeValue
+    }
+
+    return attr
+  } else if (attr instanceof Array) {
+    // loop through array and get all values
+    return attr.reduce((last, curr) => {
+      last[curr] = this.attr(curr)
+      return last
+    }, {})
+  } else if (typeof attr === 'object' && attr.constructor === Object) {
+    // apply every attribute individually if an object is passed
+    for (val in attr) this.attr(val, attr[val])
+  } else if (val === null) {
+    // remove value
+    this.node.removeAttribute(attr)
+  } else if (val == null) {
+    // act as a getter if the first and only argument is not an object
+    val = this.node.getAttribute(attr)
+    return val == null
+      ? _defaults_js__WEBPACK_IMPORTED_MODULE_0__.attrs[attr]
+      : _regex_js__WEBPACK_IMPORTED_MODULE_1__.isNumber.test(val)
+        ? parseFloat(val)
+        : val
+  } else {
+    // Loop through hooks and execute them to convert value
+    val = hooks.reduce((_val, hook) => {
+      return hook(attr, _val, this)
+    }, val)
+
+    // ensure correct numeric values (also accepts NaN and Infinity)
+    if (typeof val === 'number') {
+      val = new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_4__["default"](val)
+    } else if (colorAttributes.has(attr) && _types_Color_js__WEBPACK_IMPORTED_MODULE_2__["default"].isColor(val)) {
+      // ensure full hex color
+      val = new _types_Color_js__WEBPACK_IMPORTED_MODULE_2__["default"](val)
+    } else if (val.constructor === Array) {
+      // Check for plain arrays and parse array values
+      val = new _types_SVGArray_js__WEBPACK_IMPORTED_MODULE_3__["default"](val)
+    }
+
+    // if the passed attribute is leading...
+    if (attr === 'leading') {
+      // ... call the leading method instead
+      if (this.leading) {
+        this.leading(val)
+      }
+    } else {
+      // set given attribute on node
+      typeof ns === 'string'
+        ? this.node.setAttributeNS(ns, attr, val.toString())
+        : this.node.setAttribute(attr, val.toString())
+    }
+
+    // rebuild if required
+    if (this.rebuild && (attr === 'font-size' || attr === 'x')) {
+      this.rebuild()
+    }
+  }
+
+  return this
+}
+
 
 /***/ }),
 
@@ -406,7 +5295,62 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*******************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   cx: () => (/* binding */ cx),\n/* harmony export */   cy: () => (/* binding */ cy),\n/* harmony export */   height: () => (/* binding */ height),\n/* harmony export */   rx: () => (/* binding */ rx),\n/* harmony export */   ry: () => (/* binding */ ry),\n/* harmony export */   width: () => (/* binding */ width),\n/* harmony export */   x: () => (/* binding */ x),\n/* harmony export */   y: () => (/* binding */ y)\n/* harmony export */ });\n/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../types/SVGNumber.js */ \"./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js\");\n\n\n// Radius x value\nfunction rx(rx) {\n  return this.attr('rx', rx)\n}\n\n// Radius y value\nfunction ry(ry) {\n  return this.attr('ry', ry)\n}\n\n// Move over x-axis\nfunction x(x) {\n  return x == null ? this.cx() - this.rx() : this.cx(x + this.rx())\n}\n\n// Move over y-axis\nfunction y(y) {\n  return y == null ? this.cy() - this.ry() : this.cy(y + this.ry())\n}\n\n// Move by center over x-axis\nfunction cx(x) {\n  return this.attr('cx', x)\n}\n\n// Move by center over y-axis\nfunction cy(y) {\n  return this.attr('cy', y)\n}\n\n// Set width of element\nfunction width(width) {\n  return width == null ? this.rx() * 2 : this.rx(new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"](width).divide(2))\n}\n\n// Set height of element\nfunction height(height) {\n  return height == null\n    ? this.ry() * 2\n    : this.ry(new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"](height).divide(2))\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/modules/core/circled.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   cx: () => (/* binding */ cx),
+/* harmony export */   cy: () => (/* binding */ cy),
+/* harmony export */   height: () => (/* binding */ height),
+/* harmony export */   rx: () => (/* binding */ rx),
+/* harmony export */   ry: () => (/* binding */ ry),
+/* harmony export */   width: () => (/* binding */ width),
+/* harmony export */   x: () => (/* binding */ x),
+/* harmony export */   y: () => (/* binding */ y)
+/* harmony export */ });
+/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../types/SVGNumber.js */ "./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js");
+
+
+// Radius x value
+function rx(rx) {
+  return this.attr('rx', rx)
+}
+
+// Radius y value
+function ry(ry) {
+  return this.attr('ry', ry)
+}
+
+// Move over x-axis
+function x(x) {
+  return x == null ? this.cx() - this.rx() : this.cx(x + this.rx())
+}
+
+// Move over y-axis
+function y(y) {
+  return y == null ? this.cy() - this.ry() : this.cy(y + this.ry())
+}
+
+// Move by center over x-axis
+function cx(x) {
+  return this.attr('cx', x)
+}
+
+// Move by center over y-axis
+function cy(y) {
+  return this.attr('cy', y)
+}
+
+// Set width of element
+function width(width) {
+  return width == null ? this.rx() * 2 : this.rx(new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__["default"](width).divide(2))
+}
+
+// Set height of element
+function height(height) {
+  return height == null
+    ? this.ry() * 2
+    : this.ry(new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__["default"](height).divide(2))
+}
+
 
 /***/ }),
 
@@ -416,7 +5360,112 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*****************************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   dmove: () => (/* binding */ dmove),\n/* harmony export */   dx: () => (/* binding */ dx),\n/* harmony export */   dy: () => (/* binding */ dy),\n/* harmony export */   height: () => (/* binding */ height),\n/* harmony export */   move: () => (/* binding */ move),\n/* harmony export */   size: () => (/* binding */ size),\n/* harmony export */   width: () => (/* binding */ width),\n/* harmony export */   x: () => (/* binding */ x),\n/* harmony export */   y: () => (/* binding */ y)\n/* harmony export */ });\n/* harmony import */ var _types_Matrix_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../types/Matrix.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Matrix.js\");\n/* harmony import */ var _types_Point_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../types/Point.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Point.js\");\n/* harmony import */ var _types_Box_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../types/Box.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Box.js\");\n/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/utils.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/utils.js\");\n/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../utils/window.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/window.js\");\n\n\n\n\n\n\nfunction dmove(dx, dy) {\n  this.children().forEach((child) => {\n    let bbox\n\n    // We have to wrap this for elements that dont have a bbox\n    // e.g. title and other descriptive elements\n    try {\n      // Get the childs bbox\n      // Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=1905039\n      // Because bbox for nested svgs returns the contents bbox in the coordinate space of the svg itself (weird!), we cant use bbox for svgs\n      // Therefore we have to use getBoundingClientRect. But THAT is broken (as explained in the bug).\n      // Funnily enough the broken behavior would work for us but that breaks it in chrome\n      // So we have to replicate the broken behavior of FF by just reading the attributes of the svg itself\n      bbox =\n        child.node instanceof (0,_utils_window_js__WEBPACK_IMPORTED_MODULE_4__.getWindow)().SVGSVGElement\n          ? new _types_Box_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"](child.attr(['x', 'y', 'width', 'height']))\n          : child.bbox()\n    } catch (e) {\n      return\n    }\n\n    // Get childs matrix\n    const m = new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"](child)\n    // Translate childs matrix by amount and\n    // transform it back into parents space\n    const matrix = m.translate(dx, dy).transform(m.inverse())\n    // Calculate new x and y from old box\n    const p = new _types_Point_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"](bbox.x, bbox.y).transform(matrix)\n    // Move element\n    child.move(p.x, p.y)\n  })\n\n  return this\n}\n\nfunction dx(dx) {\n  return this.dmove(dx, 0)\n}\n\nfunction dy(dy) {\n  return this.dmove(0, dy)\n}\n\nfunction height(height, box = this.bbox()) {\n  if (height == null) return box.height\n  return this.size(box.width, height, box)\n}\n\nfunction move(x = 0, y = 0, box = this.bbox()) {\n  const dx = x - box.x\n  const dy = y - box.y\n\n  return this.dmove(dx, dy)\n}\n\nfunction size(width, height, box = this.bbox()) {\n  const p = (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_3__.proportionalSize)(this, width, height, box)\n  const scaleX = p.width / box.width\n  const scaleY = p.height / box.height\n\n  this.children().forEach((child) => {\n    const o = new _types_Point_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"](box).transform(new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"](child).inverse())\n    child.scale(scaleX, scaleY, o.x, o.y)\n  })\n\n  return this\n}\n\nfunction width(width, box = this.bbox()) {\n  if (width == null) return box.width\n  return this.size(width, box.height, box)\n}\n\nfunction x(x, box = this.bbox()) {\n  if (x == null) return box.x\n  return this.move(x, box.y, box)\n}\n\nfunction y(y, box = this.bbox()) {\n  if (y == null) return box.y\n  return this.move(box.x, y, box)\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/modules/core/containerGeometry.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   dmove: () => (/* binding */ dmove),
+/* harmony export */   dx: () => (/* binding */ dx),
+/* harmony export */   dy: () => (/* binding */ dy),
+/* harmony export */   height: () => (/* binding */ height),
+/* harmony export */   move: () => (/* binding */ move),
+/* harmony export */   size: () => (/* binding */ size),
+/* harmony export */   width: () => (/* binding */ width),
+/* harmony export */   x: () => (/* binding */ x),
+/* harmony export */   y: () => (/* binding */ y)
+/* harmony export */ });
+/* harmony import */ var _types_Matrix_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../types/Matrix.js */ "./node_modules/@svgdotjs/svg.js/src/types/Matrix.js");
+/* harmony import */ var _types_Point_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../types/Point.js */ "./node_modules/@svgdotjs/svg.js/src/types/Point.js");
+/* harmony import */ var _types_Box_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../types/Box.js */ "./node_modules/@svgdotjs/svg.js/src/types/Box.js");
+/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/utils.js */ "./node_modules/@svgdotjs/svg.js/src/utils/utils.js");
+/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../utils/window.js */ "./node_modules/@svgdotjs/svg.js/src/utils/window.js");
+
+
+
+
+
+
+function dmove(dx, dy) {
+  this.children().forEach((child) => {
+    let bbox
+
+    // We have to wrap this for elements that dont have a bbox
+    // e.g. title and other descriptive elements
+    try {
+      // Get the childs bbox
+      // Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=1905039
+      // Because bbox for nested svgs returns the contents bbox in the coordinate space of the svg itself (weird!), we cant use bbox for svgs
+      // Therefore we have to use getBoundingClientRect. But THAT is broken (as explained in the bug).
+      // Funnily enough the broken behavior would work for us but that breaks it in chrome
+      // So we have to replicate the broken behavior of FF by just reading the attributes of the svg itself
+      bbox =
+        child.node instanceof (0,_utils_window_js__WEBPACK_IMPORTED_MODULE_4__.getWindow)().SVGSVGElement
+          ? new _types_Box_js__WEBPACK_IMPORTED_MODULE_2__["default"](child.attr(['x', 'y', 'width', 'height']))
+          : child.bbox()
+    } catch (e) {
+      return
+    }
+
+    // Get childs matrix
+    const m = new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_0__["default"](child)
+    // Translate childs matrix by amount and
+    // transform it back into parents space
+    const matrix = m.translate(dx, dy).transform(m.inverse())
+    // Calculate new x and y from old box
+    const p = new _types_Point_js__WEBPACK_IMPORTED_MODULE_1__["default"](bbox.x, bbox.y).transform(matrix)
+    // Move element
+    child.move(p.x, p.y)
+  })
+
+  return this
+}
+
+function dx(dx) {
+  return this.dmove(dx, 0)
+}
+
+function dy(dy) {
+  return this.dmove(0, dy)
+}
+
+function height(height, box = this.bbox()) {
+  if (height == null) return box.height
+  return this.size(box.width, height, box)
+}
+
+function move(x = 0, y = 0, box = this.bbox()) {
+  const dx = x - box.x
+  const dy = y - box.y
+
+  return this.dmove(dx, dy)
+}
+
+function size(width, height, box = this.bbox()) {
+  const p = (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_3__.proportionalSize)(this, width, height, box)
+  const scaleX = p.width / box.width
+  const scaleY = p.height / box.height
+
+  this.children().forEach((child) => {
+    const o = new _types_Point_js__WEBPACK_IMPORTED_MODULE_1__["default"](box).transform(new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_0__["default"](child).inverse())
+    child.scale(scaleX, scaleY, o.x, o.y)
+  })
+
+  return this
+}
+
+function width(width, box = this.bbox()) {
+  if (width == null) return box.width
+  return this.size(width, box.height, box)
+}
+
+function x(x, box = this.bbox()) {
+  if (x == null) return box.x
+  return this.move(x, box.y, box)
+}
+
+function y(y, box = this.bbox()) {
+  if (y == null) return box.y
+  return this.move(box.x, y, box)
+}
+
 
 /***/ }),
 
@@ -426,7 +5475,57 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \********************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   attrs: () => (/* binding */ attrs),\n/* harmony export */   noop: () => (/* binding */ noop),\n/* harmony export */   timeline: () => (/* binding */ timeline)\n/* harmony export */ });\nfunction noop() {}\n\n// Default animation values\nconst timeline = {\n  duration: 400,\n  ease: '>',\n  delay: 0\n}\n\n// Default attribute values\nconst attrs = {\n  // fill and stroke\n  'fill-opacity': 1,\n  'stroke-opacity': 1,\n  'stroke-width': 0,\n  'stroke-linejoin': 'miter',\n  'stroke-linecap': 'butt',\n  fill: '#000000',\n  stroke: '#000000',\n  opacity: 1,\n\n  // position\n  x: 0,\n  y: 0,\n  cx: 0,\n  cy: 0,\n\n  // size\n  width: 0,\n  height: 0,\n\n  // radius\n  r: 0,\n  rx: 0,\n  ry: 0,\n\n  // gradient\n  offset: 0,\n  'stop-opacity': 1,\n  'stop-color': '#000000',\n\n  // text\n  'text-anchor': 'start'\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/modules/core/defaults.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   attrs: () => (/* binding */ attrs),
+/* harmony export */   noop: () => (/* binding */ noop),
+/* harmony export */   timeline: () => (/* binding */ timeline)
+/* harmony export */ });
+function noop() {}
+
+// Default animation values
+const timeline = {
+  duration: 400,
+  ease: '>',
+  delay: 0
+}
+
+// Default attribute values
+const attrs = {
+  // fill and stroke
+  'fill-opacity': 1,
+  'stroke-opacity': 1,
+  'stroke-width': 0,
+  'stroke-linejoin': 'miter',
+  'stroke-linecap': 'butt',
+  fill: '#000000',
+  stroke: '#000000',
+  opacity: 1,
+
+  // position
+  x: 0,
+  y: 0,
+  cx: 0,
+  cy: 0,
+
+  // size
+  width: 0,
+  height: 0,
+
+  // radius
+  r: 0,
+  rx: 0,
+  ry: 0,
+
+  // gradient
+  offset: 0,
+  'stop-opacity': 1,
+  'stop-color': '#000000',
+
+  // text
+  'text-anchor': 'start'
+}
+
 
 /***/ }),
 
@@ -436,7 +5535,163 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*****************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   clearEvents: () => (/* binding */ clearEvents),\n/* harmony export */   dispatch: () => (/* binding */ dispatch),\n/* harmony export */   getEventTarget: () => (/* binding */ getEventTarget),\n/* harmony export */   getEvents: () => (/* binding */ getEvents),\n/* harmony export */   off: () => (/* binding */ off),\n/* harmony export */   on: () => (/* binding */ on),\n/* harmony export */   windowEvents: () => (/* binding */ windowEvents)\n/* harmony export */ });\n/* harmony import */ var _regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./regex.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js\");\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/window.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/window.js\");\n\n\n\n\nlet listenerId = 0\nconst windowEvents = {}\n\nfunction getEvents(instance) {\n  let n = instance.getEventHolder()\n\n  // We dont want to save events in global space\n  if (n === _utils_window_js__WEBPACK_IMPORTED_MODULE_2__.globals.window) n = windowEvents\n  if (!n.events) n.events = {}\n  return n.events\n}\n\nfunction getEventTarget(instance) {\n  return instance.getEventTarget()\n}\n\nfunction clearEvents(instance) {\n  let n = instance.getEventHolder()\n  if (n === _utils_window_js__WEBPACK_IMPORTED_MODULE_2__.globals.window) n = windowEvents\n  if (n.events) n.events = {}\n}\n\n// Add event binder in the SVG namespace\nfunction on(node, events, listener, binding, options) {\n  const l = listener.bind(binding || node)\n  const instance = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.makeInstance)(node)\n  const bag = getEvents(instance)\n  const n = getEventTarget(instance)\n\n  // events can be an array of events or a string of events\n  events = Array.isArray(events) ? events : events.split(_regex_js__WEBPACK_IMPORTED_MODULE_0__.delimiter)\n\n  // add id to listener\n  if (!listener._svgjsListenerId) {\n    listener._svgjsListenerId = ++listenerId\n  }\n\n  events.forEach(function (event) {\n    const ev = event.split('.')[0]\n    const ns = event.split('.')[1] || '*'\n\n    // ensure valid object\n    bag[ev] = bag[ev] || {}\n    bag[ev][ns] = bag[ev][ns] || {}\n\n    // reference listener\n    bag[ev][ns][listener._svgjsListenerId] = l\n\n    // add listener\n    n.addEventListener(ev, l, options || false)\n  })\n}\n\n// Add event unbinder in the SVG namespace\nfunction off(node, events, listener, options) {\n  const instance = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.makeInstance)(node)\n  const bag = getEvents(instance)\n  const n = getEventTarget(instance)\n\n  // listener can be a function or a number\n  if (typeof listener === 'function') {\n    listener = listener._svgjsListenerId\n    if (!listener) return\n  }\n\n  // events can be an array of events or a string or undefined\n  events = Array.isArray(events) ? events : (events || '').split(_regex_js__WEBPACK_IMPORTED_MODULE_0__.delimiter)\n\n  events.forEach(function (event) {\n    const ev = event && event.split('.')[0]\n    const ns = event && event.split('.')[1]\n    let namespace, l\n\n    if (listener) {\n      // remove listener reference\n      if (bag[ev] && bag[ev][ns || '*']) {\n        // removeListener\n        n.removeEventListener(\n          ev,\n          bag[ev][ns || '*'][listener],\n          options || false\n        )\n\n        delete bag[ev][ns || '*'][listener]\n      }\n    } else if (ev && ns) {\n      // remove all listeners for a namespaced event\n      if (bag[ev] && bag[ev][ns]) {\n        for (l in bag[ev][ns]) {\n          off(n, [ev, ns].join('.'), l)\n        }\n\n        delete bag[ev][ns]\n      }\n    } else if (ns) {\n      // remove all listeners for a specific namespace\n      for (event in bag) {\n        for (namespace in bag[event]) {\n          if (ns === namespace) {\n            off(n, [event, ns].join('.'))\n          }\n        }\n      }\n    } else if (ev) {\n      // remove all listeners for the event\n      if (bag[ev]) {\n        for (namespace in bag[ev]) {\n          off(n, [ev, namespace].join('.'))\n        }\n\n        delete bag[ev]\n      }\n    } else {\n      // remove all listeners on a given node\n      for (event in bag) {\n        off(n, event)\n      }\n\n      clearEvents(instance)\n    }\n  })\n}\n\nfunction dispatch(node, event, data, options) {\n  const n = getEventTarget(node)\n\n  // Dispatch event\n  if (event instanceof _utils_window_js__WEBPACK_IMPORTED_MODULE_2__.globals.window.Event) {\n    n.dispatchEvent(event)\n  } else {\n    event = new _utils_window_js__WEBPACK_IMPORTED_MODULE_2__.globals.window.CustomEvent(event, {\n      detail: data,\n      cancelable: true,\n      ...options\n    })\n    n.dispatchEvent(event)\n  }\n  return event\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/modules/core/event.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   clearEvents: () => (/* binding */ clearEvents),
+/* harmony export */   dispatch: () => (/* binding */ dispatch),
+/* harmony export */   getEventTarget: () => (/* binding */ getEventTarget),
+/* harmony export */   getEvents: () => (/* binding */ getEvents),
+/* harmony export */   off: () => (/* binding */ off),
+/* harmony export */   on: () => (/* binding */ on),
+/* harmony export */   windowEvents: () => (/* binding */ windowEvents)
+/* harmony export */ });
+/* harmony import */ var _regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./regex.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js");
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/window.js */ "./node_modules/@svgdotjs/svg.js/src/utils/window.js");
+
+
+
+
+let listenerId = 0
+const windowEvents = {}
+
+function getEvents(instance) {
+  let n = instance.getEventHolder()
+
+  // We dont want to save events in global space
+  if (n === _utils_window_js__WEBPACK_IMPORTED_MODULE_2__.globals.window) n = windowEvents
+  if (!n.events) n.events = {}
+  return n.events
+}
+
+function getEventTarget(instance) {
+  return instance.getEventTarget()
+}
+
+function clearEvents(instance) {
+  let n = instance.getEventHolder()
+  if (n === _utils_window_js__WEBPACK_IMPORTED_MODULE_2__.globals.window) n = windowEvents
+  if (n.events) n.events = {}
+}
+
+// Add event binder in the SVG namespace
+function on(node, events, listener, binding, options) {
+  const l = listener.bind(binding || node)
+  const instance = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.makeInstance)(node)
+  const bag = getEvents(instance)
+  const n = getEventTarget(instance)
+
+  // events can be an array of events or a string of events
+  events = Array.isArray(events) ? events : events.split(_regex_js__WEBPACK_IMPORTED_MODULE_0__.delimiter)
+
+  // add id to listener
+  if (!listener._svgjsListenerId) {
+    listener._svgjsListenerId = ++listenerId
+  }
+
+  events.forEach(function (event) {
+    const ev = event.split('.')[0]
+    const ns = event.split('.')[1] || '*'
+
+    // ensure valid object
+    bag[ev] = bag[ev] || {}
+    bag[ev][ns] = bag[ev][ns] || {}
+
+    // reference listener
+    bag[ev][ns][listener._svgjsListenerId] = l
+
+    // add listener
+    n.addEventListener(ev, l, options || false)
+  })
+}
+
+// Add event unbinder in the SVG namespace
+function off(node, events, listener, options) {
+  const instance = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.makeInstance)(node)
+  const bag = getEvents(instance)
+  const n = getEventTarget(instance)
+
+  // listener can be a function or a number
+  if (typeof listener === 'function') {
+    listener = listener._svgjsListenerId
+    if (!listener) return
+  }
+
+  // events can be an array of events or a string or undefined
+  events = Array.isArray(events) ? events : (events || '').split(_regex_js__WEBPACK_IMPORTED_MODULE_0__.delimiter)
+
+  events.forEach(function (event) {
+    const ev = event && event.split('.')[0]
+    const ns = event && event.split('.')[1]
+    let namespace, l
+
+    if (listener) {
+      // remove listener reference
+      if (bag[ev] && bag[ev][ns || '*']) {
+        // removeListener
+        n.removeEventListener(
+          ev,
+          bag[ev][ns || '*'][listener],
+          options || false
+        )
+
+        delete bag[ev][ns || '*'][listener]
+      }
+    } else if (ev && ns) {
+      // remove all listeners for a namespaced event
+      if (bag[ev] && bag[ev][ns]) {
+        for (l in bag[ev][ns]) {
+          off(n, [ev, ns].join('.'), l)
+        }
+
+        delete bag[ev][ns]
+      }
+    } else if (ns) {
+      // remove all listeners for a specific namespace
+      for (event in bag) {
+        for (namespace in bag[event]) {
+          if (ns === namespace) {
+            off(n, [event, ns].join('.'))
+          }
+        }
+      }
+    } else if (ev) {
+      // remove all listeners for the event
+      if (bag[ev]) {
+        for (namespace in bag[ev]) {
+          off(n, [ev, namespace].join('.'))
+        }
+
+        delete bag[ev]
+      }
+    } else {
+      // remove all listeners on a given node
+      for (event in bag) {
+        off(n, event)
+      }
+
+      clearEvents(instance)
+    }
+  })
+}
+
+function dispatch(node, event, data, options) {
+  const n = getEventTarget(node)
+
+  // Dispatch event
+  if (event instanceof _utils_window_js__WEBPACK_IMPORTED_MODULE_2__.globals.window.Event) {
+    n.dispatchEvent(event)
+  } else {
+    event = new _utils_window_js__WEBPACK_IMPORTED_MODULE_2__.globals.window.CustomEvent(event, {
+      detail: data,
+      cancelable: true,
+      ...options
+    })
+    n.dispatchEvent(event)
+  }
+  return event
+}
+
 
 /***/ }),
 
@@ -446,7 +5701,26 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \**********************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   from: () => (/* binding */ from),\n/* harmony export */   to: () => (/* binding */ to)\n/* harmony export */ });\n/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../types/SVGNumber.js */ \"./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js\");\n\n\nfunction from(x, y) {\n  return (this._element || this).type === 'radialGradient'\n    ? this.attr({ fx: new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"](x), fy: new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"](y) })\n    : this.attr({ x1: new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"](x), y1: new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"](y) })\n}\n\nfunction to(x, y) {\n  return (this._element || this).type === 'radialGradient'\n    ? this.attr({ cx: new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"](x), cy: new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"](y) })\n    : this.attr({ x2: new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"](x), y2: new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"](y) })\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/modules/core/gradiented.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   from: () => (/* binding */ from),
+/* harmony export */   to: () => (/* binding */ to)
+/* harmony export */ });
+/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../types/SVGNumber.js */ "./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js");
+
+
+function from(x, y) {
+  return (this._element || this).type === 'radialGradient'
+    ? this.attr({ fx: new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__["default"](x), fy: new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__["default"](y) })
+    : this.attr({ x1: new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__["default"](x), y1: new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__["default"](y) })
+}
+
+function to(x, y) {
+  return (this._element || this).type === 'radialGradient'
+    ? this.attr({ cx: new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__["default"](x), cy: new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__["default"](y) })
+    : this.attr({ x2: new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__["default"](x), y2: new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_0__["default"](y) })
+}
+
 
 /***/ }),
 
@@ -456,7 +5730,19 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \**********************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   html: () => (/* binding */ html),\n/* harmony export */   svg: () => (/* binding */ svg),\n/* harmony export */   xlink: () => (/* binding */ xlink),\n/* harmony export */   xmlns: () => (/* binding */ xmlns)\n/* harmony export */ });\n// Default namespaces\nconst svg = 'http://www.w3.org/2000/svg'\nconst html = 'http://www.w3.org/1999/xhtml'\nconst xmlns = 'http://www.w3.org/2000/xmlns/'\nconst xlink = 'http://www.w3.org/1999/xlink'\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/modules/core/namespaces.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   html: () => (/* binding */ html),
+/* harmony export */   svg: () => (/* binding */ svg),
+/* harmony export */   xlink: () => (/* binding */ xlink),
+/* harmony export */   xmlns: () => (/* binding */ xmlns)
+/* harmony export */ });
+// Default namespaces
+const svg = 'http://www.w3.org/2000/svg'
+const html = 'http://www.w3.org/1999/xhtml'
+const xmlns = 'http://www.w3.org/2000/xmlns/'
+const xlink = 'http://www.w3.org/1999/xlink'
+
 
 /***/ }),
 
@@ -466,7 +5752,43 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \******************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ parser)\n/* harmony export */ });\n/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/window.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/window.js\");\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n\n\n\nfunction parser() {\n  // Reuse cached element if possible\n  if (!parser.nodes) {\n    const svg = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.makeInstance)().size(2, 0)\n    svg.node.style.cssText = [\n      'opacity: 0',\n      'position: absolute',\n      'left: -100%',\n      'top: -100%',\n      'overflow: hidden'\n    ].join(';')\n\n    svg.attr('focusable', 'false')\n    svg.attr('aria-hidden', 'true')\n\n    const path = svg.path().node\n\n    parser.nodes = { svg, path }\n  }\n\n  if (!parser.nodes.svg.node.parentNode) {\n    const b = _utils_window_js__WEBPACK_IMPORTED_MODULE_0__.globals.document.body || _utils_window_js__WEBPACK_IMPORTED_MODULE_0__.globals.document.documentElement\n    parser.nodes.svg.addTo(b)\n  }\n\n  return parser.nodes\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/modules/core/parser.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ parser)
+/* harmony export */ });
+/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/window.js */ "./node_modules/@svgdotjs/svg.js/src/utils/window.js");
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+
+
+
+function parser() {
+  // Reuse cached element if possible
+  if (!parser.nodes) {
+    const svg = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.makeInstance)().size(2, 0)
+    svg.node.style.cssText = [
+      'opacity: 0',
+      'position: absolute',
+      'left: -100%',
+      'top: -100%',
+      'overflow: hidden'
+    ].join(';')
+
+    svg.attr('focusable', 'false')
+    svg.attr('aria-hidden', 'true')
+
+    const path = svg.path().node
+
+    parser.nodes = { svg, path }
+  }
+
+  if (!parser.nodes.svg.node.parentNode) {
+    const b = _utils_window_js__WEBPACK_IMPORTED_MODULE_0__.globals.document.body || _utils_window_js__WEBPACK_IMPORTED_MODULE_0__.globals.document.documentElement
+    parser.nodes.svg.addTo(b)
+  }
+
+  return parser.nodes
+}
+
 
 /***/ }),
 
@@ -476,7 +5798,41 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*******************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   MorphArray: () => (/* binding */ MorphArray),\n/* harmony export */   height: () => (/* binding */ height),\n/* harmony export */   width: () => (/* binding */ width),\n/* harmony export */   x: () => (/* binding */ x),\n/* harmony export */   y: () => (/* binding */ y)\n/* harmony export */ });\n/* harmony import */ var _types_PointArray_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../types/PointArray.js */ \"./node_modules/@svgdotjs/svg.js/src/types/PointArray.js\");\n\n\nconst MorphArray = _types_PointArray_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"]\n\n// Move by left top corner over x-axis\nfunction x(x) {\n  return x == null ? this.bbox().x : this.move(x, this.bbox().y)\n}\n\n// Move by left top corner over y-axis\nfunction y(y) {\n  return y == null ? this.bbox().y : this.move(this.bbox().x, y)\n}\n\n// Set width of element\nfunction width(width) {\n  const b = this.bbox()\n  return width == null ? b.width : this.size(width, b.height)\n}\n\n// Set height of element\nfunction height(height) {\n  const b = this.bbox()\n  return height == null ? b.height : this.size(b.width, height)\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/modules/core/pointed.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   MorphArray: () => (/* binding */ MorphArray),
+/* harmony export */   height: () => (/* binding */ height),
+/* harmony export */   width: () => (/* binding */ width),
+/* harmony export */   x: () => (/* binding */ x),
+/* harmony export */   y: () => (/* binding */ y)
+/* harmony export */ });
+/* harmony import */ var _types_PointArray_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../types/PointArray.js */ "./node_modules/@svgdotjs/svg.js/src/types/PointArray.js");
+
+
+const MorphArray = _types_PointArray_js__WEBPACK_IMPORTED_MODULE_0__["default"]
+
+// Move by left top corner over x-axis
+function x(x) {
+  return x == null ? this.bbox().x : this.move(x, this.bbox().y)
+}
+
+// Move by left top corner over y-axis
+function y(y) {
+  return y == null ? this.bbox().y : this.move(this.bbox().x, y)
+}
+
+// Set width of element
+function width(width) {
+  const b = this.bbox()
+  return width == null ? b.width : this.size(width, b.height)
+}
+
+// Set height of element
+function height(height) {
+  const b = this.bbox()
+  return height == null ? b.height : this.size(b.width, height)
+}
+
 
 /***/ }),
 
@@ -486,7 +5842,51 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \****************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   array: () => (/* binding */ array),\n/* harmony export */   clear: () => (/* binding */ clear),\n/* harmony export */   move: () => (/* binding */ move),\n/* harmony export */   plot: () => (/* binding */ plot),\n/* harmony export */   size: () => (/* binding */ size)\n/* harmony export */ });\n/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/utils.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/utils.js\");\n/* harmony import */ var _types_PointArray_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../types/PointArray.js */ \"./node_modules/@svgdotjs/svg.js/src/types/PointArray.js\");\n\n\n\n// Get array\nfunction array() {\n  return this._array || (this._array = new _types_PointArray_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"](this.attr('points')))\n}\n\n// Clear array cache\nfunction clear() {\n  delete this._array\n  return this\n}\n\n// Move by left top corner\nfunction move(x, y) {\n  return this.attr('points', this.array().move(x, y))\n}\n\n// Plot new path\nfunction plot(p) {\n  return p == null\n    ? this.array()\n    : this.clear().attr(\n        'points',\n        typeof p === 'string' ? p : (this._array = new _types_PointArray_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"](p))\n      )\n}\n\n// Set element size to given width and height\nfunction size(width, height) {\n  const p = (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_0__.proportionalSize)(this, width, height)\n  return this.attr('points', this.array().size(p.width, p.height))\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/modules/core/poly.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   array: () => (/* binding */ array),
+/* harmony export */   clear: () => (/* binding */ clear),
+/* harmony export */   move: () => (/* binding */ move),
+/* harmony export */   plot: () => (/* binding */ plot),
+/* harmony export */   size: () => (/* binding */ size)
+/* harmony export */ });
+/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/utils.js */ "./node_modules/@svgdotjs/svg.js/src/utils/utils.js");
+/* harmony import */ var _types_PointArray_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../types/PointArray.js */ "./node_modules/@svgdotjs/svg.js/src/types/PointArray.js");
+
+
+
+// Get array
+function array() {
+  return this._array || (this._array = new _types_PointArray_js__WEBPACK_IMPORTED_MODULE_1__["default"](this.attr('points')))
+}
+
+// Clear array cache
+function clear() {
+  delete this._array
+  return this
+}
+
+// Move by left top corner
+function move(x, y) {
+  return this.attr('points', this.array().move(x, y))
+}
+
+// Plot new path
+function plot(p) {
+  return p == null
+    ? this.array()
+    : this.clear().attr(
+        'points',
+        typeof p === 'string' ? p : (this._array = new _types_PointArray_js__WEBPACK_IMPORTED_MODULE_1__["default"](p))
+      )
+}
+
+// Set element size to given width and height
+function size(width, height) {
+  const p = (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_0__.proportionalSize)(this, width, height)
+  return this.attr('points', this.array().size(p.width, p.height))
+}
+
 
 /***/ }),
 
@@ -496,7 +5896,62 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*****************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   delimiter: () => (/* binding */ delimiter),\n/* harmony export */   hex: () => (/* binding */ hex),\n/* harmony export */   isBlank: () => (/* binding */ isBlank),\n/* harmony export */   isHex: () => (/* binding */ isHex),\n/* harmony export */   isImage: () => (/* binding */ isImage),\n/* harmony export */   isNumber: () => (/* binding */ isNumber),\n/* harmony export */   isPathLetter: () => (/* binding */ isPathLetter),\n/* harmony export */   isRgb: () => (/* binding */ isRgb),\n/* harmony export */   numberAndUnit: () => (/* binding */ numberAndUnit),\n/* harmony export */   reference: () => (/* binding */ reference),\n/* harmony export */   rgb: () => (/* binding */ rgb),\n/* harmony export */   transforms: () => (/* binding */ transforms),\n/* harmony export */   whitespace: () => (/* binding */ whitespace)\n/* harmony export */ });\n// Parse unit value\nconst numberAndUnit =\n  /^([+-]?(\\d+(\\.\\d*)?|\\.\\d+)(e[+-]?\\d+)?)([a-z%]*)$/i\n\n// Parse hex value\nconst hex = /^#?([a-f\\d]{2})([a-f\\d]{2})([a-f\\d]{2})$/i\n\n// Parse rgb value\nconst rgb = /rgb\\((\\d+),(\\d+),(\\d+)\\)/\n\n// Parse reference id\nconst reference = /(#[a-z_][a-z0-9\\-_]*)/i\n\n// splits a transformation chain\nconst transforms = /\\)\\s*,?\\s*/\n\n// Whitespace\nconst whitespace = /\\s/g\n\n// Test hex value\nconst isHex = /^#[a-f0-9]{3}$|^#[a-f0-9]{6}$/i\n\n// Test rgb value\nconst isRgb = /^rgb\\(/\n\n// Test for blank string\nconst isBlank = /^(\\s+)?$/\n\n// Test for numeric string\nconst isNumber = /^[+-]?(\\d+(\\.\\d*)?|\\.\\d+)(e[+-]?\\d+)?$/i\n\n// Test for image url\nconst isImage = /\\.(jpg|jpeg|png|gif|svg)(\\?[^=]+.*)?/i\n\n// split at whitespace and comma\nconst delimiter = /[\\s,]+/\n\n// Test for path letter\nconst isPathLetter = /[MLHVCSQTAZ]/i\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   delimiter: () => (/* binding */ delimiter),
+/* harmony export */   hex: () => (/* binding */ hex),
+/* harmony export */   isBlank: () => (/* binding */ isBlank),
+/* harmony export */   isHex: () => (/* binding */ isHex),
+/* harmony export */   isImage: () => (/* binding */ isImage),
+/* harmony export */   isNumber: () => (/* binding */ isNumber),
+/* harmony export */   isPathLetter: () => (/* binding */ isPathLetter),
+/* harmony export */   isRgb: () => (/* binding */ isRgb),
+/* harmony export */   numberAndUnit: () => (/* binding */ numberAndUnit),
+/* harmony export */   reference: () => (/* binding */ reference),
+/* harmony export */   rgb: () => (/* binding */ rgb),
+/* harmony export */   transforms: () => (/* binding */ transforms),
+/* harmony export */   whitespace: () => (/* binding */ whitespace)
+/* harmony export */ });
+// Parse unit value
+const numberAndUnit =
+  /^([+-]?(\d+(\.\d*)?|\.\d+)(e[+-]?\d+)?)([a-z%]*)$/i
+
+// Parse hex value
+const hex = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i
+
+// Parse rgb value
+const rgb = /rgb\((\d+),(\d+),(\d+)\)/
+
+// Parse reference id
+const reference = /(#[a-z_][a-z0-9\-_]*)/i
+
+// splits a transformation chain
+const transforms = /\)\s*,?\s*/
+
+// Whitespace
+const whitespace = /\s/g
+
+// Test hex value
+const isHex = /^#[a-f0-9]{3}$|^#[a-f0-9]{6}$/i
+
+// Test rgb value
+const isRgb = /^rgb\(/
+
+// Test for blank string
+const isBlank = /^(\s+)?$/
+
+// Test for numeric string
+const isNumber = /^[+-]?(\d+(\.\d*)?|\.\d+)(e[+-]?\d+)?$/i
+
+// Test for image url
+const isImage = /\.(jpg|jpeg|png|gif|svg)(\?[^=]+.*)?/i
+
+// split at whitespace and comma
+const delimiter = /[\s,]+/
+
+// Test for path letter
+const isPathLetter = /[MLHVCSQTAZ]/i
+
 
 /***/ }),
 
@@ -506,7 +5961,38 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \********************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ baseFind),\n/* harmony export */   find: () => (/* binding */ find),\n/* harmony export */   findOne: () => (/* binding */ findOne)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/window.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/window.js\");\n/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/utils.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/utils.js\");\n/* harmony import */ var _types_List_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../types/List.js */ \"./node_modules/@svgdotjs/svg.js/src/types/List.js\");\n\n\n\n\n\nfunction baseFind(query, parent) {\n  return new _types_List_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"](\n    (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_2__.map)((parent || _utils_window_js__WEBPACK_IMPORTED_MODULE_1__.globals.document).querySelectorAll(query), function (node) {\n      return (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.adopt)(node)\n    })\n  )\n}\n\n// Scoped find method\nfunction find(query) {\n  return baseFind(query, this.node)\n}\n\nfunction findOne(query) {\n  return (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.adopt)(this.node.querySelector(query))\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/modules/core/selector.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ baseFind),
+/* harmony export */   find: () => (/* binding */ find),
+/* harmony export */   findOne: () => (/* binding */ findOne)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/window.js */ "./node_modules/@svgdotjs/svg.js/src/utils/window.js");
+/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/utils.js */ "./node_modules/@svgdotjs/svg.js/src/utils/utils.js");
+/* harmony import */ var _types_List_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../types/List.js */ "./node_modules/@svgdotjs/svg.js/src/types/List.js");
+
+
+
+
+
+function baseFind(query, parent) {
+  return new _types_List_js__WEBPACK_IMPORTED_MODULE_3__["default"](
+    (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_2__.map)((parent || _utils_window_js__WEBPACK_IMPORTED_MODULE_1__.globals.document).querySelectorAll(query), function (node) {
+      return (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.adopt)(node)
+    })
+  )
+}
+
+// Scoped find method
+function find(query) {
+  return baseFind(query, this.node)
+}
+
+function findOne(query) {
+  return (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.adopt)(this.node.querySelector(query))
+}
+
 
 /***/ }),
 
@@ -516,7 +6002,106 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \********************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   amove: () => (/* binding */ amove),\n/* harmony export */   ax: () => (/* binding */ ax),\n/* harmony export */   ay: () => (/* binding */ ay),\n/* harmony export */   build: () => (/* binding */ build),\n/* harmony export */   center: () => (/* binding */ center),\n/* harmony export */   cx: () => (/* binding */ cx),\n/* harmony export */   cy: () => (/* binding */ cy),\n/* harmony export */   length: () => (/* binding */ length),\n/* harmony export */   move: () => (/* binding */ move),\n/* harmony export */   plain: () => (/* binding */ plain),\n/* harmony export */   x: () => (/* binding */ x),\n/* harmony export */   y: () => (/* binding */ y)\n/* harmony export */ });\n/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/window.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/window.js\");\n\n\n// Create plain text node\nfunction plain(text) {\n  // clear if build mode is disabled\n  if (this._build === false) {\n    this.clear()\n  }\n\n  // create text node\n  this.node.appendChild(_utils_window_js__WEBPACK_IMPORTED_MODULE_0__.globals.document.createTextNode(text))\n\n  return this\n}\n\n// Get length of text element\nfunction length() {\n  return this.node.getComputedTextLength()\n}\n\n// Move over x-axis\n// Text is moved by its bounding box\n// text-anchor does NOT matter\nfunction x(x, box = this.bbox()) {\n  if (x == null) {\n    return box.x\n  }\n\n  return this.attr('x', this.attr('x') + x - box.x)\n}\n\n// Move over y-axis\nfunction y(y, box = this.bbox()) {\n  if (y == null) {\n    return box.y\n  }\n\n  return this.attr('y', this.attr('y') + y - box.y)\n}\n\nfunction move(x, y, box = this.bbox()) {\n  return this.x(x, box).y(y, box)\n}\n\n// Move center over x-axis\nfunction cx(x, box = this.bbox()) {\n  if (x == null) {\n    return box.cx\n  }\n\n  return this.attr('x', this.attr('x') + x - box.cx)\n}\n\n// Move center over y-axis\nfunction cy(y, box = this.bbox()) {\n  if (y == null) {\n    return box.cy\n  }\n\n  return this.attr('y', this.attr('y') + y - box.cy)\n}\n\nfunction center(x, y, box = this.bbox()) {\n  return this.cx(x, box).cy(y, box)\n}\n\nfunction ax(x) {\n  return this.attr('x', x)\n}\n\nfunction ay(y) {\n  return this.attr('y', y)\n}\n\nfunction amove(x, y) {\n  return this.ax(x).ay(y)\n}\n\n// Enable / disable build mode\nfunction build(build) {\n  this._build = !!build\n  return this\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/modules/core/textable.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   amove: () => (/* binding */ amove),
+/* harmony export */   ax: () => (/* binding */ ax),
+/* harmony export */   ay: () => (/* binding */ ay),
+/* harmony export */   build: () => (/* binding */ build),
+/* harmony export */   center: () => (/* binding */ center),
+/* harmony export */   cx: () => (/* binding */ cx),
+/* harmony export */   cy: () => (/* binding */ cy),
+/* harmony export */   length: () => (/* binding */ length),
+/* harmony export */   move: () => (/* binding */ move),
+/* harmony export */   plain: () => (/* binding */ plain),
+/* harmony export */   x: () => (/* binding */ x),
+/* harmony export */   y: () => (/* binding */ y)
+/* harmony export */ });
+/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/window.js */ "./node_modules/@svgdotjs/svg.js/src/utils/window.js");
+
+
+// Create plain text node
+function plain(text) {
+  // clear if build mode is disabled
+  if (this._build === false) {
+    this.clear()
+  }
+
+  // create text node
+  this.node.appendChild(_utils_window_js__WEBPACK_IMPORTED_MODULE_0__.globals.document.createTextNode(text))
+
+  return this
+}
+
+// Get length of text element
+function length() {
+  return this.node.getComputedTextLength()
+}
+
+// Move over x-axis
+// Text is moved by its bounding box
+// text-anchor does NOT matter
+function x(x, box = this.bbox()) {
+  if (x == null) {
+    return box.x
+  }
+
+  return this.attr('x', this.attr('x') + x - box.x)
+}
+
+// Move over y-axis
+function y(y, box = this.bbox()) {
+  if (y == null) {
+    return box.y
+  }
+
+  return this.attr('y', this.attr('y') + y - box.y)
+}
+
+function move(x, y, box = this.bbox()) {
+  return this.x(x, box).y(y, box)
+}
+
+// Move center over x-axis
+function cx(x, box = this.bbox()) {
+  if (x == null) {
+    return box.cx
+  }
+
+  return this.attr('x', this.attr('x') + x - box.cx)
+}
+
+// Move center over y-axis
+function cy(y, box = this.bbox()) {
+  if (y == null) {
+    return box.cy
+  }
+
+  return this.attr('y', this.attr('y') + y - box.cy)
+}
+
+function center(x, y, box = this.bbox()) {
+  return this.cx(x, box).cy(y, box)
+}
+
+function ax(x) {
+  return this.attr('x', x)
+}
+
+function ay(y) {
+  return this.attr('y', y)
+}
+
+function amove(x, y) {
+  return this.ax(x).ay(y)
+}
+
+// Enable / disable build mode
+function build(build) {
+  this._build = !!build
+  return this
+}
+
 
 /***/ }),
 
@@ -526,7 +6111,138 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \***********************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   after: () => (/* binding */ after),\n/* harmony export */   back: () => (/* binding */ back),\n/* harmony export */   backward: () => (/* binding */ backward),\n/* harmony export */   before: () => (/* binding */ before),\n/* harmony export */   forward: () => (/* binding */ forward),\n/* harmony export */   front: () => (/* binding */ front),\n/* harmony export */   insertAfter: () => (/* binding */ insertAfter),\n/* harmony export */   insertBefore: () => (/* binding */ insertBefore),\n/* harmony export */   next: () => (/* binding */ next),\n/* harmony export */   position: () => (/* binding */ position),\n/* harmony export */   prev: () => (/* binding */ prev),\n/* harmony export */   siblings: () => (/* binding */ siblings)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n\n\n\n// Get all siblings, including myself\nfunction siblings() {\n  return this.parent().children()\n}\n\n// Get the current position siblings\nfunction position() {\n  return this.parent().index(this)\n}\n\n// Get the next element (will return null if there is none)\nfunction next() {\n  return this.siblings()[this.position() + 1]\n}\n\n// Get the next element (will return null if there is none)\nfunction prev() {\n  return this.siblings()[this.position() - 1]\n}\n\n// Send given element one step forward\nfunction forward() {\n  const i = this.position()\n  const p = this.parent()\n\n  // move node one step forward\n  p.add(this.remove(), i + 1)\n\n  return this\n}\n\n// Send given element one step backward\nfunction backward() {\n  const i = this.position()\n  const p = this.parent()\n\n  p.add(this.remove(), i ? i - 1 : 0)\n\n  return this\n}\n\n// Send given element all the way to the front\nfunction front() {\n  const p = this.parent()\n\n  // Move node forward\n  p.add(this.remove())\n\n  return this\n}\n\n// Send given element all the way to the back\nfunction back() {\n  const p = this.parent()\n\n  // Move node back\n  p.add(this.remove(), 0)\n\n  return this\n}\n\n// Inserts a given element before the targeted element\nfunction before(element) {\n  element = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.makeInstance)(element)\n  element.remove()\n\n  const i = this.position()\n\n  this.parent().add(element, i)\n\n  return this\n}\n\n// Inserts a given element after the targeted element\nfunction after(element) {\n  element = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.makeInstance)(element)\n  element.remove()\n\n  const i = this.position()\n\n  this.parent().add(element, i + 1)\n\n  return this\n}\n\nfunction insertBefore(element) {\n  element = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.makeInstance)(element)\n  element.before(this)\n  return this\n}\n\nfunction insertAfter(element) {\n  element = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.makeInstance)(element)\n  element.after(this)\n  return this\n}\n\n(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)('Dom', {\n  siblings,\n  position,\n  next,\n  prev,\n  forward,\n  backward,\n  front,\n  back,\n  before,\n  after,\n  insertBefore,\n  insertAfter\n})\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/modules/optional/arrange.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   after: () => (/* binding */ after),
+/* harmony export */   back: () => (/* binding */ back),
+/* harmony export */   backward: () => (/* binding */ backward),
+/* harmony export */   before: () => (/* binding */ before),
+/* harmony export */   forward: () => (/* binding */ forward),
+/* harmony export */   front: () => (/* binding */ front),
+/* harmony export */   insertAfter: () => (/* binding */ insertAfter),
+/* harmony export */   insertBefore: () => (/* binding */ insertBefore),
+/* harmony export */   next: () => (/* binding */ next),
+/* harmony export */   position: () => (/* binding */ position),
+/* harmony export */   prev: () => (/* binding */ prev),
+/* harmony export */   siblings: () => (/* binding */ siblings)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+
+
+
+// Get all siblings, including myself
+function siblings() {
+  return this.parent().children()
+}
+
+// Get the current position siblings
+function position() {
+  return this.parent().index(this)
+}
+
+// Get the next element (will return null if there is none)
+function next() {
+  return this.siblings()[this.position() + 1]
+}
+
+// Get the next element (will return null if there is none)
+function prev() {
+  return this.siblings()[this.position() - 1]
+}
+
+// Send given element one step forward
+function forward() {
+  const i = this.position()
+  const p = this.parent()
+
+  // move node one step forward
+  p.add(this.remove(), i + 1)
+
+  return this
+}
+
+// Send given element one step backward
+function backward() {
+  const i = this.position()
+  const p = this.parent()
+
+  p.add(this.remove(), i ? i - 1 : 0)
+
+  return this
+}
+
+// Send given element all the way to the front
+function front() {
+  const p = this.parent()
+
+  // Move node forward
+  p.add(this.remove())
+
+  return this
+}
+
+// Send given element all the way to the back
+function back() {
+  const p = this.parent()
+
+  // Move node back
+  p.add(this.remove(), 0)
+
+  return this
+}
+
+// Inserts a given element before the targeted element
+function before(element) {
+  element = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.makeInstance)(element)
+  element.remove()
+
+  const i = this.position()
+
+  this.parent().add(element, i)
+
+  return this
+}
+
+// Inserts a given element after the targeted element
+function after(element) {
+  element = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.makeInstance)(element)
+  element.remove()
+
+  const i = this.position()
+
+  this.parent().add(element, i + 1)
+
+  return this
+}
+
+function insertBefore(element) {
+  element = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.makeInstance)(element)
+  element.before(this)
+  return this
+}
+
+function insertAfter(element) {
+  element = (0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.makeInstance)(element)
+  element.after(this)
+  return this
+}
+
+(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)('Dom', {
+  siblings,
+  position,
+  next,
+  prev,
+  forward,
+  backward,
+  front,
+  back,
+  before,
+  after,
+  insertBefore,
+  insertAfter
+})
+
 
 /***/ }),
 
@@ -536,7 +6252,70 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*********************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   addClass: () => (/* binding */ addClass),\n/* harmony export */   classes: () => (/* binding */ classes),\n/* harmony export */   hasClass: () => (/* binding */ hasClass),\n/* harmony export */   removeClass: () => (/* binding */ removeClass),\n/* harmony export */   toggleClass: () => (/* binding */ toggleClass)\n/* harmony export */ });\n/* harmony import */ var _core_regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../core/regex.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n\n\n\n// Return array of classes on the node\nfunction classes() {\n  const attr = this.attr('class')\n  return attr == null ? [] : attr.trim().split(_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.delimiter)\n}\n\n// Return true if class exists on the node, false otherwise\nfunction hasClass(name) {\n  return this.classes().indexOf(name) !== -1\n}\n\n// Add class to the node\nfunction addClass(name) {\n  if (!this.hasClass(name)) {\n    const array = this.classes()\n    array.push(name)\n    this.attr('class', array.join(' '))\n  }\n\n  return this\n}\n\n// Remove class from the node\nfunction removeClass(name) {\n  if (this.hasClass(name)) {\n    this.attr(\n      'class',\n      this.classes()\n        .filter(function (c) {\n          return c !== name\n        })\n        .join(' ')\n    )\n  }\n\n  return this\n}\n\n// Toggle the presence of a class on the node\nfunction toggleClass(name) {\n  return this.hasClass(name) ? this.removeClass(name) : this.addClass(name)\n}\n\n(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)('Dom', {\n  classes,\n  hasClass,\n  addClass,\n  removeClass,\n  toggleClass\n})\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/modules/optional/class.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   addClass: () => (/* binding */ addClass),
+/* harmony export */   classes: () => (/* binding */ classes),
+/* harmony export */   hasClass: () => (/* binding */ hasClass),
+/* harmony export */   removeClass: () => (/* binding */ removeClass),
+/* harmony export */   toggleClass: () => (/* binding */ toggleClass)
+/* harmony export */ });
+/* harmony import */ var _core_regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../core/regex.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+
+
+
+// Return array of classes on the node
+function classes() {
+  const attr = this.attr('class')
+  return attr == null ? [] : attr.trim().split(_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.delimiter)
+}
+
+// Return true if class exists on the node, false otherwise
+function hasClass(name) {
+  return this.classes().indexOf(name) !== -1
+}
+
+// Add class to the node
+function addClass(name) {
+  if (!this.hasClass(name)) {
+    const array = this.classes()
+    array.push(name)
+    this.attr('class', array.join(' '))
+  }
+
+  return this
+}
+
+// Remove class from the node
+function removeClass(name) {
+  if (this.hasClass(name)) {
+    this.attr(
+      'class',
+      this.classes()
+        .filter(function (c) {
+          return c !== name
+        })
+        .join(' ')
+    )
+  }
+
+  return this
+}
+
+// Toggle the presence of a class on the node
+function toggleClass(name) {
+  return this.hasClass(name) ? this.removeClass(name) : this.addClass(name)
+}
+
+(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)('Dom', {
+  classes,
+  hasClass,
+  addClass,
+  removeClass,
+  toggleClass
+})
+
 
 /***/ }),
 
@@ -546,7 +6325,95 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*******************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   css: () => (/* binding */ css),\n/* harmony export */   hide: () => (/* binding */ hide),\n/* harmony export */   show: () => (/* binding */ show),\n/* harmony export */   visible: () => (/* binding */ visible)\n/* harmony export */ });\n/* harmony import */ var _core_regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../core/regex.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n\n\n\n// Dynamic style generator\nfunction css(style, val) {\n  const ret = {}\n  if (arguments.length === 0) {\n    // get full style as object\n    this.node.style.cssText\n      .split(/\\s*;\\s*/)\n      .filter(function (el) {\n        return !!el.length\n      })\n      .forEach(function (el) {\n        const t = el.split(/\\s*:\\s*/)\n        ret[t[0]] = t[1]\n      })\n    return ret\n  }\n\n  if (arguments.length < 2) {\n    // get style properties as array\n    if (Array.isArray(style)) {\n      for (const name of style) {\n        const cased = name\n        ret[name] = this.node.style.getPropertyValue(cased)\n      }\n      return ret\n    }\n\n    // get style for property\n    if (typeof style === 'string') {\n      return this.node.style.getPropertyValue(style)\n    }\n\n    // set styles in object\n    if (typeof style === 'object') {\n      for (const name in style) {\n        // set empty string if null/undefined/'' was given\n        this.node.style.setProperty(\n          name,\n          style[name] == null || _core_regex_js__WEBPACK_IMPORTED_MODULE_0__.isBlank.test(style[name]) ? '' : style[name]\n        )\n      }\n    }\n  }\n\n  // set style for property\n  if (arguments.length === 2) {\n    this.node.style.setProperty(\n      style,\n      val == null || _core_regex_js__WEBPACK_IMPORTED_MODULE_0__.isBlank.test(val) ? '' : val\n    )\n  }\n\n  return this\n}\n\n// Show element\nfunction show() {\n  return this.css('display', '')\n}\n\n// Hide element\nfunction hide() {\n  return this.css('display', 'none')\n}\n\n// Is element visible?\nfunction visible() {\n  return this.css('display') !== 'none'\n}\n\n(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)('Dom', {\n  css,\n  show,\n  hide,\n  visible\n})\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/modules/optional/css.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   css: () => (/* binding */ css),
+/* harmony export */   hide: () => (/* binding */ hide),
+/* harmony export */   show: () => (/* binding */ show),
+/* harmony export */   visible: () => (/* binding */ visible)
+/* harmony export */ });
+/* harmony import */ var _core_regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../core/regex.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+
+
+
+// Dynamic style generator
+function css(style, val) {
+  const ret = {}
+  if (arguments.length === 0) {
+    // get full style as object
+    this.node.style.cssText
+      .split(/\s*;\s*/)
+      .filter(function (el) {
+        return !!el.length
+      })
+      .forEach(function (el) {
+        const t = el.split(/\s*:\s*/)
+        ret[t[0]] = t[1]
+      })
+    return ret
+  }
+
+  if (arguments.length < 2) {
+    // get style properties as array
+    if (Array.isArray(style)) {
+      for (const name of style) {
+        const cased = name
+        ret[name] = this.node.style.getPropertyValue(cased)
+      }
+      return ret
+    }
+
+    // get style for property
+    if (typeof style === 'string') {
+      return this.node.style.getPropertyValue(style)
+    }
+
+    // set styles in object
+    if (typeof style === 'object') {
+      for (const name in style) {
+        // set empty string if null/undefined/'' was given
+        this.node.style.setProperty(
+          name,
+          style[name] == null || _core_regex_js__WEBPACK_IMPORTED_MODULE_0__.isBlank.test(style[name]) ? '' : style[name]
+        )
+      }
+    }
+  }
+
+  // set style for property
+  if (arguments.length === 2) {
+    this.node.style.setProperty(
+      style,
+      val == null || _core_regex_js__WEBPACK_IMPORTED_MODULE_0__.isBlank.test(val) ? '' : val
+    )
+  }
+
+  return this
+}
+
+// Show element
+function show() {
+  return this.css('display', '')
+}
+
+// Hide element
+function hide() {
+  return this.css('display', 'none')
+}
+
+// Is element visible?
+function visible() {
+  return this.css('display') !== 'none'
+}
+
+(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_1__.registerMethods)('Dom', {
+  css,
+  show,
+  hide,
+  visible
+})
+
 
 /***/ }),
 
@@ -556,7 +6423,60 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \********************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   data: () => (/* binding */ data)\n/* harmony export */ });\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/utils.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/utils.js\");\n\n\n\n// Store data values on svg nodes\nfunction data(a, v, r) {\n  if (a == null) {\n    // get an object of attributes\n    return this.data(\n      (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_1__.map)(\n        (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_1__.filter)(\n          this.node.attributes,\n          (el) => el.nodeName.indexOf('data-') === 0\n        ),\n        (el) => el.nodeName.slice(5)\n      )\n    )\n  } else if (a instanceof Array) {\n    const data = {}\n    for (const key of a) {\n      data[key] = this.data(key)\n    }\n    return data\n  } else if (typeof a === 'object') {\n    for (v in a) {\n      this.data(v, a[v])\n    }\n  } else if (arguments.length < 2) {\n    try {\n      return JSON.parse(this.attr('data-' + a))\n    } catch (e) {\n      return this.attr('data-' + a)\n    }\n  } else {\n    this.attr(\n      'data-' + a,\n      v === null\n        ? null\n        : r === true || typeof v === 'string' || typeof v === 'number'\n          ? v\n          : JSON.stringify(v)\n    )\n  }\n\n  return this\n}\n\n(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_0__.registerMethods)('Dom', { data })\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/modules/optional/data.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   data: () => (/* binding */ data)
+/* harmony export */ });
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/utils.js */ "./node_modules/@svgdotjs/svg.js/src/utils/utils.js");
+
+
+
+// Store data values on svg nodes
+function data(a, v, r) {
+  if (a == null) {
+    // get an object of attributes
+    return this.data(
+      (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_1__.map)(
+        (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_1__.filter)(
+          this.node.attributes,
+          (el) => el.nodeName.indexOf('data-') === 0
+        ),
+        (el) => el.nodeName.slice(5)
+      )
+    )
+  } else if (a instanceof Array) {
+    const data = {}
+    for (const key of a) {
+      data[key] = this.data(key)
+    }
+    return data
+  } else if (typeof a === 'object') {
+    for (v in a) {
+      this.data(v, a[v])
+    }
+  } else if (arguments.length < 2) {
+    try {
+      return JSON.parse(this.attr('data-' + a))
+    } catch (e) {
+      return this.attr('data-' + a)
+    }
+  } else {
+    this.attr(
+      'data-' + a,
+      v === null
+        ? null
+        : r === true || typeof v === 'string' || typeof v === 'number'
+          ? v
+          : JSON.stringify(v)
+    )
+  }
+
+  return this
+}
+
+(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_0__.registerMethods)('Dom', { data })
+
 
 /***/ }),
 
@@ -566,7 +6486,54 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \**********************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   forget: () => (/* binding */ forget),\n/* harmony export */   memory: () => (/* binding */ memory),\n/* harmony export */   remember: () => (/* binding */ remember)\n/* harmony export */ });\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n\n\n// Remember arbitrary data\nfunction remember(k, v) {\n  // remember every item in an object individually\n  if (typeof arguments[0] === 'object') {\n    for (const key in k) {\n      this.remember(key, k[key])\n    }\n  } else if (arguments.length === 1) {\n    // retrieve memory\n    return this.memory()[k]\n  } else {\n    // store memory\n    this.memory()[k] = v\n  }\n\n  return this\n}\n\n// Erase a given memory\nfunction forget() {\n  if (arguments.length === 0) {\n    this._memory = {}\n  } else {\n    for (let i = arguments.length - 1; i >= 0; i--) {\n      delete this.memory()[arguments[i]]\n    }\n  }\n  return this\n}\n\n// This triggers creation of a new hidden class which is not performant\n// However, this function is not rarely used so it will not happen frequently\n// Return local memory object\nfunction memory() {\n  return (this._memory = this._memory || {})\n}\n\n(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_0__.registerMethods)('Dom', { remember, forget, memory })\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/modules/optional/memory.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   forget: () => (/* binding */ forget),
+/* harmony export */   memory: () => (/* binding */ memory),
+/* harmony export */   remember: () => (/* binding */ remember)
+/* harmony export */ });
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+
+
+// Remember arbitrary data
+function remember(k, v) {
+  // remember every item in an object individually
+  if (typeof arguments[0] === 'object') {
+    for (const key in k) {
+      this.remember(key, k[key])
+    }
+  } else if (arguments.length === 1) {
+    // retrieve memory
+    return this.memory()[k]
+  } else {
+    // store memory
+    this.memory()[k] = v
+  }
+
+  return this
+}
+
+// Erase a given memory
+function forget() {
+  if (arguments.length === 0) {
+    this._memory = {}
+  } else {
+    for (let i = arguments.length - 1; i >= 0; i--) {
+      delete this.memory()[arguments[i]]
+    }
+  }
+  return this
+}
+
+// This triggers creation of a new hidden class which is not performant
+// However, this function is not rarely used so it will not happen frequently
+// Return local memory object
+function memory() {
+  return (this._memory = this._memory || {})
+}
+
+(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_0__.registerMethods)('Dom', { remember, forget, memory })
+
 
 /***/ }),
 
@@ -576,7 +6543,214 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*********************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _types_Color_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../types/Color.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Color.js\");\n/* harmony import */ var _elements_Element_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../elements/Element.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Element.js\");\n/* harmony import */ var _types_Matrix_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../types/Matrix.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Matrix.js\");\n/* harmony import */ var _types_Point_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../types/Point.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Point.js\");\n/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../types/SVGNumber.js */ \"./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js\");\n\n\n\n\n\n\n\n// Define list of available attributes for stroke and fill\nconst sugar = {\n  stroke: [\n    'color',\n    'width',\n    'opacity',\n    'linecap',\n    'linejoin',\n    'miterlimit',\n    'dasharray',\n    'dashoffset'\n  ],\n  fill: ['color', 'opacity', 'rule'],\n  prefix: function (t, a) {\n    return a === 'color' ? t : t + '-' + a\n  }\n}\n\n// Add sugar for fill and stroke\n;['fill', 'stroke'].forEach(function (m) {\n  const extension = {}\n  let i\n\n  extension[m] = function (o) {\n    if (typeof o === 'undefined') {\n      return this.attr(m)\n    }\n    if (\n      typeof o === 'string' ||\n      o instanceof _types_Color_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"] ||\n      _types_Color_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"].isRgb(o) ||\n      o instanceof _elements_Element_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"]\n    ) {\n      this.attr(m, o)\n    } else {\n      // set all attributes from sugar.fill and sugar.stroke list\n      for (i = sugar[m].length - 1; i >= 0; i--) {\n        if (o[sugar[m][i]] != null) {\n          this.attr(sugar.prefix(m, sugar[m][i]), o[sugar[m][i]])\n        }\n      }\n    }\n\n    return this\n  }\n\n  ;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_0__.registerMethods)(['Element', 'Runner'], extension)\n})\n\n;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_0__.registerMethods)(['Element', 'Runner'], {\n  // Let the user set the matrix directly\n  matrix: function (mat, b, c, d, e, f) {\n    // Act as a getter\n    if (mat == null) {\n      return new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"](this)\n    }\n\n    // Act as a setter, the user can pass a matrix or a set of numbers\n    return this.attr('transform', new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"](mat, b, c, d, e, f))\n  },\n\n  // Map rotation to transform\n  rotate: function (angle, cx, cy) {\n    return this.transform({ rotate: angle, ox: cx, oy: cy }, true)\n  },\n\n  // Map skew to transform\n  skew: function (x, y, cx, cy) {\n    return arguments.length === 1 || arguments.length === 3\n      ? this.transform({ skew: x, ox: y, oy: cx }, true)\n      : this.transform({ skew: [x, y], ox: cx, oy: cy }, true)\n  },\n\n  shear: function (lam, cx, cy) {\n    return this.transform({ shear: lam, ox: cx, oy: cy }, true)\n  },\n\n  // Map scale to transform\n  scale: function (x, y, cx, cy) {\n    return arguments.length === 1 || arguments.length === 3\n      ? this.transform({ scale: x, ox: y, oy: cx }, true)\n      : this.transform({ scale: [x, y], ox: cx, oy: cy }, true)\n  },\n\n  // Map translate to transform\n  translate: function (x, y) {\n    return this.transform({ translate: [x, y] }, true)\n  },\n\n  // Map relative translations to transform\n  relative: function (x, y) {\n    return this.transform({ relative: [x, y] }, true)\n  },\n\n  // Map flip to transform\n  flip: function (direction = 'both', origin = 'center') {\n    if ('xybothtrue'.indexOf(direction) === -1) {\n      origin = direction\n      direction = 'both'\n    }\n\n    return this.transform({ flip: direction, origin: origin }, true)\n  },\n\n  // Opacity\n  opacity: function (value) {\n    return this.attr('opacity', value)\n  }\n})\n\n;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_0__.registerMethods)('radius', {\n  // Add x and y radius\n  radius: function (x, y = x) {\n    const type = (this._element || this).type\n    return type === 'radialGradient'\n      ? this.attr('r', new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_5__[\"default\"](x))\n      : this.rx(x).ry(y)\n  }\n})\n\n;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_0__.registerMethods)('Path', {\n  // Get path length\n  length: function () {\n    return this.node.getTotalLength()\n  },\n  // Get point at length\n  pointAt: function (length) {\n    return new _types_Point_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"](this.node.getPointAtLength(length))\n  }\n})\n\n;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_0__.registerMethods)(['Element', 'Runner'], {\n  // Set font\n  font: function (a, v) {\n    if (typeof a === 'object') {\n      for (v in a) this.font(v, a[v])\n      return this\n    }\n\n    return a === 'leading'\n      ? this.leading(v)\n      : a === 'anchor'\n        ? this.attr('text-anchor', v)\n        : a === 'size' ||\n            a === 'family' ||\n            a === 'weight' ||\n            a === 'stretch' ||\n            a === 'variant' ||\n            a === 'style'\n          ? this.attr('font-' + a, v)\n          : this.attr(a, v)\n  }\n})\n\n// Add events to elements\nconst methods = [\n  'click',\n  'dblclick',\n  'mousedown',\n  'mouseup',\n  'mouseover',\n  'mouseout',\n  'mousemove',\n  'mouseenter',\n  'mouseleave',\n  'touchstart',\n  'touchmove',\n  'touchleave',\n  'touchend',\n  'touchcancel',\n  'contextmenu',\n  'wheel',\n  'pointerdown',\n  'pointermove',\n  'pointerup',\n  'pointerleave',\n  'pointercancel'\n].reduce(function (last, event) {\n  // add event to Element\n  const fn = function (f) {\n    if (f === null) {\n      this.off(event)\n    } else {\n      this.on(event, f)\n    }\n    return this\n  }\n\n  last[event] = fn\n  return last\n}, {})\n\n;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_0__.registerMethods)('Element', methods)\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/modules/optional/sugar.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _types_Color_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../types/Color.js */ "./node_modules/@svgdotjs/svg.js/src/types/Color.js");
+/* harmony import */ var _elements_Element_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../elements/Element.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Element.js");
+/* harmony import */ var _types_Matrix_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../types/Matrix.js */ "./node_modules/@svgdotjs/svg.js/src/types/Matrix.js");
+/* harmony import */ var _types_Point_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../types/Point.js */ "./node_modules/@svgdotjs/svg.js/src/types/Point.js");
+/* harmony import */ var _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../types/SVGNumber.js */ "./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js");
+
+
+
+
+
+
+
+// Define list of available attributes for stroke and fill
+const sugar = {
+  stroke: [
+    'color',
+    'width',
+    'opacity',
+    'linecap',
+    'linejoin',
+    'miterlimit',
+    'dasharray',
+    'dashoffset'
+  ],
+  fill: ['color', 'opacity', 'rule'],
+  prefix: function (t, a) {
+    return a === 'color' ? t : t + '-' + a
+  }
+}
+
+// Add sugar for fill and stroke
+;['fill', 'stroke'].forEach(function (m) {
+  const extension = {}
+  let i
+
+  extension[m] = function (o) {
+    if (typeof o === 'undefined') {
+      return this.attr(m)
+    }
+    if (
+      typeof o === 'string' ||
+      o instanceof _types_Color_js__WEBPACK_IMPORTED_MODULE_1__["default"] ||
+      _types_Color_js__WEBPACK_IMPORTED_MODULE_1__["default"].isRgb(o) ||
+      o instanceof _elements_Element_js__WEBPACK_IMPORTED_MODULE_2__["default"]
+    ) {
+      this.attr(m, o)
+    } else {
+      // set all attributes from sugar.fill and sugar.stroke list
+      for (i = sugar[m].length - 1; i >= 0; i--) {
+        if (o[sugar[m][i]] != null) {
+          this.attr(sugar.prefix(m, sugar[m][i]), o[sugar[m][i]])
+        }
+      }
+    }
+
+    return this
+  }
+
+  ;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_0__.registerMethods)(['Element', 'Runner'], extension)
+})
+
+;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_0__.registerMethods)(['Element', 'Runner'], {
+  // Let the user set the matrix directly
+  matrix: function (mat, b, c, d, e, f) {
+    // Act as a getter
+    if (mat == null) {
+      return new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_3__["default"](this)
+    }
+
+    // Act as a setter, the user can pass a matrix or a set of numbers
+    return this.attr('transform', new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_3__["default"](mat, b, c, d, e, f))
+  },
+
+  // Map rotation to transform
+  rotate: function (angle, cx, cy) {
+    return this.transform({ rotate: angle, ox: cx, oy: cy }, true)
+  },
+
+  // Map skew to transform
+  skew: function (x, y, cx, cy) {
+    return arguments.length === 1 || arguments.length === 3
+      ? this.transform({ skew: x, ox: y, oy: cx }, true)
+      : this.transform({ skew: [x, y], ox: cx, oy: cy }, true)
+  },
+
+  shear: function (lam, cx, cy) {
+    return this.transform({ shear: lam, ox: cx, oy: cy }, true)
+  },
+
+  // Map scale to transform
+  scale: function (x, y, cx, cy) {
+    return arguments.length === 1 || arguments.length === 3
+      ? this.transform({ scale: x, ox: y, oy: cx }, true)
+      : this.transform({ scale: [x, y], ox: cx, oy: cy }, true)
+  },
+
+  // Map translate to transform
+  translate: function (x, y) {
+    return this.transform({ translate: [x, y] }, true)
+  },
+
+  // Map relative translations to transform
+  relative: function (x, y) {
+    return this.transform({ relative: [x, y] }, true)
+  },
+
+  // Map flip to transform
+  flip: function (direction = 'both', origin = 'center') {
+    if ('xybothtrue'.indexOf(direction) === -1) {
+      origin = direction
+      direction = 'both'
+    }
+
+    return this.transform({ flip: direction, origin: origin }, true)
+  },
+
+  // Opacity
+  opacity: function (value) {
+    return this.attr('opacity', value)
+  }
+})
+
+;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_0__.registerMethods)('radius', {
+  // Add x and y radius
+  radius: function (x, y = x) {
+    const type = (this._element || this).type
+    return type === 'radialGradient'
+      ? this.attr('r', new _types_SVGNumber_js__WEBPACK_IMPORTED_MODULE_5__["default"](x))
+      : this.rx(x).ry(y)
+  }
+})
+
+;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_0__.registerMethods)('Path', {
+  // Get path length
+  length: function () {
+    return this.node.getTotalLength()
+  },
+  // Get point at length
+  pointAt: function (length) {
+    return new _types_Point_js__WEBPACK_IMPORTED_MODULE_4__["default"](this.node.getPointAtLength(length))
+  }
+})
+
+;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_0__.registerMethods)(['Element', 'Runner'], {
+  // Set font
+  font: function (a, v) {
+    if (typeof a === 'object') {
+      for (v in a) this.font(v, a[v])
+      return this
+    }
+
+    return a === 'leading'
+      ? this.leading(v)
+      : a === 'anchor'
+        ? this.attr('text-anchor', v)
+        : a === 'size' ||
+            a === 'family' ||
+            a === 'weight' ||
+            a === 'stretch' ||
+            a === 'variant' ||
+            a === 'style'
+          ? this.attr('font-' + a, v)
+          : this.attr(a, v)
+  }
+})
+
+// Add events to elements
+const methods = [
+  'click',
+  'dblclick',
+  'mousedown',
+  'mouseup',
+  'mouseover',
+  'mouseout',
+  'mousemove',
+  'mouseenter',
+  'mouseleave',
+  'touchstart',
+  'touchmove',
+  'touchleave',
+  'touchend',
+  'touchcancel',
+  'contextmenu',
+  'wheel',
+  'pointerdown',
+  'pointermove',
+  'pointerup',
+  'pointerleave',
+  'pointercancel'
+].reduce(function (last, event) {
+  // add event to Element
+  const fn = function (f) {
+    if (f === null) {
+      this.off(event)
+    } else {
+      this.on(event, f)
+    }
+    return this
+  }
+
+  last[event] = fn
+  return last
+}, {})
+
+;(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_0__.registerMethods)('Element', methods)
+
 
 /***/ }),
 
@@ -586,7 +6760,102 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _uti
   \*************************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   matrixify: () => (/* binding */ matrixify),\n/* harmony export */   toParent: () => (/* binding */ toParent),\n/* harmony export */   toRoot: () => (/* binding */ toRoot),\n/* harmony export */   transform: () => (/* binding */ transform),\n/* harmony export */   untransform: () => (/* binding */ untransform)\n/* harmony export */ });\n/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/utils.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/utils.js\");\n/* harmony import */ var _core_regex_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../core/regex.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _types_Matrix_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../types/Matrix.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Matrix.js\");\n\n\n\n\n\n// Reset all transformations\nfunction untransform() {\n  return this.attr('transform', null)\n}\n\n// merge the whole transformation chain into one matrix and returns it\nfunction matrixify() {\n  const matrix = (this.attr('transform') || '')\n    // split transformations\n    .split(_core_regex_js__WEBPACK_IMPORTED_MODULE_1__.transforms)\n    .slice(0, -1)\n    .map(function (str) {\n      // generate key => value pairs\n      const kv = str.trim().split('(')\n      return [\n        kv[0],\n        kv[1].split(_core_regex_js__WEBPACK_IMPORTED_MODULE_1__.delimiter).map(function (str) {\n          return parseFloat(str)\n        })\n      ]\n    })\n    .reverse()\n    // merge every transformation into one matrix\n    .reduce(function (matrix, transform) {\n      if (transform[0] === 'matrix') {\n        return matrix.lmultiply(_types_Matrix_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"].fromArray(transform[1]))\n      }\n      return matrix[transform[0]].apply(matrix, transform[1])\n    }, new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"]())\n\n  return matrix\n}\n\n// add an element to another parent without changing the visual representation on the screen\nfunction toParent(parent, i) {\n  if (this === parent) return this\n\n  if ((0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_0__.isDescriptive)(this.node)) return this.addTo(parent, i)\n\n  const ctm = this.screenCTM()\n  const pCtm = parent.screenCTM().inverse()\n\n  this.addTo(parent, i).untransform().transform(pCtm.multiply(ctm))\n\n  return this\n}\n\n// same as above with parent equals root-svg\nfunction toRoot(i) {\n  return this.toParent(this.root(), i)\n}\n\n// Add transformations\nfunction transform(o, relative) {\n  // Act as a getter if no object was passed\n  if (o == null || typeof o === 'string') {\n    const decomposed = new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"](this).decompose()\n    return o == null ? decomposed : decomposed[o]\n  }\n\n  if (!_types_Matrix_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"].isMatrixLike(o)) {\n    // Set the origin according to the defined transform\n    o = { ...o, origin: (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_0__.getOrigin)(o, this) }\n  }\n\n  // The user can pass a boolean, an Element or an Matrix or nothing\n  const cleanRelative = relative === true ? this : relative || false\n  const result = new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"](cleanRelative).transform(o)\n  return this.attr('transform', result)\n}\n\n(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_2__.registerMethods)('Element', {\n  untransform,\n  matrixify,\n  toParent,\n  toRoot,\n  transform\n})\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/modules/optional/transform.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   matrixify: () => (/* binding */ matrixify),
+/* harmony export */   toParent: () => (/* binding */ toParent),
+/* harmony export */   toRoot: () => (/* binding */ toRoot),
+/* harmony export */   transform: () => (/* binding */ transform),
+/* harmony export */   untransform: () => (/* binding */ untransform)
+/* harmony export */ });
+/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/utils.js */ "./node_modules/@svgdotjs/svg.js/src/utils/utils.js");
+/* harmony import */ var _core_regex_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../core/regex.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _types_Matrix_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../types/Matrix.js */ "./node_modules/@svgdotjs/svg.js/src/types/Matrix.js");
+
+
+
+
+
+// Reset all transformations
+function untransform() {
+  return this.attr('transform', null)
+}
+
+// merge the whole transformation chain into one matrix and returns it
+function matrixify() {
+  const matrix = (this.attr('transform') || '')
+    // split transformations
+    .split(_core_regex_js__WEBPACK_IMPORTED_MODULE_1__.transforms)
+    .slice(0, -1)
+    .map(function (str) {
+      // generate key => value pairs
+      const kv = str.trim().split('(')
+      return [
+        kv[0],
+        kv[1].split(_core_regex_js__WEBPACK_IMPORTED_MODULE_1__.delimiter).map(function (str) {
+          return parseFloat(str)
+        })
+      ]
+    })
+    .reverse()
+    // merge every transformation into one matrix
+    .reduce(function (matrix, transform) {
+      if (transform[0] === 'matrix') {
+        return matrix.lmultiply(_types_Matrix_js__WEBPACK_IMPORTED_MODULE_3__["default"].fromArray(transform[1]))
+      }
+      return matrix[transform[0]].apply(matrix, transform[1])
+    }, new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_3__["default"]())
+
+  return matrix
+}
+
+// add an element to another parent without changing the visual representation on the screen
+function toParent(parent, i) {
+  if (this === parent) return this
+
+  if ((0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_0__.isDescriptive)(this.node)) return this.addTo(parent, i)
+
+  const ctm = this.screenCTM()
+  const pCtm = parent.screenCTM().inverse()
+
+  this.addTo(parent, i).untransform().transform(pCtm.multiply(ctm))
+
+  return this
+}
+
+// same as above with parent equals root-svg
+function toRoot(i) {
+  return this.toParent(this.root(), i)
+}
+
+// Add transformations
+function transform(o, relative) {
+  // Act as a getter if no object was passed
+  if (o == null || typeof o === 'string') {
+    const decomposed = new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_3__["default"](this).decompose()
+    return o == null ? decomposed : decomposed[o]
+  }
+
+  if (!_types_Matrix_js__WEBPACK_IMPORTED_MODULE_3__["default"].isMatrixLike(o)) {
+    // Set the origin according to the defined transform
+    o = { ...o, origin: (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_0__.getOrigin)(o, this) }
+  }
+
+  // The user can pass a boolean, an Element or an Matrix or nothing
+  const cleanRelative = relative === true ? this : relative || false
+  const result = new _types_Matrix_js__WEBPACK_IMPORTED_MODULE_3__["default"](cleanRelative).transform(o)
+  return this.attr('transform', result)
+}
+
+(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_2__.registerMethods)('Element', {
+  untransform,
+  matrixify,
+  toParent,
+  toRoot,
+  transform
+})
+
 
 /***/ }),
 
@@ -596,7 +6865,21 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Base)\n/* harmony export */ });\nclass Base {\n  // constructor (node/*, {extensions = []} */) {\n  //   // this.tags = []\n  //   //\n  //   // for (let extension of extensions) {\n  //   //   extension.setup.call(this, node)\n  //   //   this.tags.push(extension.name)\n  //   // }\n  // }\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/types/Base.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Base)
+/* harmony export */ });
+class Base {
+  // constructor (node/*, {extensions = []} */) {
+  //   // this.tags = []
+  //   //
+  //   // for (let extension of extensions) {
+  //   //   extension.setup.call(this, node)
+  //   //   this.tags.push(extension.name)
+  //   // }
+  // }
+}
+
 
 /***/ }),
 
@@ -606,7 +6889,293 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   bbox: () => (/* binding */ bbox),\n/* harmony export */   \"default\": () => (/* binding */ Box),\n/* harmony export */   domContains: () => (/* binding */ domContains),\n/* harmony export */   inside: () => (/* binding */ inside),\n/* harmony export */   isNulledBox: () => (/* binding */ isNulledBox),\n/* harmony export */   rbox: () => (/* binding */ rbox)\n/* harmony export */ });\n/* harmony import */ var _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../modules/core/regex.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js\");\n/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/window.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/window.js\");\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _Matrix_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Matrix.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Matrix.js\");\n/* harmony import */ var _Point_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Point.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Point.js\");\n/* harmony import */ var _modules_core_parser_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../modules/core/parser.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/parser.js\");\n\n\n\n\n\n\n\n\nfunction isNulledBox(box) {\n  return !box.width && !box.height && !box.x && !box.y\n}\n\nfunction domContains(node) {\n  return (\n    node === _utils_window_js__WEBPACK_IMPORTED_MODULE_1__.globals.document ||\n    (\n      _utils_window_js__WEBPACK_IMPORTED_MODULE_1__.globals.document.documentElement.contains ||\n      function (node) {\n        // This is IE - it does not support contains() for top-level SVGs\n        while (node.parentNode) {\n          node = node.parentNode\n        }\n        return node === _utils_window_js__WEBPACK_IMPORTED_MODULE_1__.globals.document\n      }\n    ).call(_utils_window_js__WEBPACK_IMPORTED_MODULE_1__.globals.document.documentElement, node)\n  )\n}\n\nclass Box {\n  constructor(...args) {\n    this.init(...args)\n  }\n\n  addOffset() {\n    // offset by window scroll position, because getBoundingClientRect changes when window is scrolled\n    this.x += _utils_window_js__WEBPACK_IMPORTED_MODULE_1__.globals.window.pageXOffset\n    this.y += _utils_window_js__WEBPACK_IMPORTED_MODULE_1__.globals.window.pageYOffset\n    return new Box(this)\n  }\n\n  init(source) {\n    const base = [0, 0, 0, 0]\n    source =\n      typeof source === 'string'\n        ? source.split(_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.delimiter).map(parseFloat)\n        : Array.isArray(source)\n          ? source\n          : typeof source === 'object'\n            ? [\n                source.left != null ? source.left : source.x,\n                source.top != null ? source.top : source.y,\n                source.width,\n                source.height\n              ]\n            : arguments.length === 4\n              ? [].slice.call(arguments)\n              : base\n\n    this.x = source[0] || 0\n    this.y = source[1] || 0\n    this.width = this.w = source[2] || 0\n    this.height = this.h = source[3] || 0\n\n    // Add more bounding box properties\n    this.x2 = this.x + this.w\n    this.y2 = this.y + this.h\n    this.cx = this.x + this.w / 2\n    this.cy = this.y + this.h / 2\n\n    return this\n  }\n\n  isNulled() {\n    return isNulledBox(this)\n  }\n\n  // Merge rect box with another, return a new instance\n  merge(box) {\n    const x = Math.min(this.x, box.x)\n    const y = Math.min(this.y, box.y)\n    const width = Math.max(this.x + this.width, box.x + box.width) - x\n    const height = Math.max(this.y + this.height, box.y + box.height) - y\n\n    return new Box(x, y, width, height)\n  }\n\n  toArray() {\n    return [this.x, this.y, this.width, this.height]\n  }\n\n  toString() {\n    return this.x + ' ' + this.y + ' ' + this.width + ' ' + this.height\n  }\n\n  transform(m) {\n    if (!(m instanceof _Matrix_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"])) {\n      m = new _Matrix_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"](m)\n    }\n\n    let xMin = Infinity\n    let xMax = -Infinity\n    let yMin = Infinity\n    let yMax = -Infinity\n\n    const pts = [\n      new _Point_js__WEBPACK_IMPORTED_MODULE_5__[\"default\"](this.x, this.y),\n      new _Point_js__WEBPACK_IMPORTED_MODULE_5__[\"default\"](this.x2, this.y),\n      new _Point_js__WEBPACK_IMPORTED_MODULE_5__[\"default\"](this.x, this.y2),\n      new _Point_js__WEBPACK_IMPORTED_MODULE_5__[\"default\"](this.x2, this.y2)\n    ]\n\n    pts.forEach(function (p) {\n      p = p.transform(m)\n      xMin = Math.min(xMin, p.x)\n      xMax = Math.max(xMax, p.x)\n      yMin = Math.min(yMin, p.y)\n      yMax = Math.max(yMax, p.y)\n    })\n\n    return new Box(xMin, yMin, xMax - xMin, yMax - yMin)\n  }\n}\n\nfunction getBox(el, getBBoxFn, retry) {\n  let box\n\n  try {\n    // Try to get the box with the provided function\n    box = getBBoxFn(el.node)\n\n    // If the box is worthless and not even in the dom, retry\n    // by throwing an error here...\n    if (isNulledBox(box) && !domContains(el.node)) {\n      throw new Error('Element not in the dom')\n    }\n  } catch (e) {\n    // ... and calling the retry handler here\n    box = retry(el)\n  }\n\n  return box\n}\n\nfunction bbox() {\n  // Function to get bbox is getBBox()\n  const getBBox = (node) => node.getBBox()\n\n  // Take all measures so that a stupid browser renders the element\n  // so we can get the bbox from it when we try again\n  const retry = (el) => {\n    try {\n      const clone = el.clone().addTo((0,_modules_core_parser_js__WEBPACK_IMPORTED_MODULE_6__[\"default\"])().svg).show()\n      const box = clone.node.getBBox()\n      clone.remove()\n      return box\n    } catch (e) {\n      // We give up...\n      throw new Error(\n        `Getting bbox of element \"${\n          el.node.nodeName\n        }\" is not possible: ${e.toString()}`\n      )\n    }\n  }\n\n  const box = getBox(this, getBBox, retry)\n  const bbox = new Box(box)\n\n  return bbox\n}\n\nfunction rbox(el) {\n  const getRBox = (node) => node.getBoundingClientRect()\n  const retry = (el) => {\n    // There is no point in trying tricks here because if we insert the element into the dom ourselves\n    // it obviously will be at the wrong position\n    throw new Error(\n      `Getting rbox of element \"${el.node.nodeName}\" is not possible`\n    )\n  }\n\n  const box = getBox(this, getRBox, retry)\n  const rbox = new Box(box)\n\n  // If an element was passed, we want the bbox in the coordinate system of that element\n  if (el) {\n    return rbox.transform(el.screenCTM().inverseO())\n  }\n\n  // Else we want it in absolute screen coordinates\n  // Therefore we need to add the scrollOffset\n  return rbox.addOffset()\n}\n\n// Checks whether the given point is inside the bounding box\nfunction inside(x, y) {\n  const box = this.bbox()\n\n  return (\n    x > box.x && y > box.y && x < box.x + box.width && y < box.y + box.height\n  )\n}\n\n(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_3__.registerMethods)({\n  viewbox: {\n    viewbox(x, y, width, height) {\n      // act as getter\n      if (x == null) return new Box(this.attr('viewBox'))\n\n      // act as setter\n      return this.attr('viewBox', new Box(x, y, width, height))\n    },\n\n    zoom(level, point) {\n      // Its best to rely on the attributes here and here is why:\n      // clientXYZ: Doesn't work on non-root svgs because they dont have a CSSBox (silly!)\n      // getBoundingClientRect: Doesn't work because Chrome just ignores width and height of nested svgs completely\n      //                        that means, their clientRect is always as big as the content.\n      //                        Furthermore this size is incorrect if the element is further transformed by its parents\n      // computedStyle: Only returns meaningful values if css was used with px. We dont go this route here!\n      // getBBox: returns the bounding box of its content - that doesn't help!\n      let { width, height } = this.attr(['width', 'height'])\n\n      // Width and height is a string when a number with a unit is present which we can't use\n      // So we try clientXYZ\n      if (\n        (!width && !height) ||\n        typeof width === 'string' ||\n        typeof height === 'string'\n      ) {\n        width = this.node.clientWidth\n        height = this.node.clientHeight\n      }\n\n      // Giving up...\n      if (!width || !height) {\n        throw new Error(\n          'Impossible to get absolute width and height. Please provide an absolute width and height attribute on the zooming element'\n        )\n      }\n\n      const v = this.viewbox()\n\n      const zoomX = width / v.width\n      const zoomY = height / v.height\n      const zoom = Math.min(zoomX, zoomY)\n\n      if (level == null) {\n        return zoom\n      }\n\n      let zoomAmount = zoom / level\n\n      // Set the zoomAmount to the highest value which is safe to process and recover from\n      // The * 100 is a bit of wiggle room for the matrix transformation\n      if (zoomAmount === Infinity) zoomAmount = Number.MAX_SAFE_INTEGER / 100\n\n      point =\n        point || new _Point_js__WEBPACK_IMPORTED_MODULE_5__[\"default\"](width / 2 / zoomX + v.x, height / 2 / zoomY + v.y)\n\n      const box = new Box(v).transform(\n        new _Matrix_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"]({ scale: zoomAmount, origin: point })\n      )\n\n      return this.viewbox(box)\n    }\n  }\n})\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__.register)(Box, 'Box')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/types/Box.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   bbox: () => (/* binding */ bbox),
+/* harmony export */   "default": () => (/* binding */ Box),
+/* harmony export */   domContains: () => (/* binding */ domContains),
+/* harmony export */   inside: () => (/* binding */ inside),
+/* harmony export */   isNulledBox: () => (/* binding */ isNulledBox),
+/* harmony export */   rbox: () => (/* binding */ rbox)
+/* harmony export */ });
+/* harmony import */ var _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../modules/core/regex.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js");
+/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/window.js */ "./node_modules/@svgdotjs/svg.js/src/utils/window.js");
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _utils_methods_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _Matrix_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Matrix.js */ "./node_modules/@svgdotjs/svg.js/src/types/Matrix.js");
+/* harmony import */ var _Point_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Point.js */ "./node_modules/@svgdotjs/svg.js/src/types/Point.js");
+/* harmony import */ var _modules_core_parser_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../modules/core/parser.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/parser.js");
+
+
+
+
+
+
+
+
+function isNulledBox(box) {
+  return !box.width && !box.height && !box.x && !box.y
+}
+
+function domContains(node) {
+  return (
+    node === _utils_window_js__WEBPACK_IMPORTED_MODULE_1__.globals.document ||
+    (
+      _utils_window_js__WEBPACK_IMPORTED_MODULE_1__.globals.document.documentElement.contains ||
+      function (node) {
+        // This is IE - it does not support contains() for top-level SVGs
+        while (node.parentNode) {
+          node = node.parentNode
+        }
+        return node === _utils_window_js__WEBPACK_IMPORTED_MODULE_1__.globals.document
+      }
+    ).call(_utils_window_js__WEBPACK_IMPORTED_MODULE_1__.globals.document.documentElement, node)
+  )
+}
+
+class Box {
+  constructor(...args) {
+    this.init(...args)
+  }
+
+  addOffset() {
+    // offset by window scroll position, because getBoundingClientRect changes when window is scrolled
+    this.x += _utils_window_js__WEBPACK_IMPORTED_MODULE_1__.globals.window.pageXOffset
+    this.y += _utils_window_js__WEBPACK_IMPORTED_MODULE_1__.globals.window.pageYOffset
+    return new Box(this)
+  }
+
+  init(source) {
+    const base = [0, 0, 0, 0]
+    source =
+      typeof source === 'string'
+        ? source.split(_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.delimiter).map(parseFloat)
+        : Array.isArray(source)
+          ? source
+          : typeof source === 'object'
+            ? [
+                source.left != null ? source.left : source.x,
+                source.top != null ? source.top : source.y,
+                source.width,
+                source.height
+              ]
+            : arguments.length === 4
+              ? [].slice.call(arguments)
+              : base
+
+    this.x = source[0] || 0
+    this.y = source[1] || 0
+    this.width = this.w = source[2] || 0
+    this.height = this.h = source[3] || 0
+
+    // Add more bounding box properties
+    this.x2 = this.x + this.w
+    this.y2 = this.y + this.h
+    this.cx = this.x + this.w / 2
+    this.cy = this.y + this.h / 2
+
+    return this
+  }
+
+  isNulled() {
+    return isNulledBox(this)
+  }
+
+  // Merge rect box with another, return a new instance
+  merge(box) {
+    const x = Math.min(this.x, box.x)
+    const y = Math.min(this.y, box.y)
+    const width = Math.max(this.x + this.width, box.x + box.width) - x
+    const height = Math.max(this.y + this.height, box.y + box.height) - y
+
+    return new Box(x, y, width, height)
+  }
+
+  toArray() {
+    return [this.x, this.y, this.width, this.height]
+  }
+
+  toString() {
+    return this.x + ' ' + this.y + ' ' + this.width + ' ' + this.height
+  }
+
+  transform(m) {
+    if (!(m instanceof _Matrix_js__WEBPACK_IMPORTED_MODULE_4__["default"])) {
+      m = new _Matrix_js__WEBPACK_IMPORTED_MODULE_4__["default"](m)
+    }
+
+    let xMin = Infinity
+    let xMax = -Infinity
+    let yMin = Infinity
+    let yMax = -Infinity
+
+    const pts = [
+      new _Point_js__WEBPACK_IMPORTED_MODULE_5__["default"](this.x, this.y),
+      new _Point_js__WEBPACK_IMPORTED_MODULE_5__["default"](this.x2, this.y),
+      new _Point_js__WEBPACK_IMPORTED_MODULE_5__["default"](this.x, this.y2),
+      new _Point_js__WEBPACK_IMPORTED_MODULE_5__["default"](this.x2, this.y2)
+    ]
+
+    pts.forEach(function (p) {
+      p = p.transform(m)
+      xMin = Math.min(xMin, p.x)
+      xMax = Math.max(xMax, p.x)
+      yMin = Math.min(yMin, p.y)
+      yMax = Math.max(yMax, p.y)
+    })
+
+    return new Box(xMin, yMin, xMax - xMin, yMax - yMin)
+  }
+}
+
+function getBox(el, getBBoxFn, retry) {
+  let box
+
+  try {
+    // Try to get the box with the provided function
+    box = getBBoxFn(el.node)
+
+    // If the box is worthless and not even in the dom, retry
+    // by throwing an error here...
+    if (isNulledBox(box) && !domContains(el.node)) {
+      throw new Error('Element not in the dom')
+    }
+  } catch (e) {
+    // ... and calling the retry handler here
+    box = retry(el)
+  }
+
+  return box
+}
+
+function bbox() {
+  // Function to get bbox is getBBox()
+  const getBBox = (node) => node.getBBox()
+
+  // Take all measures so that a stupid browser renders the element
+  // so we can get the bbox from it when we try again
+  const retry = (el) => {
+    try {
+      const clone = el.clone().addTo((0,_modules_core_parser_js__WEBPACK_IMPORTED_MODULE_6__["default"])().svg).show()
+      const box = clone.node.getBBox()
+      clone.remove()
+      return box
+    } catch (e) {
+      // We give up...
+      throw new Error(
+        `Getting bbox of element "${
+          el.node.nodeName
+        }" is not possible: ${e.toString()}`
+      )
+    }
+  }
+
+  const box = getBox(this, getBBox, retry)
+  const bbox = new Box(box)
+
+  return bbox
+}
+
+function rbox(el) {
+  const getRBox = (node) => node.getBoundingClientRect()
+  const retry = (el) => {
+    // There is no point in trying tricks here because if we insert the element into the dom ourselves
+    // it obviously will be at the wrong position
+    throw new Error(
+      `Getting rbox of element "${el.node.nodeName}" is not possible`
+    )
+  }
+
+  const box = getBox(this, getRBox, retry)
+  const rbox = new Box(box)
+
+  // If an element was passed, we want the bbox in the coordinate system of that element
+  if (el) {
+    return rbox.transform(el.screenCTM().inverseO())
+  }
+
+  // Else we want it in absolute screen coordinates
+  // Therefore we need to add the scrollOffset
+  return rbox.addOffset()
+}
+
+// Checks whether the given point is inside the bounding box
+function inside(x, y) {
+  const box = this.bbox()
+
+  return (
+    x > box.x && y > box.y && x < box.x + box.width && y < box.y + box.height
+  )
+}
+
+(0,_utils_methods_js__WEBPACK_IMPORTED_MODULE_3__.registerMethods)({
+  viewbox: {
+    viewbox(x, y, width, height) {
+      // act as getter
+      if (x == null) return new Box(this.attr('viewBox'))
+
+      // act as setter
+      return this.attr('viewBox', new Box(x, y, width, height))
+    },
+
+    zoom(level, point) {
+      // Its best to rely on the attributes here and here is why:
+      // clientXYZ: Doesn't work on non-root svgs because they dont have a CSSBox (silly!)
+      // getBoundingClientRect: Doesn't work because Chrome just ignores width and height of nested svgs completely
+      //                        that means, their clientRect is always as big as the content.
+      //                        Furthermore this size is incorrect if the element is further transformed by its parents
+      // computedStyle: Only returns meaningful values if css was used with px. We dont go this route here!
+      // getBBox: returns the bounding box of its content - that doesn't help!
+      let { width, height } = this.attr(['width', 'height'])
+
+      // Width and height is a string when a number with a unit is present which we can't use
+      // So we try clientXYZ
+      if (
+        (!width && !height) ||
+        typeof width === 'string' ||
+        typeof height === 'string'
+      ) {
+        width = this.node.clientWidth
+        height = this.node.clientHeight
+      }
+
+      // Giving up...
+      if (!width || !height) {
+        throw new Error(
+          'Impossible to get absolute width and height. Please provide an absolute width and height attribute on the zooming element'
+        )
+      }
+
+      const v = this.viewbox()
+
+      const zoomX = width / v.width
+      const zoomY = height / v.height
+      const zoom = Math.min(zoomX, zoomY)
+
+      if (level == null) {
+        return zoom
+      }
+
+      let zoomAmount = zoom / level
+
+      // Set the zoomAmount to the highest value which is safe to process and recover from
+      // The * 100 is a bit of wiggle room for the matrix transformation
+      if (zoomAmount === Infinity) zoomAmount = Number.MAX_SAFE_INTEGER / 100
+
+      point =
+        point || new _Point_js__WEBPACK_IMPORTED_MODULE_5__["default"](width / 2 / zoomX + v.x, height / 2 / zoomY + v.y)
+
+      const box = new Box(v).transform(
+        new _Matrix_js__WEBPACK_IMPORTED_MODULE_4__["default"]({ scale: zoomAmount, origin: point })
+      )
+
+      return this.viewbox(box)
+    }
+  }
+})
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__.register)(Box, 'Box')
+
 
 /***/ }),
 
@@ -616,7 +7185,462 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \**********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Color)\n/* harmony export */ });\n/* harmony import */ var _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../modules/core/regex.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js\");\n\n\nfunction sixDigitHex(hex) {\n  return hex.length === 4\n    ? [\n        '#',\n        hex.substring(1, 2),\n        hex.substring(1, 2),\n        hex.substring(2, 3),\n        hex.substring(2, 3),\n        hex.substring(3, 4),\n        hex.substring(3, 4)\n      ].join('')\n    : hex\n}\n\nfunction componentHex(component) {\n  const integer = Math.round(component)\n  const bounded = Math.max(0, Math.min(255, integer))\n  const hex = bounded.toString(16)\n  return hex.length === 1 ? '0' + hex : hex\n}\n\nfunction is(object, space) {\n  for (let i = space.length; i--; ) {\n    if (object[space[i]] == null) {\n      return false\n    }\n  }\n  return true\n}\n\nfunction getParameters(a, b) {\n  const params = is(a, 'rgb')\n    ? { _a: a.r, _b: a.g, _c: a.b, _d: 0, space: 'rgb' }\n    : is(a, 'xyz')\n      ? { _a: a.x, _b: a.y, _c: a.z, _d: 0, space: 'xyz' }\n      : is(a, 'hsl')\n        ? { _a: a.h, _b: a.s, _c: a.l, _d: 0, space: 'hsl' }\n        : is(a, 'lab')\n          ? { _a: a.l, _b: a.a, _c: a.b, _d: 0, space: 'lab' }\n          : is(a, 'lch')\n            ? { _a: a.l, _b: a.c, _c: a.h, _d: 0, space: 'lch' }\n            : is(a, 'cmyk')\n              ? { _a: a.c, _b: a.m, _c: a.y, _d: a.k, space: 'cmyk' }\n              : { _a: 0, _b: 0, _c: 0, space: 'rgb' }\n\n  params.space = b || params.space\n  return params\n}\n\nfunction cieSpace(space) {\n  if (space === 'lab' || space === 'xyz' || space === 'lch') {\n    return true\n  } else {\n    return false\n  }\n}\n\nfunction hueToRgb(p, q, t) {\n  if (t < 0) t += 1\n  if (t > 1) t -= 1\n  if (t < 1 / 6) return p + (q - p) * 6 * t\n  if (t < 1 / 2) return q\n  if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6\n  return p\n}\n\nclass Color {\n  constructor(...inputs) {\n    this.init(...inputs)\n  }\n\n  // Test if given value is a color\n  static isColor(color) {\n    return (\n      color && (color instanceof Color || this.isRgb(color) || this.test(color))\n    )\n  }\n\n  // Test if given value is an rgb object\n  static isRgb(color) {\n    return (\n      color &&\n      typeof color.r === 'number' &&\n      typeof color.g === 'number' &&\n      typeof color.b === 'number'\n    )\n  }\n\n  /*\n  Generating random colors\n  */\n  static random(mode = 'vibrant', t) {\n    // Get the math modules\n    const { random, round, sin, PI: pi } = Math\n\n    // Run the correct generator\n    if (mode === 'vibrant') {\n      const l = (81 - 57) * random() + 57\n      const c = (83 - 45) * random() + 45\n      const h = 360 * random()\n      const color = new Color(l, c, h, 'lch')\n      return color\n    } else if (mode === 'sine') {\n      t = t == null ? random() : t\n      const r = round(80 * sin((2 * pi * t) / 0.5 + 0.01) + 150)\n      const g = round(50 * sin((2 * pi * t) / 0.5 + 4.6) + 200)\n      const b = round(100 * sin((2 * pi * t) / 0.5 + 2.3) + 150)\n      const color = new Color(r, g, b)\n      return color\n    } else if (mode === 'pastel') {\n      const l = (94 - 86) * random() + 86\n      const c = (26 - 9) * random() + 9\n      const h = 360 * random()\n      const color = new Color(l, c, h, 'lch')\n      return color\n    } else if (mode === 'dark') {\n      const l = 10 + 10 * random()\n      const c = (125 - 75) * random() + 86\n      const h = 360 * random()\n      const color = new Color(l, c, h, 'lch')\n      return color\n    } else if (mode === 'rgb') {\n      const r = 255 * random()\n      const g = 255 * random()\n      const b = 255 * random()\n      const color = new Color(r, g, b)\n      return color\n    } else if (mode === 'lab') {\n      const l = 100 * random()\n      const a = 256 * random() - 128\n      const b = 256 * random() - 128\n      const color = new Color(l, a, b, 'lab')\n      return color\n    } else if (mode === 'grey') {\n      const grey = 255 * random()\n      const color = new Color(grey, grey, grey)\n      return color\n    } else {\n      throw new Error('Unsupported random color mode')\n    }\n  }\n\n  // Test if given value is a color string\n  static test(color) {\n    return typeof color === 'string' && (_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.isHex.test(color) || _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.isRgb.test(color))\n  }\n\n  cmyk() {\n    // Get the rgb values for the current color\n    const { _a, _b, _c } = this.rgb()\n    const [r, g, b] = [_a, _b, _c].map((v) => v / 255)\n\n    // Get the cmyk values in an unbounded format\n    const k = Math.min(1 - r, 1 - g, 1 - b)\n\n    if (k === 1) {\n      // Catch the black case\n      return new Color(0, 0, 0, 1, 'cmyk')\n    }\n\n    const c = (1 - r - k) / (1 - k)\n    const m = (1 - g - k) / (1 - k)\n    const y = (1 - b - k) / (1 - k)\n\n    // Construct the new color\n    const color = new Color(c, m, y, k, 'cmyk')\n    return color\n  }\n\n  hsl() {\n    // Get the rgb values\n    const { _a, _b, _c } = this.rgb()\n    const [r, g, b] = [_a, _b, _c].map((v) => v / 255)\n\n    // Find the maximum and minimum values to get the lightness\n    const max = Math.max(r, g, b)\n    const min = Math.min(r, g, b)\n    const l = (max + min) / 2\n\n    // If the r, g, v values are identical then we are grey\n    const isGrey = max === min\n\n    // Calculate the hue and saturation\n    const delta = max - min\n    const s = isGrey\n      ? 0\n      : l > 0.5\n        ? delta / (2 - max - min)\n        : delta / (max + min)\n    const h = isGrey\n      ? 0\n      : max === r\n        ? ((g - b) / delta + (g < b ? 6 : 0)) / 6\n        : max === g\n          ? ((b - r) / delta + 2) / 6\n          : max === b\n            ? ((r - g) / delta + 4) / 6\n            : 0\n\n    // Construct and return the new color\n    const color = new Color(360 * h, 100 * s, 100 * l, 'hsl')\n    return color\n  }\n\n  init(a = 0, b = 0, c = 0, d = 0, space = 'rgb') {\n    // This catches the case when a falsy value is passed like ''\n    a = !a ? 0 : a\n\n    // Reset all values in case the init function is rerun with new color space\n    if (this.space) {\n      for (const component in this.space) {\n        delete this[this.space[component]]\n      }\n    }\n\n    if (typeof a === 'number') {\n      // Allow for the case that we don't need d...\n      space = typeof d === 'string' ? d : space\n      d = typeof d === 'string' ? 0 : d\n\n      // Assign the values straight to the color\n      Object.assign(this, { _a: a, _b: b, _c: c, _d: d, space })\n      // If the user gave us an array, make the color from it\n    } else if (a instanceof Array) {\n      this.space = b || (typeof a[3] === 'string' ? a[3] : a[4]) || 'rgb'\n      Object.assign(this, { _a: a[0], _b: a[1], _c: a[2], _d: a[3] || 0 })\n    } else if (a instanceof Object) {\n      // Set the object up and assign its values directly\n      const values = getParameters(a, b)\n      Object.assign(this, values)\n    } else if (typeof a === 'string') {\n      if (_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.isRgb.test(a)) {\n        const noWhitespace = a.replace(_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.whitespace, '')\n        const [_a, _b, _c] = _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.rgb\n          .exec(noWhitespace)\n          .slice(1, 4)\n          .map((v) => parseInt(v))\n        Object.assign(this, { _a, _b, _c, _d: 0, space: 'rgb' })\n      } else if (_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.isHex.test(a)) {\n        const hexParse = (v) => parseInt(v, 16)\n        const [, _a, _b, _c] = _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.hex.exec(sixDigitHex(a)).map(hexParse)\n        Object.assign(this, { _a, _b, _c, _d: 0, space: 'rgb' })\n      } else throw Error(\"Unsupported string format, can't construct Color\")\n    }\n\n    // Now add the components as a convenience\n    const { _a, _b, _c, _d } = this\n    const components =\n      this.space === 'rgb'\n        ? { r: _a, g: _b, b: _c }\n        : this.space === 'xyz'\n          ? { x: _a, y: _b, z: _c }\n          : this.space === 'hsl'\n            ? { h: _a, s: _b, l: _c }\n            : this.space === 'lab'\n              ? { l: _a, a: _b, b: _c }\n              : this.space === 'lch'\n                ? { l: _a, c: _b, h: _c }\n                : this.space === 'cmyk'\n                  ? { c: _a, m: _b, y: _c, k: _d }\n                  : {}\n    Object.assign(this, components)\n  }\n\n  lab() {\n    // Get the xyz color\n    const { x, y, z } = this.xyz()\n\n    // Get the lab components\n    const l = 116 * y - 16\n    const a = 500 * (x - y)\n    const b = 200 * (y - z)\n\n    // Construct and return a new color\n    const color = new Color(l, a, b, 'lab')\n    return color\n  }\n\n  lch() {\n    // Get the lab color directly\n    const { l, a, b } = this.lab()\n\n    // Get the chromaticity and the hue using polar coordinates\n    const c = Math.sqrt(a ** 2 + b ** 2)\n    let h = (180 * Math.atan2(b, a)) / Math.PI\n    if (h < 0) {\n      h *= -1\n      h = 360 - h\n    }\n\n    // Make a new color and return it\n    const color = new Color(l, c, h, 'lch')\n    return color\n  }\n  /*\n  Conversion Methods\n  */\n\n  rgb() {\n    if (this.space === 'rgb') {\n      return this\n    } else if (cieSpace(this.space)) {\n      // Convert to the xyz color space\n      let { x, y, z } = this\n      if (this.space === 'lab' || this.space === 'lch') {\n        // Get the values in the lab space\n        let { l, a, b } = this\n        if (this.space === 'lch') {\n          const { c, h } = this\n          const dToR = Math.PI / 180\n          a = c * Math.cos(dToR * h)\n          b = c * Math.sin(dToR * h)\n        }\n\n        // Undo the nonlinear function\n        const yL = (l + 16) / 116\n        const xL = a / 500 + yL\n        const zL = yL - b / 200\n\n        // Get the xyz values\n        const ct = 16 / 116\n        const mx = 0.008856\n        const nm = 7.787\n        x = 0.95047 * (xL ** 3 > mx ? xL ** 3 : (xL - ct) / nm)\n        y = 1.0 * (yL ** 3 > mx ? yL ** 3 : (yL - ct) / nm)\n        z = 1.08883 * (zL ** 3 > mx ? zL ** 3 : (zL - ct) / nm)\n      }\n\n      // Convert xyz to unbounded rgb values\n      const rU = x * 3.2406 + y * -1.5372 + z * -0.4986\n      const gU = x * -0.9689 + y * 1.8758 + z * 0.0415\n      const bU = x * 0.0557 + y * -0.204 + z * 1.057\n\n      // Convert the values to true rgb values\n      const pow = Math.pow\n      const bd = 0.0031308\n      const r = rU > bd ? 1.055 * pow(rU, 1 / 2.4) - 0.055 : 12.92 * rU\n      const g = gU > bd ? 1.055 * pow(gU, 1 / 2.4) - 0.055 : 12.92 * gU\n      const b = bU > bd ? 1.055 * pow(bU, 1 / 2.4) - 0.055 : 12.92 * bU\n\n      // Make and return the color\n      const color = new Color(255 * r, 255 * g, 255 * b)\n      return color\n    } else if (this.space === 'hsl') {\n      // https://bgrins.github.io/TinyColor/docs/tinycolor.html\n      // Get the current hsl values\n      let { h, s, l } = this\n      h /= 360\n      s /= 100\n      l /= 100\n\n      // If we are grey, then just make the color directly\n      if (s === 0) {\n        l *= 255\n        const color = new Color(l, l, l)\n        return color\n      }\n\n      // TODO I have no idea what this does :D If you figure it out, tell me!\n      const q = l < 0.5 ? l * (1 + s) : l + s - l * s\n      const p = 2 * l - q\n\n      // Get the rgb values\n      const r = 255 * hueToRgb(p, q, h + 1 / 3)\n      const g = 255 * hueToRgb(p, q, h)\n      const b = 255 * hueToRgb(p, q, h - 1 / 3)\n\n      // Make a new color\n      const color = new Color(r, g, b)\n      return color\n    } else if (this.space === 'cmyk') {\n      // https://gist.github.com/felipesabino/5066336\n      // Get the normalised cmyk values\n      const { c, m, y, k } = this\n\n      // Get the rgb values\n      const r = 255 * (1 - Math.min(1, c * (1 - k) + k))\n      const g = 255 * (1 - Math.min(1, m * (1 - k) + k))\n      const b = 255 * (1 - Math.min(1, y * (1 - k) + k))\n\n      // Form the color and return it\n      const color = new Color(r, g, b)\n      return color\n    } else {\n      return this\n    }\n  }\n\n  toArray() {\n    const { _a, _b, _c, _d, space } = this\n    return [_a, _b, _c, _d, space]\n  }\n\n  toHex() {\n    const [r, g, b] = this._clamped().map(componentHex)\n    return `#${r}${g}${b}`\n  }\n\n  toRgb() {\n    const [rV, gV, bV] = this._clamped()\n    const string = `rgb(${rV},${gV},${bV})`\n    return string\n  }\n\n  toString() {\n    return this.toHex()\n  }\n\n  xyz() {\n    // Normalise the red, green and blue values\n    const { _a: r255, _b: g255, _c: b255 } = this.rgb()\n    const [r, g, b] = [r255, g255, b255].map((v) => v / 255)\n\n    // Convert to the lab rgb space\n    const rL = r > 0.04045 ? Math.pow((r + 0.055) / 1.055, 2.4) : r / 12.92\n    const gL = g > 0.04045 ? Math.pow((g + 0.055) / 1.055, 2.4) : g / 12.92\n    const bL = b > 0.04045 ? Math.pow((b + 0.055) / 1.055, 2.4) : b / 12.92\n\n    // Convert to the xyz color space without bounding the values\n    const xU = (rL * 0.4124 + gL * 0.3576 + bL * 0.1805) / 0.95047\n    const yU = (rL * 0.2126 + gL * 0.7152 + bL * 0.0722) / 1.0\n    const zU = (rL * 0.0193 + gL * 0.1192 + bL * 0.9505) / 1.08883\n\n    // Get the proper xyz values by applying the bounding\n    const x = xU > 0.008856 ? Math.pow(xU, 1 / 3) : 7.787 * xU + 16 / 116\n    const y = yU > 0.008856 ? Math.pow(yU, 1 / 3) : 7.787 * yU + 16 / 116\n    const z = zU > 0.008856 ? Math.pow(zU, 1 / 3) : 7.787 * zU + 16 / 116\n\n    // Make and return the color\n    const color = new Color(x, y, z, 'xyz')\n    return color\n  }\n\n  /*\n  Input and Output methods\n  */\n\n  _clamped() {\n    const { _a, _b, _c } = this.rgb()\n    const { max, min, round } = Math\n    const format = (v) => max(0, min(round(v), 255))\n    return [_a, _b, _c].map(format)\n  }\n\n  /*\n  Constructing colors\n  */\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/types/Color.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Color)
+/* harmony export */ });
+/* harmony import */ var _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../modules/core/regex.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js");
+
+
+function sixDigitHex(hex) {
+  return hex.length === 4
+    ? [
+        '#',
+        hex.substring(1, 2),
+        hex.substring(1, 2),
+        hex.substring(2, 3),
+        hex.substring(2, 3),
+        hex.substring(3, 4),
+        hex.substring(3, 4)
+      ].join('')
+    : hex
+}
+
+function componentHex(component) {
+  const integer = Math.round(component)
+  const bounded = Math.max(0, Math.min(255, integer))
+  const hex = bounded.toString(16)
+  return hex.length === 1 ? '0' + hex : hex
+}
+
+function is(object, space) {
+  for (let i = space.length; i--; ) {
+    if (object[space[i]] == null) {
+      return false
+    }
+  }
+  return true
+}
+
+function getParameters(a, b) {
+  const params = is(a, 'rgb')
+    ? { _a: a.r, _b: a.g, _c: a.b, _d: 0, space: 'rgb' }
+    : is(a, 'xyz')
+      ? { _a: a.x, _b: a.y, _c: a.z, _d: 0, space: 'xyz' }
+      : is(a, 'hsl')
+        ? { _a: a.h, _b: a.s, _c: a.l, _d: 0, space: 'hsl' }
+        : is(a, 'lab')
+          ? { _a: a.l, _b: a.a, _c: a.b, _d: 0, space: 'lab' }
+          : is(a, 'lch')
+            ? { _a: a.l, _b: a.c, _c: a.h, _d: 0, space: 'lch' }
+            : is(a, 'cmyk')
+              ? { _a: a.c, _b: a.m, _c: a.y, _d: a.k, space: 'cmyk' }
+              : { _a: 0, _b: 0, _c: 0, space: 'rgb' }
+
+  params.space = b || params.space
+  return params
+}
+
+function cieSpace(space) {
+  if (space === 'lab' || space === 'xyz' || space === 'lch') {
+    return true
+  } else {
+    return false
+  }
+}
+
+function hueToRgb(p, q, t) {
+  if (t < 0) t += 1
+  if (t > 1) t -= 1
+  if (t < 1 / 6) return p + (q - p) * 6 * t
+  if (t < 1 / 2) return q
+  if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6
+  return p
+}
+
+class Color {
+  constructor(...inputs) {
+    this.init(...inputs)
+  }
+
+  // Test if given value is a color
+  static isColor(color) {
+    return (
+      color && (color instanceof Color || this.isRgb(color) || this.test(color))
+    )
+  }
+
+  // Test if given value is an rgb object
+  static isRgb(color) {
+    return (
+      color &&
+      typeof color.r === 'number' &&
+      typeof color.g === 'number' &&
+      typeof color.b === 'number'
+    )
+  }
+
+  /*
+  Generating random colors
+  */
+  static random(mode = 'vibrant', t) {
+    // Get the math modules
+    const { random, round, sin, PI: pi } = Math
+
+    // Run the correct generator
+    if (mode === 'vibrant') {
+      const l = (81 - 57) * random() + 57
+      const c = (83 - 45) * random() + 45
+      const h = 360 * random()
+      const color = new Color(l, c, h, 'lch')
+      return color
+    } else if (mode === 'sine') {
+      t = t == null ? random() : t
+      const r = round(80 * sin((2 * pi * t) / 0.5 + 0.01) + 150)
+      const g = round(50 * sin((2 * pi * t) / 0.5 + 4.6) + 200)
+      const b = round(100 * sin((2 * pi * t) / 0.5 + 2.3) + 150)
+      const color = new Color(r, g, b)
+      return color
+    } else if (mode === 'pastel') {
+      const l = (94 - 86) * random() + 86
+      const c = (26 - 9) * random() + 9
+      const h = 360 * random()
+      const color = new Color(l, c, h, 'lch')
+      return color
+    } else if (mode === 'dark') {
+      const l = 10 + 10 * random()
+      const c = (125 - 75) * random() + 86
+      const h = 360 * random()
+      const color = new Color(l, c, h, 'lch')
+      return color
+    } else if (mode === 'rgb') {
+      const r = 255 * random()
+      const g = 255 * random()
+      const b = 255 * random()
+      const color = new Color(r, g, b)
+      return color
+    } else if (mode === 'lab') {
+      const l = 100 * random()
+      const a = 256 * random() - 128
+      const b = 256 * random() - 128
+      const color = new Color(l, a, b, 'lab')
+      return color
+    } else if (mode === 'grey') {
+      const grey = 255 * random()
+      const color = new Color(grey, grey, grey)
+      return color
+    } else {
+      throw new Error('Unsupported random color mode')
+    }
+  }
+
+  // Test if given value is a color string
+  static test(color) {
+    return typeof color === 'string' && (_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.isHex.test(color) || _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.isRgb.test(color))
+  }
+
+  cmyk() {
+    // Get the rgb values for the current color
+    const { _a, _b, _c } = this.rgb()
+    const [r, g, b] = [_a, _b, _c].map((v) => v / 255)
+
+    // Get the cmyk values in an unbounded format
+    const k = Math.min(1 - r, 1 - g, 1 - b)
+
+    if (k === 1) {
+      // Catch the black case
+      return new Color(0, 0, 0, 1, 'cmyk')
+    }
+
+    const c = (1 - r - k) / (1 - k)
+    const m = (1 - g - k) / (1 - k)
+    const y = (1 - b - k) / (1 - k)
+
+    // Construct the new color
+    const color = new Color(c, m, y, k, 'cmyk')
+    return color
+  }
+
+  hsl() {
+    // Get the rgb values
+    const { _a, _b, _c } = this.rgb()
+    const [r, g, b] = [_a, _b, _c].map((v) => v / 255)
+
+    // Find the maximum and minimum values to get the lightness
+    const max = Math.max(r, g, b)
+    const min = Math.min(r, g, b)
+    const l = (max + min) / 2
+
+    // If the r, g, v values are identical then we are grey
+    const isGrey = max === min
+
+    // Calculate the hue and saturation
+    const delta = max - min
+    const s = isGrey
+      ? 0
+      : l > 0.5
+        ? delta / (2 - max - min)
+        : delta / (max + min)
+    const h = isGrey
+      ? 0
+      : max === r
+        ? ((g - b) / delta + (g < b ? 6 : 0)) / 6
+        : max === g
+          ? ((b - r) / delta + 2) / 6
+          : max === b
+            ? ((r - g) / delta + 4) / 6
+            : 0
+
+    // Construct and return the new color
+    const color = new Color(360 * h, 100 * s, 100 * l, 'hsl')
+    return color
+  }
+
+  init(a = 0, b = 0, c = 0, d = 0, space = 'rgb') {
+    // This catches the case when a falsy value is passed like ''
+    a = !a ? 0 : a
+
+    // Reset all values in case the init function is rerun with new color space
+    if (this.space) {
+      for (const component in this.space) {
+        delete this[this.space[component]]
+      }
+    }
+
+    if (typeof a === 'number') {
+      // Allow for the case that we don't need d...
+      space = typeof d === 'string' ? d : space
+      d = typeof d === 'string' ? 0 : d
+
+      // Assign the values straight to the color
+      Object.assign(this, { _a: a, _b: b, _c: c, _d: d, space })
+      // If the user gave us an array, make the color from it
+    } else if (a instanceof Array) {
+      this.space = b || (typeof a[3] === 'string' ? a[3] : a[4]) || 'rgb'
+      Object.assign(this, { _a: a[0], _b: a[1], _c: a[2], _d: a[3] || 0 })
+    } else if (a instanceof Object) {
+      // Set the object up and assign its values directly
+      const values = getParameters(a, b)
+      Object.assign(this, values)
+    } else if (typeof a === 'string') {
+      if (_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.isRgb.test(a)) {
+        const noWhitespace = a.replace(_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.whitespace, '')
+        const [_a, _b, _c] = _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.rgb
+          .exec(noWhitespace)
+          .slice(1, 4)
+          .map((v) => parseInt(v))
+        Object.assign(this, { _a, _b, _c, _d: 0, space: 'rgb' })
+      } else if (_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.isHex.test(a)) {
+        const hexParse = (v) => parseInt(v, 16)
+        const [, _a, _b, _c] = _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.hex.exec(sixDigitHex(a)).map(hexParse)
+        Object.assign(this, { _a, _b, _c, _d: 0, space: 'rgb' })
+      } else throw Error("Unsupported string format, can't construct Color")
+    }
+
+    // Now add the components as a convenience
+    const { _a, _b, _c, _d } = this
+    const components =
+      this.space === 'rgb'
+        ? { r: _a, g: _b, b: _c }
+        : this.space === 'xyz'
+          ? { x: _a, y: _b, z: _c }
+          : this.space === 'hsl'
+            ? { h: _a, s: _b, l: _c }
+            : this.space === 'lab'
+              ? { l: _a, a: _b, b: _c }
+              : this.space === 'lch'
+                ? { l: _a, c: _b, h: _c }
+                : this.space === 'cmyk'
+                  ? { c: _a, m: _b, y: _c, k: _d }
+                  : {}
+    Object.assign(this, components)
+  }
+
+  lab() {
+    // Get the xyz color
+    const { x, y, z } = this.xyz()
+
+    // Get the lab components
+    const l = 116 * y - 16
+    const a = 500 * (x - y)
+    const b = 200 * (y - z)
+
+    // Construct and return a new color
+    const color = new Color(l, a, b, 'lab')
+    return color
+  }
+
+  lch() {
+    // Get the lab color directly
+    const { l, a, b } = this.lab()
+
+    // Get the chromaticity and the hue using polar coordinates
+    const c = Math.sqrt(a ** 2 + b ** 2)
+    let h = (180 * Math.atan2(b, a)) / Math.PI
+    if (h < 0) {
+      h *= -1
+      h = 360 - h
+    }
+
+    // Make a new color and return it
+    const color = new Color(l, c, h, 'lch')
+    return color
+  }
+  /*
+  Conversion Methods
+  */
+
+  rgb() {
+    if (this.space === 'rgb') {
+      return this
+    } else if (cieSpace(this.space)) {
+      // Convert to the xyz color space
+      let { x, y, z } = this
+      if (this.space === 'lab' || this.space === 'lch') {
+        // Get the values in the lab space
+        let { l, a, b } = this
+        if (this.space === 'lch') {
+          const { c, h } = this
+          const dToR = Math.PI / 180
+          a = c * Math.cos(dToR * h)
+          b = c * Math.sin(dToR * h)
+        }
+
+        // Undo the nonlinear function
+        const yL = (l + 16) / 116
+        const xL = a / 500 + yL
+        const zL = yL - b / 200
+
+        // Get the xyz values
+        const ct = 16 / 116
+        const mx = 0.008856
+        const nm = 7.787
+        x = 0.95047 * (xL ** 3 > mx ? xL ** 3 : (xL - ct) / nm)
+        y = 1.0 * (yL ** 3 > mx ? yL ** 3 : (yL - ct) / nm)
+        z = 1.08883 * (zL ** 3 > mx ? zL ** 3 : (zL - ct) / nm)
+      }
+
+      // Convert xyz to unbounded rgb values
+      const rU = x * 3.2406 + y * -1.5372 + z * -0.4986
+      const gU = x * -0.9689 + y * 1.8758 + z * 0.0415
+      const bU = x * 0.0557 + y * -0.204 + z * 1.057
+
+      // Convert the values to true rgb values
+      const pow = Math.pow
+      const bd = 0.0031308
+      const r = rU > bd ? 1.055 * pow(rU, 1 / 2.4) - 0.055 : 12.92 * rU
+      const g = gU > bd ? 1.055 * pow(gU, 1 / 2.4) - 0.055 : 12.92 * gU
+      const b = bU > bd ? 1.055 * pow(bU, 1 / 2.4) - 0.055 : 12.92 * bU
+
+      // Make and return the color
+      const color = new Color(255 * r, 255 * g, 255 * b)
+      return color
+    } else if (this.space === 'hsl') {
+      // https://bgrins.github.io/TinyColor/docs/tinycolor.html
+      // Get the current hsl values
+      let { h, s, l } = this
+      h /= 360
+      s /= 100
+      l /= 100
+
+      // If we are grey, then just make the color directly
+      if (s === 0) {
+        l *= 255
+        const color = new Color(l, l, l)
+        return color
+      }
+
+      // TODO I have no idea what this does :D If you figure it out, tell me!
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s
+      const p = 2 * l - q
+
+      // Get the rgb values
+      const r = 255 * hueToRgb(p, q, h + 1 / 3)
+      const g = 255 * hueToRgb(p, q, h)
+      const b = 255 * hueToRgb(p, q, h - 1 / 3)
+
+      // Make a new color
+      const color = new Color(r, g, b)
+      return color
+    } else if (this.space === 'cmyk') {
+      // https://gist.github.com/felipesabino/5066336
+      // Get the normalised cmyk values
+      const { c, m, y, k } = this
+
+      // Get the rgb values
+      const r = 255 * (1 - Math.min(1, c * (1 - k) + k))
+      const g = 255 * (1 - Math.min(1, m * (1 - k) + k))
+      const b = 255 * (1 - Math.min(1, y * (1 - k) + k))
+
+      // Form the color and return it
+      const color = new Color(r, g, b)
+      return color
+    } else {
+      return this
+    }
+  }
+
+  toArray() {
+    const { _a, _b, _c, _d, space } = this
+    return [_a, _b, _c, _d, space]
+  }
+
+  toHex() {
+    const [r, g, b] = this._clamped().map(componentHex)
+    return `#${r}${g}${b}`
+  }
+
+  toRgb() {
+    const [rV, gV, bV] = this._clamped()
+    const string = `rgb(${rV},${gV},${bV})`
+    return string
+  }
+
+  toString() {
+    return this.toHex()
+  }
+
+  xyz() {
+    // Normalise the red, green and blue values
+    const { _a: r255, _b: g255, _c: b255 } = this.rgb()
+    const [r, g, b] = [r255, g255, b255].map((v) => v / 255)
+
+    // Convert to the lab rgb space
+    const rL = r > 0.04045 ? Math.pow((r + 0.055) / 1.055, 2.4) : r / 12.92
+    const gL = g > 0.04045 ? Math.pow((g + 0.055) / 1.055, 2.4) : g / 12.92
+    const bL = b > 0.04045 ? Math.pow((b + 0.055) / 1.055, 2.4) : b / 12.92
+
+    // Convert to the xyz color space without bounding the values
+    const xU = (rL * 0.4124 + gL * 0.3576 + bL * 0.1805) / 0.95047
+    const yU = (rL * 0.2126 + gL * 0.7152 + bL * 0.0722) / 1.0
+    const zU = (rL * 0.0193 + gL * 0.1192 + bL * 0.9505) / 1.08883
+
+    // Get the proper xyz values by applying the bounding
+    const x = xU > 0.008856 ? Math.pow(xU, 1 / 3) : 7.787 * xU + 16 / 116
+    const y = yU > 0.008856 ? Math.pow(yU, 1 / 3) : 7.787 * yU + 16 / 116
+    const z = zU > 0.008856 ? Math.pow(zU, 1 / 3) : 7.787 * zU + 16 / 116
+
+    // Make and return the color
+    const color = new Color(x, y, z, 'xyz')
+    return color
+  }
+
+  /*
+  Input and Output methods
+  */
+
+  _clamped() {
+    const { _a, _b, _c } = this.rgb()
+    const { max, min, round } = Math
+    const format = (v) => max(0, min(round(v), 255))
+    return [_a, _b, _c].map(format)
+  }
+
+  /*
+  Constructing colors
+  */
+}
+
 
 /***/ }),
 
@@ -626,7 +7650,70 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \****************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ EventTarget)\n/* harmony export */ });\n/* harmony import */ var _modules_core_event_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../modules/core/event.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/event.js\");\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _Base_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Base.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Base.js\");\n\n\n\n\nclass EventTarget extends _Base_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"] {\n  addEventListener() {}\n\n  dispatch(event, data, options) {\n    return (0,_modules_core_event_js__WEBPACK_IMPORTED_MODULE_0__.dispatch)(this, event, data, options)\n  }\n\n  dispatchEvent(event) {\n    const bag = this.getEventHolder().events\n    if (!bag) return true\n\n    const events = bag[event.type]\n\n    for (const i in events) {\n      for (const j in events[i]) {\n        events[i][j](event)\n      }\n    }\n\n    return !event.defaultPrevented\n  }\n\n  // Fire given event\n  fire(event, data, options) {\n    this.dispatch(event, data, options)\n    return this\n  }\n\n  getEventHolder() {\n    return this\n  }\n\n  getEventTarget() {\n    return this\n  }\n\n  // Unbind event from listener\n  off(event, listener, options) {\n    (0,_modules_core_event_js__WEBPACK_IMPORTED_MODULE_0__.off)(this, event, listener, options)\n    return this\n  }\n\n  // Bind given event to listener\n  on(event, listener, binding, options) {\n    (0,_modules_core_event_js__WEBPACK_IMPORTED_MODULE_0__.on)(this, event, listener, binding, options)\n    return this\n  }\n\n  removeEventListener() {}\n}\n\n(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.register)(EventTarget, 'EventTarget')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/types/EventTarget.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ EventTarget)
+/* harmony export */ });
+/* harmony import */ var _modules_core_event_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../modules/core/event.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/event.js");
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _Base_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Base.js */ "./node_modules/@svgdotjs/svg.js/src/types/Base.js");
+
+
+
+
+class EventTarget extends _Base_js__WEBPACK_IMPORTED_MODULE_2__["default"] {
+  addEventListener() {}
+
+  dispatch(event, data, options) {
+    return (0,_modules_core_event_js__WEBPACK_IMPORTED_MODULE_0__.dispatch)(this, event, data, options)
+  }
+
+  dispatchEvent(event) {
+    const bag = this.getEventHolder().events
+    if (!bag) return true
+
+    const events = bag[event.type]
+
+    for (const i in events) {
+      for (const j in events[i]) {
+        events[i][j](event)
+      }
+    }
+
+    return !event.defaultPrevented
+  }
+
+  // Fire given event
+  fire(event, data, options) {
+    this.dispatch(event, data, options)
+    return this
+  }
+
+  getEventHolder() {
+    return this
+  }
+
+  getEventTarget() {
+    return this
+  }
+
+  // Unbind event from listener
+  off(event, listener, options) {
+    (0,_modules_core_event_js__WEBPACK_IMPORTED_MODULE_0__.off)(this, event, listener, options)
+    return this
+  }
+
+  // Bind given event to listener
+  on(event, listener, binding, options) {
+    (0,_modules_core_event_js__WEBPACK_IMPORTED_MODULE_0__.on)(this, event, listener, binding, options)
+    return this
+  }
+
+  removeEventListener() {}
+}
+
+(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_1__.register)(EventTarget, 'EventTarget')
+
 
 /***/ }),
 
@@ -636,7 +7723,75 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n\n// import { subClassArray } from './ArrayPolyfill.js'\n\nclass List extends Array {\n  constructor(arr = [], ...args) {\n    super(arr, ...args)\n    if (typeof arr === 'number') return this\n    this.length = 0\n    this.push(...arr)\n  }\n}\n\n/* = subClassArray('List', Array, function (arr = []) {\n  // This catches the case, that native map tries to create an array with new Array(1)\n  if (typeof arr === 'number') return this\n  this.length = 0\n  this.push(...arr)\n}) */\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (List);\n\n;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)([List], {\n  each(fnOrMethodName, ...args) {\n    if (typeof fnOrMethodName === 'function') {\n      return this.map((el, i, arr) => {\n        return fnOrMethodName.call(el, el, i, arr)\n      })\n    } else {\n      return this.map((el) => {\n        return el[fnOrMethodName](...args)\n      })\n    }\n  },\n\n  toArray() {\n    return Array.prototype.concat.apply([], this)\n  }\n})\n\nconst reserved = ['toArray', 'constructor', 'each']\n\nList.extend = function (methods) {\n  methods = methods.reduce((obj, name) => {\n    // Don't overwrite own methods\n    if (reserved.includes(name)) return obj\n\n    // Don't add private methods\n    if (name[0] === '_') return obj\n\n    // Allow access to original Array methods through a prefix\n    if (name in Array.prototype) {\n      obj['$' + name] = Array.prototype[name]\n    }\n\n    // Relay every call to each()\n    obj[name] = function (...attrs) {\n      return this.each(name, ...attrs)\n    }\n    return obj\n  }, {})\n\n  ;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)([List], methods)\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/types/List.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+
+// import { subClassArray } from './ArrayPolyfill.js'
+
+class List extends Array {
+  constructor(arr = [], ...args) {
+    super(arr, ...args)
+    if (typeof arr === 'number') return this
+    this.length = 0
+    this.push(...arr)
+  }
+}
+
+/* = subClassArray('List', Array, function (arr = []) {
+  // This catches the case, that native map tries to create an array with new Array(1)
+  if (typeof arr === 'number') return this
+  this.length = 0
+  this.push(...arr)
+}) */
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (List);
+
+;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)([List], {
+  each(fnOrMethodName, ...args) {
+    if (typeof fnOrMethodName === 'function') {
+      return this.map((el, i, arr) => {
+        return fnOrMethodName.call(el, el, i, arr)
+      })
+    } else {
+      return this.map((el) => {
+        return el[fnOrMethodName](...args)
+      })
+    }
+  },
+
+  toArray() {
+    return Array.prototype.concat.apply([], this)
+  }
+})
+
+const reserved = ['toArray', 'constructor', 'each']
+
+List.extend = function (methods) {
+  methods = methods.reduce((obj, name) => {
+    // Don't overwrite own methods
+    if (reserved.includes(name)) return obj
+
+    // Don't add private methods
+    if (name[0] === '_') return obj
+
+    // Allow access to original Array methods through a prefix
+    if (name in Array.prototype) {
+      obj['$' + name] = Array.prototype[name]
+    }
+
+    // Relay every call to each()
+    obj[name] = function (...attrs) {
+      return this.each(name, ...attrs)
+    }
+    return obj
+  }, {})
+
+  ;(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_0__.extend)([List], methods)
+}
+
 
 /***/ }),
 
@@ -646,7 +7801,561 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \***********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   ctm: () => (/* binding */ ctm),\n/* harmony export */   \"default\": () => (/* binding */ Matrix),\n/* harmony export */   screenCTM: () => (/* binding */ screenCTM)\n/* harmony export */ });\n/* harmony import */ var _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../modules/core/regex.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js\");\n/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/utils.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/utils.js\");\n/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/adopter.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/adopter.js\");\n/* harmony import */ var _elements_Element_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../elements/Element.js */ \"./node_modules/@svgdotjs/svg.js/src/elements/Element.js\");\n/* harmony import */ var _Point_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Point.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Point.js\");\n\n\n\n\n\n\nfunction closeEnough(a, b, threshold) {\n  return Math.abs(b - a) < (threshold || 1e-6)\n}\n\nclass Matrix {\n  constructor(...args) {\n    this.init(...args)\n  }\n\n  static formatTransforms(o) {\n    // Get all of the parameters required to form the matrix\n    const flipBoth = o.flip === 'both' || o.flip === true\n    const flipX = o.flip && (flipBoth || o.flip === 'x') ? -1 : 1\n    const flipY = o.flip && (flipBoth || o.flip === 'y') ? -1 : 1\n    const skewX =\n      o.skew && o.skew.length\n        ? o.skew[0]\n        : isFinite(o.skew)\n          ? o.skew\n          : isFinite(o.skewX)\n            ? o.skewX\n            : 0\n    const skewY =\n      o.skew && o.skew.length\n        ? o.skew[1]\n        : isFinite(o.skew)\n          ? o.skew\n          : isFinite(o.skewY)\n            ? o.skewY\n            : 0\n    const scaleX =\n      o.scale && o.scale.length\n        ? o.scale[0] * flipX\n        : isFinite(o.scale)\n          ? o.scale * flipX\n          : isFinite(o.scaleX)\n            ? o.scaleX * flipX\n            : flipX\n    const scaleY =\n      o.scale && o.scale.length\n        ? o.scale[1] * flipY\n        : isFinite(o.scale)\n          ? o.scale * flipY\n          : isFinite(o.scaleY)\n            ? o.scaleY * flipY\n            : flipY\n    const shear = o.shear || 0\n    const theta = o.rotate || o.theta || 0\n    const origin = new _Point_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"](\n      o.origin || o.around || o.ox || o.originX,\n      o.oy || o.originY\n    )\n    const ox = origin.x\n    const oy = origin.y\n    // We need Point to be invalid if nothing was passed because we cannot default to 0 here. That is why NaN\n    const position = new _Point_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"](\n      o.position || o.px || o.positionX || NaN,\n      o.py || o.positionY || NaN\n    )\n    const px = position.x\n    const py = position.y\n    const translate = new _Point_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"](\n      o.translate || o.tx || o.translateX,\n      o.ty || o.translateY\n    )\n    const tx = translate.x\n    const ty = translate.y\n    const relative = new _Point_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"](\n      o.relative || o.rx || o.relativeX,\n      o.ry || o.relativeY\n    )\n    const rx = relative.x\n    const ry = relative.y\n\n    // Populate all of the values\n    return {\n      scaleX,\n      scaleY,\n      skewX,\n      skewY,\n      shear,\n      theta,\n      rx,\n      ry,\n      tx,\n      ty,\n      ox,\n      oy,\n      px,\n      py\n    }\n  }\n\n  static fromArray(a) {\n    return { a: a[0], b: a[1], c: a[2], d: a[3], e: a[4], f: a[5] }\n  }\n\n  static isMatrixLike(o) {\n    return (\n      o.a != null ||\n      o.b != null ||\n      o.c != null ||\n      o.d != null ||\n      o.e != null ||\n      o.f != null\n    )\n  }\n\n  // left matrix, right matrix, target matrix which is overwritten\n  static matrixMultiply(l, r, o) {\n    // Work out the product directly\n    const a = l.a * r.a + l.c * r.b\n    const b = l.b * r.a + l.d * r.b\n    const c = l.a * r.c + l.c * r.d\n    const d = l.b * r.c + l.d * r.d\n    const e = l.e + l.a * r.e + l.c * r.f\n    const f = l.f + l.b * r.e + l.d * r.f\n\n    // make sure to use local variables because l/r and o could be the same\n    o.a = a\n    o.b = b\n    o.c = c\n    o.d = d\n    o.e = e\n    o.f = f\n\n    return o\n  }\n\n  around(cx, cy, matrix) {\n    return this.clone().aroundO(cx, cy, matrix)\n  }\n\n  // Transform around a center point\n  aroundO(cx, cy, matrix) {\n    const dx = cx || 0\n    const dy = cy || 0\n    return this.translateO(-dx, -dy).lmultiplyO(matrix).translateO(dx, dy)\n  }\n\n  // Clones this matrix\n  clone() {\n    return new Matrix(this)\n  }\n\n  // Decomposes this matrix into its affine parameters\n  decompose(cx = 0, cy = 0) {\n    // Get the parameters from the matrix\n    const a = this.a\n    const b = this.b\n    const c = this.c\n    const d = this.d\n    const e = this.e\n    const f = this.f\n\n    // Figure out if the winding direction is clockwise or counterclockwise\n    const determinant = a * d - b * c\n    const ccw = determinant > 0 ? 1 : -1\n\n    // Since we only shear in x, we can use the x basis to get the x scale\n    // and the rotation of the resulting matrix\n    const sx = ccw * Math.sqrt(a * a + b * b)\n    const thetaRad = Math.atan2(ccw * b, ccw * a)\n    const theta = (180 / Math.PI) * thetaRad\n    const ct = Math.cos(thetaRad)\n    const st = Math.sin(thetaRad)\n\n    // We can then solve the y basis vector simultaneously to get the other\n    // two affine parameters directly from these parameters\n    const lam = (a * c + b * d) / determinant\n    const sy = (c * sx) / (lam * a - b) || (d * sx) / (lam * b + a)\n\n    // Use the translations\n    const tx = e - cx + cx * ct * sx + cy * (lam * ct * sx - st * sy)\n    const ty = f - cy + cx * st * sx + cy * (lam * st * sx + ct * sy)\n\n    // Construct the decomposition and return it\n    return {\n      // Return the affine parameters\n      scaleX: sx,\n      scaleY: sy,\n      shear: lam,\n      rotate: theta,\n      translateX: tx,\n      translateY: ty,\n      originX: cx,\n      originY: cy,\n\n      // Return the matrix parameters\n      a: this.a,\n      b: this.b,\n      c: this.c,\n      d: this.d,\n      e: this.e,\n      f: this.f\n    }\n  }\n\n  // Check if two matrices are equal\n  equals(other) {\n    if (other === this) return true\n    const comp = new Matrix(other)\n    return (\n      closeEnough(this.a, comp.a) &&\n      closeEnough(this.b, comp.b) &&\n      closeEnough(this.c, comp.c) &&\n      closeEnough(this.d, comp.d) &&\n      closeEnough(this.e, comp.e) &&\n      closeEnough(this.f, comp.f)\n    )\n  }\n\n  // Flip matrix on x or y, at a given offset\n  flip(axis, around) {\n    return this.clone().flipO(axis, around)\n  }\n\n  flipO(axis, around) {\n    return axis === 'x'\n      ? this.scaleO(-1, 1, around, 0)\n      : axis === 'y'\n        ? this.scaleO(1, -1, 0, around)\n        : this.scaleO(-1, -1, axis, around || axis) // Define an x, y flip point\n  }\n\n  // Initialize\n  init(source) {\n    const base = Matrix.fromArray([1, 0, 0, 1, 0, 0])\n\n    // ensure source as object\n    source =\n      source instanceof _elements_Element_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"]\n        ? source.matrixify()\n        : typeof source === 'string'\n          ? Matrix.fromArray(source.split(_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.delimiter).map(parseFloat))\n          : Array.isArray(source)\n            ? Matrix.fromArray(source)\n            : typeof source === 'object' && Matrix.isMatrixLike(source)\n              ? source\n              : typeof source === 'object'\n                ? new Matrix().transform(source)\n                : arguments.length === 6\n                  ? Matrix.fromArray([].slice.call(arguments))\n                  : base\n\n    // Merge the source matrix with the base matrix\n    this.a = source.a != null ? source.a : base.a\n    this.b = source.b != null ? source.b : base.b\n    this.c = source.c != null ? source.c : base.c\n    this.d = source.d != null ? source.d : base.d\n    this.e = source.e != null ? source.e : base.e\n    this.f = source.f != null ? source.f : base.f\n\n    return this\n  }\n\n  inverse() {\n    return this.clone().inverseO()\n  }\n\n  // Inverses matrix\n  inverseO() {\n    // Get the current parameters out of the matrix\n    const a = this.a\n    const b = this.b\n    const c = this.c\n    const d = this.d\n    const e = this.e\n    const f = this.f\n\n    // Invert the 2x2 matrix in the top left\n    const det = a * d - b * c\n    if (!det) throw new Error('Cannot invert ' + this)\n\n    // Calculate the top 2x2 matrix\n    const na = d / det\n    const nb = -b / det\n    const nc = -c / det\n    const nd = a / det\n\n    // Apply the inverted matrix to the top right\n    const ne = -(na * e + nc * f)\n    const nf = -(nb * e + nd * f)\n\n    // Construct the inverted matrix\n    this.a = na\n    this.b = nb\n    this.c = nc\n    this.d = nd\n    this.e = ne\n    this.f = nf\n\n    return this\n  }\n\n  lmultiply(matrix) {\n    return this.clone().lmultiplyO(matrix)\n  }\n\n  lmultiplyO(matrix) {\n    const r = this\n    const l = matrix instanceof Matrix ? matrix : new Matrix(matrix)\n\n    return Matrix.matrixMultiply(l, r, this)\n  }\n\n  // Left multiplies by the given matrix\n  multiply(matrix) {\n    return this.clone().multiplyO(matrix)\n  }\n\n  multiplyO(matrix) {\n    // Get the matrices\n    const l = this\n    const r = matrix instanceof Matrix ? matrix : new Matrix(matrix)\n\n    return Matrix.matrixMultiply(l, r, this)\n  }\n\n  // Rotate matrix\n  rotate(r, cx, cy) {\n    return this.clone().rotateO(r, cx, cy)\n  }\n\n  rotateO(r, cx = 0, cy = 0) {\n    // Convert degrees to radians\n    r = (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_1__.radians)(r)\n\n    const cos = Math.cos(r)\n    const sin = Math.sin(r)\n\n    const { a, b, c, d, e, f } = this\n\n    this.a = a * cos - b * sin\n    this.b = b * cos + a * sin\n    this.c = c * cos - d * sin\n    this.d = d * cos + c * sin\n    this.e = e * cos - f * sin + cy * sin - cx * cos + cx\n    this.f = f * cos + e * sin - cx * sin - cy * cos + cy\n\n    return this\n  }\n\n  // Scale matrix\n  scale() {\n    return this.clone().scaleO(...arguments)\n  }\n\n  scaleO(x, y = x, cx = 0, cy = 0) {\n    // Support uniform scaling\n    if (arguments.length === 3) {\n      cy = cx\n      cx = y\n      y = x\n    }\n\n    const { a, b, c, d, e, f } = this\n\n    this.a = a * x\n    this.b = b * y\n    this.c = c * x\n    this.d = d * y\n    this.e = e * x - cx * x + cx\n    this.f = f * y - cy * y + cy\n\n    return this\n  }\n\n  // Shear matrix\n  shear(a, cx, cy) {\n    return this.clone().shearO(a, cx, cy)\n  }\n\n  // eslint-disable-next-line no-unused-vars\n  shearO(lx, cx = 0, cy = 0) {\n    const { a, b, c, d, e, f } = this\n\n    this.a = a + b * lx\n    this.c = c + d * lx\n    this.e = e + f * lx - cy * lx\n\n    return this\n  }\n\n  // Skew Matrix\n  skew() {\n    return this.clone().skewO(...arguments)\n  }\n\n  skewO(x, y = x, cx = 0, cy = 0) {\n    // support uniformal skew\n    if (arguments.length === 3) {\n      cy = cx\n      cx = y\n      y = x\n    }\n\n    // Convert degrees to radians\n    x = (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_1__.radians)(x)\n    y = (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_1__.radians)(y)\n\n    const lx = Math.tan(x)\n    const ly = Math.tan(y)\n\n    const { a, b, c, d, e, f } = this\n\n    this.a = a + b * lx\n    this.b = b + a * ly\n    this.c = c + d * lx\n    this.d = d + c * ly\n    this.e = e + f * lx - cy * lx\n    this.f = f + e * ly - cx * ly\n\n    return this\n  }\n\n  // SkewX\n  skewX(x, cx, cy) {\n    return this.skew(x, 0, cx, cy)\n  }\n\n  // SkewY\n  skewY(y, cx, cy) {\n    return this.skew(0, y, cx, cy)\n  }\n\n  toArray() {\n    return [this.a, this.b, this.c, this.d, this.e, this.f]\n  }\n\n  // Convert matrix to string\n  toString() {\n    return (\n      'matrix(' +\n      this.a +\n      ',' +\n      this.b +\n      ',' +\n      this.c +\n      ',' +\n      this.d +\n      ',' +\n      this.e +\n      ',' +\n      this.f +\n      ')'\n    )\n  }\n\n  // Transform a matrix into another matrix by manipulating the space\n  transform(o) {\n    // Check if o is a matrix and then left multiply it directly\n    if (Matrix.isMatrixLike(o)) {\n      const matrix = new Matrix(o)\n      return matrix.multiplyO(this)\n    }\n\n    // Get the proposed transformations and the current transformations\n    const t = Matrix.formatTransforms(o)\n    const current = this\n    const { x: ox, y: oy } = new _Point_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"](t.ox, t.oy).transform(current)\n\n    // Construct the resulting matrix\n    const transformer = new Matrix()\n      .translateO(t.rx, t.ry)\n      .lmultiplyO(current)\n      .translateO(-ox, -oy)\n      .scaleO(t.scaleX, t.scaleY)\n      .skewO(t.skewX, t.skewY)\n      .shearO(t.shear)\n      .rotateO(t.theta)\n      .translateO(ox, oy)\n\n    // If we want the origin at a particular place, we force it there\n    if (isFinite(t.px) || isFinite(t.py)) {\n      const origin = new _Point_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"](ox, oy).transform(transformer)\n      // TODO: Replace t.px with isFinite(t.px)\n      // Doesn't work because t.px is also 0 if it wasn't passed\n      const dx = isFinite(t.px) ? t.px - origin.x : 0\n      const dy = isFinite(t.py) ? t.py - origin.y : 0\n      transformer.translateO(dx, dy)\n    }\n\n    // Translate now after positioning\n    transformer.translateO(t.tx, t.ty)\n    return transformer\n  }\n\n  // Translate matrix\n  translate(x, y) {\n    return this.clone().translateO(x, y)\n  }\n\n  translateO(x, y) {\n    this.e += x || 0\n    this.f += y || 0\n    return this\n  }\n\n  valueOf() {\n    return {\n      a: this.a,\n      b: this.b,\n      c: this.c,\n      d: this.d,\n      e: this.e,\n      f: this.f\n    }\n  }\n}\n\nfunction ctm() {\n  return new Matrix(this.node.getCTM())\n}\n\nfunction screenCTM() {\n  try {\n    /* https://bugzilla.mozilla.org/show_bug.cgi?id=1344537\n       This is needed because FF does not return the transformation matrix\n       for the inner coordinate system when getScreenCTM() is called on nested svgs.\n       However all other Browsers do that */\n    if (typeof this.isRoot === 'function' && !this.isRoot()) {\n      const rect = this.rect(1, 1)\n      const m = rect.node.getScreenCTM()\n      rect.remove()\n      return new Matrix(m)\n    }\n    return new Matrix(this.node.getScreenCTM())\n  } catch (e) {\n    console.warn(\n      `Cannot get CTM from SVG node ${this.node.nodeName}. Is the element rendered?`\n    )\n    return new Matrix()\n  }\n}\n\n(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__.register)(Matrix, 'Matrix')\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/types/Matrix.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ctm: () => (/* binding */ ctm),
+/* harmony export */   "default": () => (/* binding */ Matrix),
+/* harmony export */   screenCTM: () => (/* binding */ screenCTM)
+/* harmony export */ });
+/* harmony import */ var _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../modules/core/regex.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js");
+/* harmony import */ var _utils_utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/utils.js */ "./node_modules/@svgdotjs/svg.js/src/utils/utils.js");
+/* harmony import */ var _utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/adopter.js */ "./node_modules/@svgdotjs/svg.js/src/utils/adopter.js");
+/* harmony import */ var _elements_Element_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../elements/Element.js */ "./node_modules/@svgdotjs/svg.js/src/elements/Element.js");
+/* harmony import */ var _Point_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Point.js */ "./node_modules/@svgdotjs/svg.js/src/types/Point.js");
+
+
+
+
+
+
+function closeEnough(a, b, threshold) {
+  return Math.abs(b - a) < (threshold || 1e-6)
+}
+
+class Matrix {
+  constructor(...args) {
+    this.init(...args)
+  }
+
+  static formatTransforms(o) {
+    // Get all of the parameters required to form the matrix
+    const flipBoth = o.flip === 'both' || o.flip === true
+    const flipX = o.flip && (flipBoth || o.flip === 'x') ? -1 : 1
+    const flipY = o.flip && (flipBoth || o.flip === 'y') ? -1 : 1
+    const skewX =
+      o.skew && o.skew.length
+        ? o.skew[0]
+        : isFinite(o.skew)
+          ? o.skew
+          : isFinite(o.skewX)
+            ? o.skewX
+            : 0
+    const skewY =
+      o.skew && o.skew.length
+        ? o.skew[1]
+        : isFinite(o.skew)
+          ? o.skew
+          : isFinite(o.skewY)
+            ? o.skewY
+            : 0
+    const scaleX =
+      o.scale && o.scale.length
+        ? o.scale[0] * flipX
+        : isFinite(o.scale)
+          ? o.scale * flipX
+          : isFinite(o.scaleX)
+            ? o.scaleX * flipX
+            : flipX
+    const scaleY =
+      o.scale && o.scale.length
+        ? o.scale[1] * flipY
+        : isFinite(o.scale)
+          ? o.scale * flipY
+          : isFinite(o.scaleY)
+            ? o.scaleY * flipY
+            : flipY
+    const shear = o.shear || 0
+    const theta = o.rotate || o.theta || 0
+    const origin = new _Point_js__WEBPACK_IMPORTED_MODULE_4__["default"](
+      o.origin || o.around || o.ox || o.originX,
+      o.oy || o.originY
+    )
+    const ox = origin.x
+    const oy = origin.y
+    // We need Point to be invalid if nothing was passed because we cannot default to 0 here. That is why NaN
+    const position = new _Point_js__WEBPACK_IMPORTED_MODULE_4__["default"](
+      o.position || o.px || o.positionX || NaN,
+      o.py || o.positionY || NaN
+    )
+    const px = position.x
+    const py = position.y
+    const translate = new _Point_js__WEBPACK_IMPORTED_MODULE_4__["default"](
+      o.translate || o.tx || o.translateX,
+      o.ty || o.translateY
+    )
+    const tx = translate.x
+    const ty = translate.y
+    const relative = new _Point_js__WEBPACK_IMPORTED_MODULE_4__["default"](
+      o.relative || o.rx || o.relativeX,
+      o.ry || o.relativeY
+    )
+    const rx = relative.x
+    const ry = relative.y
+
+    // Populate all of the values
+    return {
+      scaleX,
+      scaleY,
+      skewX,
+      skewY,
+      shear,
+      theta,
+      rx,
+      ry,
+      tx,
+      ty,
+      ox,
+      oy,
+      px,
+      py
+    }
+  }
+
+  static fromArray(a) {
+    return { a: a[0], b: a[1], c: a[2], d: a[3], e: a[4], f: a[5] }
+  }
+
+  static isMatrixLike(o) {
+    return (
+      o.a != null ||
+      o.b != null ||
+      o.c != null ||
+      o.d != null ||
+      o.e != null ||
+      o.f != null
+    )
+  }
+
+  // left matrix, right matrix, target matrix which is overwritten
+  static matrixMultiply(l, r, o) {
+    // Work out the product directly
+    const a = l.a * r.a + l.c * r.b
+    const b = l.b * r.a + l.d * r.b
+    const c = l.a * r.c + l.c * r.d
+    const d = l.b * r.c + l.d * r.d
+    const e = l.e + l.a * r.e + l.c * r.f
+    const f = l.f + l.b * r.e + l.d * r.f
+
+    // make sure to use local variables because l/r and o could be the same
+    o.a = a
+    o.b = b
+    o.c = c
+    o.d = d
+    o.e = e
+    o.f = f
+
+    return o
+  }
+
+  around(cx, cy, matrix) {
+    return this.clone().aroundO(cx, cy, matrix)
+  }
+
+  // Transform around a center point
+  aroundO(cx, cy, matrix) {
+    const dx = cx || 0
+    const dy = cy || 0
+    return this.translateO(-dx, -dy).lmultiplyO(matrix).translateO(dx, dy)
+  }
+
+  // Clones this matrix
+  clone() {
+    return new Matrix(this)
+  }
+
+  // Decomposes this matrix into its affine parameters
+  decompose(cx = 0, cy = 0) {
+    // Get the parameters from the matrix
+    const a = this.a
+    const b = this.b
+    const c = this.c
+    const d = this.d
+    const e = this.e
+    const f = this.f
+
+    // Figure out if the winding direction is clockwise or counterclockwise
+    const determinant = a * d - b * c
+    const ccw = determinant > 0 ? 1 : -1
+
+    // Since we only shear in x, we can use the x basis to get the x scale
+    // and the rotation of the resulting matrix
+    const sx = ccw * Math.sqrt(a * a + b * b)
+    const thetaRad = Math.atan2(ccw * b, ccw * a)
+    const theta = (180 / Math.PI) * thetaRad
+    const ct = Math.cos(thetaRad)
+    const st = Math.sin(thetaRad)
+
+    // We can then solve the y basis vector simultaneously to get the other
+    // two affine parameters directly from these parameters
+    const lam = (a * c + b * d) / determinant
+    const sy = (c * sx) / (lam * a - b) || (d * sx) / (lam * b + a)
+
+    // Use the translations
+    const tx = e - cx + cx * ct * sx + cy * (lam * ct * sx - st * sy)
+    const ty = f - cy + cx * st * sx + cy * (lam * st * sx + ct * sy)
+
+    // Construct the decomposition and return it
+    return {
+      // Return the affine parameters
+      scaleX: sx,
+      scaleY: sy,
+      shear: lam,
+      rotate: theta,
+      translateX: tx,
+      translateY: ty,
+      originX: cx,
+      originY: cy,
+
+      // Return the matrix parameters
+      a: this.a,
+      b: this.b,
+      c: this.c,
+      d: this.d,
+      e: this.e,
+      f: this.f
+    }
+  }
+
+  // Check if two matrices are equal
+  equals(other) {
+    if (other === this) return true
+    const comp = new Matrix(other)
+    return (
+      closeEnough(this.a, comp.a) &&
+      closeEnough(this.b, comp.b) &&
+      closeEnough(this.c, comp.c) &&
+      closeEnough(this.d, comp.d) &&
+      closeEnough(this.e, comp.e) &&
+      closeEnough(this.f, comp.f)
+    )
+  }
+
+  // Flip matrix on x or y, at a given offset
+  flip(axis, around) {
+    return this.clone().flipO(axis, around)
+  }
+
+  flipO(axis, around) {
+    return axis === 'x'
+      ? this.scaleO(-1, 1, around, 0)
+      : axis === 'y'
+        ? this.scaleO(1, -1, 0, around)
+        : this.scaleO(-1, -1, axis, around || axis) // Define an x, y flip point
+  }
+
+  // Initialize
+  init(source) {
+    const base = Matrix.fromArray([1, 0, 0, 1, 0, 0])
+
+    // ensure source as object
+    source =
+      source instanceof _elements_Element_js__WEBPACK_IMPORTED_MODULE_3__["default"]
+        ? source.matrixify()
+        : typeof source === 'string'
+          ? Matrix.fromArray(source.split(_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.delimiter).map(parseFloat))
+          : Array.isArray(source)
+            ? Matrix.fromArray(source)
+            : typeof source === 'object' && Matrix.isMatrixLike(source)
+              ? source
+              : typeof source === 'object'
+                ? new Matrix().transform(source)
+                : arguments.length === 6
+                  ? Matrix.fromArray([].slice.call(arguments))
+                  : base
+
+    // Merge the source matrix with the base matrix
+    this.a = source.a != null ? source.a : base.a
+    this.b = source.b != null ? source.b : base.b
+    this.c = source.c != null ? source.c : base.c
+    this.d = source.d != null ? source.d : base.d
+    this.e = source.e != null ? source.e : base.e
+    this.f = source.f != null ? source.f : base.f
+
+    return this
+  }
+
+  inverse() {
+    return this.clone().inverseO()
+  }
+
+  // Inverses matrix
+  inverseO() {
+    // Get the current parameters out of the matrix
+    const a = this.a
+    const b = this.b
+    const c = this.c
+    const d = this.d
+    const e = this.e
+    const f = this.f
+
+    // Invert the 2x2 matrix in the top left
+    const det = a * d - b * c
+    if (!det) throw new Error('Cannot invert ' + this)
+
+    // Calculate the top 2x2 matrix
+    const na = d / det
+    const nb = -b / det
+    const nc = -c / det
+    const nd = a / det
+
+    // Apply the inverted matrix to the top right
+    const ne = -(na * e + nc * f)
+    const nf = -(nb * e + nd * f)
+
+    // Construct the inverted matrix
+    this.a = na
+    this.b = nb
+    this.c = nc
+    this.d = nd
+    this.e = ne
+    this.f = nf
+
+    return this
+  }
+
+  lmultiply(matrix) {
+    return this.clone().lmultiplyO(matrix)
+  }
+
+  lmultiplyO(matrix) {
+    const r = this
+    const l = matrix instanceof Matrix ? matrix : new Matrix(matrix)
+
+    return Matrix.matrixMultiply(l, r, this)
+  }
+
+  // Left multiplies by the given matrix
+  multiply(matrix) {
+    return this.clone().multiplyO(matrix)
+  }
+
+  multiplyO(matrix) {
+    // Get the matrices
+    const l = this
+    const r = matrix instanceof Matrix ? matrix : new Matrix(matrix)
+
+    return Matrix.matrixMultiply(l, r, this)
+  }
+
+  // Rotate matrix
+  rotate(r, cx, cy) {
+    return this.clone().rotateO(r, cx, cy)
+  }
+
+  rotateO(r, cx = 0, cy = 0) {
+    // Convert degrees to radians
+    r = (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_1__.radians)(r)
+
+    const cos = Math.cos(r)
+    const sin = Math.sin(r)
+
+    const { a, b, c, d, e, f } = this
+
+    this.a = a * cos - b * sin
+    this.b = b * cos + a * sin
+    this.c = c * cos - d * sin
+    this.d = d * cos + c * sin
+    this.e = e * cos - f * sin + cy * sin - cx * cos + cx
+    this.f = f * cos + e * sin - cx * sin - cy * cos + cy
+
+    return this
+  }
+
+  // Scale matrix
+  scale() {
+    return this.clone().scaleO(...arguments)
+  }
+
+  scaleO(x, y = x, cx = 0, cy = 0) {
+    // Support uniform scaling
+    if (arguments.length === 3) {
+      cy = cx
+      cx = y
+      y = x
+    }
+
+    const { a, b, c, d, e, f } = this
+
+    this.a = a * x
+    this.b = b * y
+    this.c = c * x
+    this.d = d * y
+    this.e = e * x - cx * x + cx
+    this.f = f * y - cy * y + cy
+
+    return this
+  }
+
+  // Shear matrix
+  shear(a, cx, cy) {
+    return this.clone().shearO(a, cx, cy)
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  shearO(lx, cx = 0, cy = 0) {
+    const { a, b, c, d, e, f } = this
+
+    this.a = a + b * lx
+    this.c = c + d * lx
+    this.e = e + f * lx - cy * lx
+
+    return this
+  }
+
+  // Skew Matrix
+  skew() {
+    return this.clone().skewO(...arguments)
+  }
+
+  skewO(x, y = x, cx = 0, cy = 0) {
+    // support uniformal skew
+    if (arguments.length === 3) {
+      cy = cx
+      cx = y
+      y = x
+    }
+
+    // Convert degrees to radians
+    x = (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_1__.radians)(x)
+    y = (0,_utils_utils_js__WEBPACK_IMPORTED_MODULE_1__.radians)(y)
+
+    const lx = Math.tan(x)
+    const ly = Math.tan(y)
+
+    const { a, b, c, d, e, f } = this
+
+    this.a = a + b * lx
+    this.b = b + a * ly
+    this.c = c + d * lx
+    this.d = d + c * ly
+    this.e = e + f * lx - cy * lx
+    this.f = f + e * ly - cx * ly
+
+    return this
+  }
+
+  // SkewX
+  skewX(x, cx, cy) {
+    return this.skew(x, 0, cx, cy)
+  }
+
+  // SkewY
+  skewY(y, cx, cy) {
+    return this.skew(0, y, cx, cy)
+  }
+
+  toArray() {
+    return [this.a, this.b, this.c, this.d, this.e, this.f]
+  }
+
+  // Convert matrix to string
+  toString() {
+    return (
+      'matrix(' +
+      this.a +
+      ',' +
+      this.b +
+      ',' +
+      this.c +
+      ',' +
+      this.d +
+      ',' +
+      this.e +
+      ',' +
+      this.f +
+      ')'
+    )
+  }
+
+  // Transform a matrix into another matrix by manipulating the space
+  transform(o) {
+    // Check if o is a matrix and then left multiply it directly
+    if (Matrix.isMatrixLike(o)) {
+      const matrix = new Matrix(o)
+      return matrix.multiplyO(this)
+    }
+
+    // Get the proposed transformations and the current transformations
+    const t = Matrix.formatTransforms(o)
+    const current = this
+    const { x: ox, y: oy } = new _Point_js__WEBPACK_IMPORTED_MODULE_4__["default"](t.ox, t.oy).transform(current)
+
+    // Construct the resulting matrix
+    const transformer = new Matrix()
+      .translateO(t.rx, t.ry)
+      .lmultiplyO(current)
+      .translateO(-ox, -oy)
+      .scaleO(t.scaleX, t.scaleY)
+      .skewO(t.skewX, t.skewY)
+      .shearO(t.shear)
+      .rotateO(t.theta)
+      .translateO(ox, oy)
+
+    // If we want the origin at a particular place, we force it there
+    if (isFinite(t.px) || isFinite(t.py)) {
+      const origin = new _Point_js__WEBPACK_IMPORTED_MODULE_4__["default"](ox, oy).transform(transformer)
+      // TODO: Replace t.px with isFinite(t.px)
+      // Doesn't work because t.px is also 0 if it wasn't passed
+      const dx = isFinite(t.px) ? t.px - origin.x : 0
+      const dy = isFinite(t.py) ? t.py - origin.y : 0
+      transformer.translateO(dx, dy)
+    }
+
+    // Translate now after positioning
+    transformer.translateO(t.tx, t.ty)
+    return transformer
+  }
+
+  // Translate matrix
+  translate(x, y) {
+    return this.clone().translateO(x, y)
+  }
+
+  translateO(x, y) {
+    this.e += x || 0
+    this.f += y || 0
+    return this
+  }
+
+  valueOf() {
+    return {
+      a: this.a,
+      b: this.b,
+      c: this.c,
+      d: this.d,
+      e: this.e,
+      f: this.f
+    }
+  }
+}
+
+function ctm() {
+  return new Matrix(this.node.getCTM())
+}
+
+function screenCTM() {
+  try {
+    /* https://bugzilla.mozilla.org/show_bug.cgi?id=1344537
+       This is needed because FF does not return the transformation matrix
+       for the inner coordinate system when getScreenCTM() is called on nested svgs.
+       However all other Browsers do that */
+    if (typeof this.isRoot === 'function' && !this.isRoot()) {
+      const rect = this.rect(1, 1)
+      const m = rect.node.getScreenCTM()
+      rect.remove()
+      return new Matrix(m)
+    }
+    return new Matrix(this.node.getScreenCTM())
+  } catch (e) {
+    console.warn(
+      `Cannot get CTM from SVG node ${this.node.nodeName}. Is the element rendered?`
+    )
+    return new Matrix()
+  }
+}
+
+(0,_utils_adopter_js__WEBPACK_IMPORTED_MODULE_2__.register)(Matrix, 'Matrix')
+
 
 /***/ }),
 
@@ -656,7 +8365,165 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \**************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ PathArray)\n/* harmony export */ });\n/* harmony import */ var _SVGArray_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./SVGArray.js */ \"./node_modules/@svgdotjs/svg.js/src/types/SVGArray.js\");\n/* harmony import */ var _modules_core_parser_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../modules/core/parser.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/parser.js\");\n/* harmony import */ var _Box_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Box.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Box.js\");\n/* harmony import */ var _utils_pathParser_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/pathParser.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/pathParser.js\");\n\n\n\n\n\nfunction arrayToString(a) {\n  let s = ''\n  for (let i = 0, il = a.length; i < il; i++) {\n    s += a[i][0]\n\n    if (a[i][1] != null) {\n      s += a[i][1]\n\n      if (a[i][2] != null) {\n        s += ' '\n        s += a[i][2]\n\n        if (a[i][3] != null) {\n          s += ' '\n          s += a[i][3]\n          s += ' '\n          s += a[i][4]\n\n          if (a[i][5] != null) {\n            s += ' '\n            s += a[i][5]\n            s += ' '\n            s += a[i][6]\n\n            if (a[i][7] != null) {\n              s += ' '\n              s += a[i][7]\n            }\n          }\n        }\n      }\n    }\n  }\n\n  return s + ' '\n}\n\nclass PathArray extends _SVGArray_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"] {\n  // Get bounding box of path\n  bbox() {\n    (0,_modules_core_parser_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"])().path.setAttribute('d', this.toString())\n    return new _Box_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"](_modules_core_parser_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"].nodes.path.getBBox())\n  }\n\n  // Move path string\n  move(x, y) {\n    // get bounding box of current situation\n    const box = this.bbox()\n\n    // get relative offset\n    x -= box.x\n    y -= box.y\n\n    if (!isNaN(x) && !isNaN(y)) {\n      // move every point\n      for (let l, i = this.length - 1; i >= 0; i--) {\n        l = this[i][0]\n\n        if (l === 'M' || l === 'L' || l === 'T') {\n          this[i][1] += x\n          this[i][2] += y\n        } else if (l === 'H') {\n          this[i][1] += x\n        } else if (l === 'V') {\n          this[i][1] += y\n        } else if (l === 'C' || l === 'S' || l === 'Q') {\n          this[i][1] += x\n          this[i][2] += y\n          this[i][3] += x\n          this[i][4] += y\n\n          if (l === 'C') {\n            this[i][5] += x\n            this[i][6] += y\n          }\n        } else if (l === 'A') {\n          this[i][6] += x\n          this[i][7] += y\n        }\n      }\n    }\n\n    return this\n  }\n\n  // Absolutize and parse path to array\n  parse(d = 'M0 0') {\n    if (Array.isArray(d)) {\n      d = Array.prototype.concat.apply([], d).toString()\n    }\n\n    return (0,_utils_pathParser_js__WEBPACK_IMPORTED_MODULE_3__.pathParser)(d)\n  }\n\n  // Resize path string\n  size(width, height) {\n    // get bounding box of current situation\n    const box = this.bbox()\n    let i, l\n\n    // If the box width or height is 0 then we ignore\n    // transformations on the respective axis\n    box.width = box.width === 0 ? 1 : box.width\n    box.height = box.height === 0 ? 1 : box.height\n\n    // recalculate position of all points according to new size\n    for (i = this.length - 1; i >= 0; i--) {\n      l = this[i][0]\n\n      if (l === 'M' || l === 'L' || l === 'T') {\n        this[i][1] = ((this[i][1] - box.x) * width) / box.width + box.x\n        this[i][2] = ((this[i][2] - box.y) * height) / box.height + box.y\n      } else if (l === 'H') {\n        this[i][1] = ((this[i][1] - box.x) * width) / box.width + box.x\n      } else if (l === 'V') {\n        this[i][1] = ((this[i][1] - box.y) * height) / box.height + box.y\n      } else if (l === 'C' || l === 'S' || l === 'Q') {\n        this[i][1] = ((this[i][1] - box.x) * width) / box.width + box.x\n        this[i][2] = ((this[i][2] - box.y) * height) / box.height + box.y\n        this[i][3] = ((this[i][3] - box.x) * width) / box.width + box.x\n        this[i][4] = ((this[i][4] - box.y) * height) / box.height + box.y\n\n        if (l === 'C') {\n          this[i][5] = ((this[i][5] - box.x) * width) / box.width + box.x\n          this[i][6] = ((this[i][6] - box.y) * height) / box.height + box.y\n        }\n      } else if (l === 'A') {\n        // resize radii\n        this[i][1] = (this[i][1] * width) / box.width\n        this[i][2] = (this[i][2] * height) / box.height\n\n        // move position values\n        this[i][6] = ((this[i][6] - box.x) * width) / box.width + box.x\n        this[i][7] = ((this[i][7] - box.y) * height) / box.height + box.y\n      }\n    }\n\n    return this\n  }\n\n  // Convert array to string\n  toString() {\n    return arrayToString(this)\n  }\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/types/PathArray.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ PathArray)
+/* harmony export */ });
+/* harmony import */ var _SVGArray_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./SVGArray.js */ "./node_modules/@svgdotjs/svg.js/src/types/SVGArray.js");
+/* harmony import */ var _modules_core_parser_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../modules/core/parser.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/parser.js");
+/* harmony import */ var _Box_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Box.js */ "./node_modules/@svgdotjs/svg.js/src/types/Box.js");
+/* harmony import */ var _utils_pathParser_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/pathParser.js */ "./node_modules/@svgdotjs/svg.js/src/utils/pathParser.js");
+
+
+
+
+
+function arrayToString(a) {
+  let s = ''
+  for (let i = 0, il = a.length; i < il; i++) {
+    s += a[i][0]
+
+    if (a[i][1] != null) {
+      s += a[i][1]
+
+      if (a[i][2] != null) {
+        s += ' '
+        s += a[i][2]
+
+        if (a[i][3] != null) {
+          s += ' '
+          s += a[i][3]
+          s += ' '
+          s += a[i][4]
+
+          if (a[i][5] != null) {
+            s += ' '
+            s += a[i][5]
+            s += ' '
+            s += a[i][6]
+
+            if (a[i][7] != null) {
+              s += ' '
+              s += a[i][7]
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return s + ' '
+}
+
+class PathArray extends _SVGArray_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  // Get bounding box of path
+  bbox() {
+    (0,_modules_core_parser_js__WEBPACK_IMPORTED_MODULE_1__["default"])().path.setAttribute('d', this.toString())
+    return new _Box_js__WEBPACK_IMPORTED_MODULE_2__["default"](_modules_core_parser_js__WEBPACK_IMPORTED_MODULE_1__["default"].nodes.path.getBBox())
+  }
+
+  // Move path string
+  move(x, y) {
+    // get bounding box of current situation
+    const box = this.bbox()
+
+    // get relative offset
+    x -= box.x
+    y -= box.y
+
+    if (!isNaN(x) && !isNaN(y)) {
+      // move every point
+      for (let l, i = this.length - 1; i >= 0; i--) {
+        l = this[i][0]
+
+        if (l === 'M' || l === 'L' || l === 'T') {
+          this[i][1] += x
+          this[i][2] += y
+        } else if (l === 'H') {
+          this[i][1] += x
+        } else if (l === 'V') {
+          this[i][1] += y
+        } else if (l === 'C' || l === 'S' || l === 'Q') {
+          this[i][1] += x
+          this[i][2] += y
+          this[i][3] += x
+          this[i][4] += y
+
+          if (l === 'C') {
+            this[i][5] += x
+            this[i][6] += y
+          }
+        } else if (l === 'A') {
+          this[i][6] += x
+          this[i][7] += y
+        }
+      }
+    }
+
+    return this
+  }
+
+  // Absolutize and parse path to array
+  parse(d = 'M0 0') {
+    if (Array.isArray(d)) {
+      d = Array.prototype.concat.apply([], d).toString()
+    }
+
+    return (0,_utils_pathParser_js__WEBPACK_IMPORTED_MODULE_3__.pathParser)(d)
+  }
+
+  // Resize path string
+  size(width, height) {
+    // get bounding box of current situation
+    const box = this.bbox()
+    let i, l
+
+    // If the box width or height is 0 then we ignore
+    // transformations on the respective axis
+    box.width = box.width === 0 ? 1 : box.width
+    box.height = box.height === 0 ? 1 : box.height
+
+    // recalculate position of all points according to new size
+    for (i = this.length - 1; i >= 0; i--) {
+      l = this[i][0]
+
+      if (l === 'M' || l === 'L' || l === 'T') {
+        this[i][1] = ((this[i][1] - box.x) * width) / box.width + box.x
+        this[i][2] = ((this[i][2] - box.y) * height) / box.height + box.y
+      } else if (l === 'H') {
+        this[i][1] = ((this[i][1] - box.x) * width) / box.width + box.x
+      } else if (l === 'V') {
+        this[i][1] = ((this[i][1] - box.y) * height) / box.height + box.y
+      } else if (l === 'C' || l === 'S' || l === 'Q') {
+        this[i][1] = ((this[i][1] - box.x) * width) / box.width + box.x
+        this[i][2] = ((this[i][2] - box.y) * height) / box.height + box.y
+        this[i][3] = ((this[i][3] - box.x) * width) / box.width + box.x
+        this[i][4] = ((this[i][4] - box.y) * height) / box.height + box.y
+
+        if (l === 'C') {
+          this[i][5] = ((this[i][5] - box.x) * width) / box.width + box.x
+          this[i][6] = ((this[i][6] - box.y) * height) / box.height + box.y
+        }
+      } else if (l === 'A') {
+        // resize radii
+        this[i][1] = (this[i][1] * width) / box.width
+        this[i][2] = (this[i][2] * height) / box.height
+
+        // move position values
+        this[i][6] = ((this[i][6] - box.x) * width) / box.width + box.x
+        this[i][7] = ((this[i][7] - box.y) * height) / box.height + box.y
+      }
+    }
+
+    return this
+  }
+
+  // Convert array to string
+  toString() {
+    return arrayToString(this)
+  }
+}
+
 
 /***/ }),
 
@@ -666,7 +8533,70 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \**********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ Point),\n/* harmony export */   point: () => (/* binding */ point)\n/* harmony export */ });\n/* harmony import */ var _Matrix_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Matrix.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Matrix.js\");\n\n\nclass Point {\n  // Initialize\n  constructor(...args) {\n    this.init(...args)\n  }\n\n  // Clone point\n  clone() {\n    return new Point(this)\n  }\n\n  init(x, y) {\n    const base = { x: 0, y: 0 }\n\n    // ensure source as object\n    const source = Array.isArray(x)\n      ? { x: x[0], y: x[1] }\n      : typeof x === 'object'\n        ? { x: x.x, y: x.y }\n        : { x: x, y: y }\n\n    // merge source\n    this.x = source.x == null ? base.x : source.x\n    this.y = source.y == null ? base.y : source.y\n\n    return this\n  }\n\n  toArray() {\n    return [this.x, this.y]\n  }\n\n  transform(m) {\n    return this.clone().transformO(m)\n  }\n\n  // Transform point with matrix\n  transformO(m) {\n    if (!_Matrix_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"].isMatrixLike(m)) {\n      m = new _Matrix_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"](m)\n    }\n\n    const { x, y } = this\n\n    // Perform the matrix multiplication\n    this.x = m.a * x + m.c * y + m.e\n    this.y = m.b * x + m.d * y + m.f\n\n    return this\n  }\n}\n\nfunction point(x, y) {\n  return new Point(x, y).transformO(this.screenCTM().inverseO())\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/types/Point.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Point),
+/* harmony export */   point: () => (/* binding */ point)
+/* harmony export */ });
+/* harmony import */ var _Matrix_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Matrix.js */ "./node_modules/@svgdotjs/svg.js/src/types/Matrix.js");
+
+
+class Point {
+  // Initialize
+  constructor(...args) {
+    this.init(...args)
+  }
+
+  // Clone point
+  clone() {
+    return new Point(this)
+  }
+
+  init(x, y) {
+    const base = { x: 0, y: 0 }
+
+    // ensure source as object
+    const source = Array.isArray(x)
+      ? { x: x[0], y: x[1] }
+      : typeof x === 'object'
+        ? { x: x.x, y: x.y }
+        : { x: x, y: y }
+
+    // merge source
+    this.x = source.x == null ? base.x : source.x
+    this.y = source.y == null ? base.y : source.y
+
+    return this
+  }
+
+  toArray() {
+    return [this.x, this.y]
+  }
+
+  transform(m) {
+    return this.clone().transformO(m)
+  }
+
+  // Transform point with matrix
+  transformO(m) {
+    if (!_Matrix_js__WEBPACK_IMPORTED_MODULE_0__["default"].isMatrixLike(m)) {
+      m = new _Matrix_js__WEBPACK_IMPORTED_MODULE_0__["default"](m)
+    }
+
+    const { x, y } = this
+
+    // Perform the matrix multiplication
+    this.x = m.a * x + m.c * y + m.e
+    this.y = m.b * x + m.d * y + m.f
+
+    return this
+  }
+}
+
+function point(x, y) {
+  return new Point(x, y).transformO(this.screenCTM().inverseO())
+}
+
 
 /***/ }),
 
@@ -676,7 +8606,136 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \***************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ PointArray)\n/* harmony export */ });\n/* harmony import */ var _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../modules/core/regex.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js\");\n/* harmony import */ var _SVGArray_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SVGArray.js */ \"./node_modules/@svgdotjs/svg.js/src/types/SVGArray.js\");\n/* harmony import */ var _Box_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Box.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Box.js\");\n/* harmony import */ var _Matrix_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Matrix.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Matrix.js\");\n\n\n\n\n\nclass PointArray extends _SVGArray_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"] {\n  // Get bounding box of points\n  bbox() {\n    let maxX = -Infinity\n    let maxY = -Infinity\n    let minX = Infinity\n    let minY = Infinity\n    this.forEach(function (el) {\n      maxX = Math.max(el[0], maxX)\n      maxY = Math.max(el[1], maxY)\n      minX = Math.min(el[0], minX)\n      minY = Math.min(el[1], minY)\n    })\n    return new _Box_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"](minX, minY, maxX - minX, maxY - minY)\n  }\n\n  // Move point string\n  move(x, y) {\n    const box = this.bbox()\n\n    // get relative offset\n    x -= box.x\n    y -= box.y\n\n    // move every point\n    if (!isNaN(x) && !isNaN(y)) {\n      for (let i = this.length - 1; i >= 0; i--) {\n        this[i] = [this[i][0] + x, this[i][1] + y]\n      }\n    }\n\n    return this\n  }\n\n  // Parse point string and flat array\n  parse(array = [0, 0]) {\n    const points = []\n\n    // if it is an array, we flatten it and therefore clone it to 1 depths\n    if (array instanceof Array) {\n      array = Array.prototype.concat.apply([], array)\n    } else {\n      // Else, it is considered as a string\n      // parse points\n      array = array.trim().split(_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.delimiter).map(parseFloat)\n    }\n\n    // validate points - https://svgwg.org/svg2-draft/shapes.html#DataTypePoints\n    // Odd number of coordinates is an error. In such cases, drop the last odd coordinate.\n    if (array.length % 2 !== 0) array.pop()\n\n    // wrap points in two-tuples\n    for (let i = 0, len = array.length; i < len; i = i + 2) {\n      points.push([array[i], array[i + 1]])\n    }\n\n    return points\n  }\n\n  // Resize poly string\n  size(width, height) {\n    let i\n    const box = this.bbox()\n\n    // recalculate position of all points according to new size\n    for (i = this.length - 1; i >= 0; i--) {\n      if (box.width)\n        this[i][0] = ((this[i][0] - box.x) * width) / box.width + box.x\n      if (box.height)\n        this[i][1] = ((this[i][1] - box.y) * height) / box.height + box.y\n    }\n\n    return this\n  }\n\n  // Convert array to line object\n  toLine() {\n    return {\n      x1: this[0][0],\n      y1: this[0][1],\n      x2: this[1][0],\n      y2: this[1][1]\n    }\n  }\n\n  // Convert array to string\n  toString() {\n    const array = []\n    // convert to a poly point string\n    for (let i = 0, il = this.length; i < il; i++) {\n      array.push(this[i].join(','))\n    }\n\n    return array.join(' ')\n  }\n\n  transform(m) {\n    return this.clone().transformO(m)\n  }\n\n  // transform points with matrix (similar to Point.transform)\n  transformO(m) {\n    if (!_Matrix_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"].isMatrixLike(m)) {\n      m = new _Matrix_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"](m)\n    }\n\n    for (let i = this.length; i--; ) {\n      // Perform the matrix multiplication\n      const [x, y] = this[i]\n      this[i][0] = m.a * x + m.c * y + m.e\n      this[i][1] = m.b * x + m.d * y + m.f\n    }\n\n    return this\n  }\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/types/PointArray.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ PointArray)
+/* harmony export */ });
+/* harmony import */ var _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../modules/core/regex.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js");
+/* harmony import */ var _SVGArray_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SVGArray.js */ "./node_modules/@svgdotjs/svg.js/src/types/SVGArray.js");
+/* harmony import */ var _Box_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Box.js */ "./node_modules/@svgdotjs/svg.js/src/types/Box.js");
+/* harmony import */ var _Matrix_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Matrix.js */ "./node_modules/@svgdotjs/svg.js/src/types/Matrix.js");
+
+
+
+
+
+class PointArray extends _SVGArray_js__WEBPACK_IMPORTED_MODULE_1__["default"] {
+  // Get bounding box of points
+  bbox() {
+    let maxX = -Infinity
+    let maxY = -Infinity
+    let minX = Infinity
+    let minY = Infinity
+    this.forEach(function (el) {
+      maxX = Math.max(el[0], maxX)
+      maxY = Math.max(el[1], maxY)
+      minX = Math.min(el[0], minX)
+      minY = Math.min(el[1], minY)
+    })
+    return new _Box_js__WEBPACK_IMPORTED_MODULE_2__["default"](minX, minY, maxX - minX, maxY - minY)
+  }
+
+  // Move point string
+  move(x, y) {
+    const box = this.bbox()
+
+    // get relative offset
+    x -= box.x
+    y -= box.y
+
+    // move every point
+    if (!isNaN(x) && !isNaN(y)) {
+      for (let i = this.length - 1; i >= 0; i--) {
+        this[i] = [this[i][0] + x, this[i][1] + y]
+      }
+    }
+
+    return this
+  }
+
+  // Parse point string and flat array
+  parse(array = [0, 0]) {
+    const points = []
+
+    // if it is an array, we flatten it and therefore clone it to 1 depths
+    if (array instanceof Array) {
+      array = Array.prototype.concat.apply([], array)
+    } else {
+      // Else, it is considered as a string
+      // parse points
+      array = array.trim().split(_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.delimiter).map(parseFloat)
+    }
+
+    // validate points - https://svgwg.org/svg2-draft/shapes.html#DataTypePoints
+    // Odd number of coordinates is an error. In such cases, drop the last odd coordinate.
+    if (array.length % 2 !== 0) array.pop()
+
+    // wrap points in two-tuples
+    for (let i = 0, len = array.length; i < len; i = i + 2) {
+      points.push([array[i], array[i + 1]])
+    }
+
+    return points
+  }
+
+  // Resize poly string
+  size(width, height) {
+    let i
+    const box = this.bbox()
+
+    // recalculate position of all points according to new size
+    for (i = this.length - 1; i >= 0; i--) {
+      if (box.width)
+        this[i][0] = ((this[i][0] - box.x) * width) / box.width + box.x
+      if (box.height)
+        this[i][1] = ((this[i][1] - box.y) * height) / box.height + box.y
+    }
+
+    return this
+  }
+
+  // Convert array to line object
+  toLine() {
+    return {
+      x1: this[0][0],
+      y1: this[0][1],
+      x2: this[1][0],
+      y2: this[1][1]
+    }
+  }
+
+  // Convert array to string
+  toString() {
+    const array = []
+    // convert to a poly point string
+    for (let i = 0, il = this.length; i < il; i++) {
+      array.push(this[i].join(','))
+    }
+
+    return array.join(' ')
+  }
+
+  transform(m) {
+    return this.clone().transformO(m)
+  }
+
+  // transform points with matrix (similar to Point.transform)
+  transformO(m) {
+    if (!_Matrix_js__WEBPACK_IMPORTED_MODULE_3__["default"].isMatrixLike(m)) {
+      m = new _Matrix_js__WEBPACK_IMPORTED_MODULE_3__["default"](m)
+    }
+
+    for (let i = this.length; i--; ) {
+      // Perform the matrix multiplication
+      const [x, y] = this[i]
+      this[i][0] = m.a * x + m.c * y + m.e
+      this[i][1] = m.b * x + m.d * y + m.f
+    }
+
+    return this
+  }
+}
+
 
 /***/ }),
 
@@ -686,7 +8745,59 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ SVGArray)\n/* harmony export */ });\n/* harmony import */ var _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../modules/core/regex.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js\");\n\n\nclass SVGArray extends Array {\n  constructor(...args) {\n    super(...args)\n    this.init(...args)\n  }\n\n  clone() {\n    return new this.constructor(this)\n  }\n\n  init(arr) {\n    // This catches the case, that native map tries to create an array with new Array(1)\n    if (typeof arr === 'number') return this\n    this.length = 0\n    this.push(...this.parse(arr))\n    return this\n  }\n\n  // Parse whitespace separated string\n  parse(array = []) {\n    // If already is an array, no need to parse it\n    if (array instanceof Array) return array\n\n    return array.trim().split(_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.delimiter).map(parseFloat)\n  }\n\n  toArray() {\n    return Array.prototype.concat.apply([], this)\n  }\n\n  toSet() {\n    return new Set(this)\n  }\n\n  toString() {\n    return this.join(' ')\n  }\n\n  // Flattens the array if needed\n  valueOf() {\n    const ret = []\n    ret.push(...this)\n    return ret\n  }\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/types/SVGArray.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ SVGArray)
+/* harmony export */ });
+/* harmony import */ var _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../modules/core/regex.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js");
+
+
+class SVGArray extends Array {
+  constructor(...args) {
+    super(...args)
+    this.init(...args)
+  }
+
+  clone() {
+    return new this.constructor(this)
+  }
+
+  init(arr) {
+    // This catches the case, that native map tries to create an array with new Array(1)
+    if (typeof arr === 'number') return this
+    this.length = 0
+    this.push(...this.parse(arr))
+    return this
+  }
+
+  // Parse whitespace separated string
+  parse(array = []) {
+    // If already is an array, no need to parse it
+    if (array instanceof Array) return array
+
+    return array.trim().split(_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.delimiter).map(parseFloat)
+  }
+
+  toArray() {
+    return Array.prototype.concat.apply([], this)
+  }
+
+  toSet() {
+    return new Set(this)
+  }
+
+  toString() {
+    return this.join(' ')
+  }
+
+  // Flattens the array if needed
+  valueOf() {
+    const ret = []
+    ret.push(...this)
+    return ret
+  }
+}
+
 
 /***/ }),
 
@@ -696,7 +8807,116 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \**************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ SVGNumber)\n/* harmony export */ });\n/* harmony import */ var _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../modules/core/regex.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js\");\n\n\n// Module for unit conversions\nclass SVGNumber {\n  // Initialize\n  constructor(...args) {\n    this.init(...args)\n  }\n\n  convert(unit) {\n    return new SVGNumber(this.value, unit)\n  }\n\n  // Divide number\n  divide(number) {\n    number = new SVGNumber(number)\n    return new SVGNumber(this / number, this.unit || number.unit)\n  }\n\n  init(value, unit) {\n    unit = Array.isArray(value) ? value[1] : unit\n    value = Array.isArray(value) ? value[0] : value\n\n    // initialize defaults\n    this.value = 0\n    this.unit = unit || ''\n\n    // parse value\n    if (typeof value === 'number') {\n      // ensure a valid numeric value\n      this.value = isNaN(value)\n        ? 0\n        : !isFinite(value)\n          ? value < 0\n            ? -3.4e38\n            : +3.4e38\n          : value\n    } else if (typeof value === 'string') {\n      unit = value.match(_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.numberAndUnit)\n\n      if (unit) {\n        // make value numeric\n        this.value = parseFloat(unit[1])\n\n        // normalize\n        if (unit[5] === '%') {\n          this.value /= 100\n        } else if (unit[5] === 's') {\n          this.value *= 1000\n        }\n\n        // store unit\n        this.unit = unit[5]\n      }\n    } else {\n      if (value instanceof SVGNumber) {\n        this.value = value.valueOf()\n        this.unit = value.unit\n      }\n    }\n\n    return this\n  }\n\n  // Subtract number\n  minus(number) {\n    number = new SVGNumber(number)\n    return new SVGNumber(this - number, this.unit || number.unit)\n  }\n\n  // Add number\n  plus(number) {\n    number = new SVGNumber(number)\n    return new SVGNumber(this + number, this.unit || number.unit)\n  }\n\n  // Multiply number\n  times(number) {\n    number = new SVGNumber(number)\n    return new SVGNumber(this * number, this.unit || number.unit)\n  }\n\n  toArray() {\n    return [this.value, this.unit]\n  }\n\n  toJSON() {\n    return this.toString()\n  }\n\n  toString() {\n    return (\n      (this.unit === '%'\n        ? ~~(this.value * 1e8) / 1e6\n        : this.unit === 's'\n          ? this.value / 1e3\n          : this.value) + this.unit\n    )\n  }\n\n  valueOf() {\n    return this.value\n  }\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/types/SVGNumber.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ SVGNumber)
+/* harmony export */ });
+/* harmony import */ var _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../modules/core/regex.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js");
+
+
+// Module for unit conversions
+class SVGNumber {
+  // Initialize
+  constructor(...args) {
+    this.init(...args)
+  }
+
+  convert(unit) {
+    return new SVGNumber(this.value, unit)
+  }
+
+  // Divide number
+  divide(number) {
+    number = new SVGNumber(number)
+    return new SVGNumber(this / number, this.unit || number.unit)
+  }
+
+  init(value, unit) {
+    unit = Array.isArray(value) ? value[1] : unit
+    value = Array.isArray(value) ? value[0] : value
+
+    // initialize defaults
+    this.value = 0
+    this.unit = unit || ''
+
+    // parse value
+    if (typeof value === 'number') {
+      // ensure a valid numeric value
+      this.value = isNaN(value)
+        ? 0
+        : !isFinite(value)
+          ? value < 0
+            ? -3.4e38
+            : +3.4e38
+          : value
+    } else if (typeof value === 'string') {
+      unit = value.match(_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.numberAndUnit)
+
+      if (unit) {
+        // make value numeric
+        this.value = parseFloat(unit[1])
+
+        // normalize
+        if (unit[5] === '%') {
+          this.value /= 100
+        } else if (unit[5] === 's') {
+          this.value *= 1000
+        }
+
+        // store unit
+        this.unit = unit[5]
+      }
+    } else {
+      if (value instanceof SVGNumber) {
+        this.value = value.valueOf()
+        this.unit = value.unit
+      }
+    }
+
+    return this
+  }
+
+  // Subtract number
+  minus(number) {
+    number = new SVGNumber(number)
+    return new SVGNumber(this - number, this.unit || number.unit)
+  }
+
+  // Add number
+  plus(number) {
+    number = new SVGNumber(number)
+    return new SVGNumber(this + number, this.unit || number.unit)
+  }
+
+  // Multiply number
+  times(number) {
+    number = new SVGNumber(number)
+    return new SVGNumber(this * number, this.unit || number.unit)
+  }
+
+  toArray() {
+    return [this.value, this.unit]
+  }
+
+  toJSON() {
+    return this.toString()
+  }
+
+  toString() {
+    return (
+      (this.unit === '%'
+        ? ~~(this.value * 1e8) / 1e6
+        : this.unit === 's'
+          ? this.value / 1e3
+          : this.value) + this.unit
+    )
+  }
+
+  valueOf() {
+    return this.value
+  }
+}
+
 
 /***/ }),
 
@@ -706,7 +8926,172 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   adopt: () => (/* binding */ adopt),\n/* harmony export */   assignNewId: () => (/* binding */ assignNewId),\n/* harmony export */   create: () => (/* binding */ create),\n/* harmony export */   eid: () => (/* binding */ eid),\n/* harmony export */   extend: () => (/* binding */ extend),\n/* harmony export */   getClass: () => (/* binding */ getClass),\n/* harmony export */   makeInstance: () => (/* binding */ makeInstance),\n/* harmony export */   mockAdopt: () => (/* binding */ mockAdopt),\n/* harmony export */   nodeOrNew: () => (/* binding */ nodeOrNew),\n/* harmony export */   register: () => (/* binding */ register),\n/* harmony export */   root: () => (/* binding */ root),\n/* harmony export */   wrapWithAttrCheck: () => (/* binding */ wrapWithAttrCheck)\n/* harmony export */ });\n/* harmony import */ var _methods_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./methods.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/methods.js\");\n/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/utils.js\");\n/* harmony import */ var _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../modules/core/namespaces.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/namespaces.js\");\n/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/window.js */ \"./node_modules/@svgdotjs/svg.js/src/utils/window.js\");\n/* harmony import */ var _types_Base_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../types/Base.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Base.js\");\n\n\n\n\n\n\nconst elements = {}\nconst root = '___SYMBOL___ROOT___'\n\n// Method for element creation\nfunction create(name, ns = _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_2__.svg) {\n  // create element\n  return _utils_window_js__WEBPACK_IMPORTED_MODULE_3__.globals.document.createElementNS(ns, name)\n}\n\nfunction makeInstance(element, isHTML = false) {\n  if (element instanceof _types_Base_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"]) return element\n\n  if (typeof element === 'object') {\n    return adopter(element)\n  }\n\n  if (element == null) {\n    return new elements[root]()\n  }\n\n  if (typeof element === 'string' && element.charAt(0) !== '<') {\n    return adopter(_utils_window_js__WEBPACK_IMPORTED_MODULE_3__.globals.document.querySelector(element))\n  }\n\n  // Make sure, that HTML elements are created with the correct namespace\n  const wrapper = isHTML ? _utils_window_js__WEBPACK_IMPORTED_MODULE_3__.globals.document.createElement('div') : create('svg')\n  wrapper.innerHTML = element\n\n  // We can use firstChild here because we know,\n  // that the first char is < and thus an element\n  element = adopter(wrapper.firstChild)\n\n  // make sure, that element doesn't have its wrapper attached\n  wrapper.removeChild(wrapper.firstChild)\n  return element\n}\n\nfunction nodeOrNew(name, node) {\n  return node &&\n    (node instanceof _utils_window_js__WEBPACK_IMPORTED_MODULE_3__.globals.window.Node ||\n      (node.ownerDocument &&\n        node instanceof node.ownerDocument.defaultView.Node))\n    ? node\n    : create(name)\n}\n\n// Adopt existing svg elements\nfunction adopt(node) {\n  // check for presence of node\n  if (!node) return null\n\n  // make sure a node isn't already adopted\n  if (node.instance instanceof _types_Base_js__WEBPACK_IMPORTED_MODULE_4__[\"default\"]) return node.instance\n\n  if (node.nodeName === '#document-fragment') {\n    return new elements.Fragment(node)\n  }\n\n  // initialize variables\n  let className = (0,_utils_js__WEBPACK_IMPORTED_MODULE_1__.capitalize)(node.nodeName || 'Dom')\n\n  // Make sure that gradients are adopted correctly\n  if (className === 'LinearGradient' || className === 'RadialGradient') {\n    className = 'Gradient'\n\n    // Fallback to Dom if element is not known\n  } else if (!elements[className]) {\n    className = 'Dom'\n  }\n\n  return new elements[className](node)\n}\n\nlet adopter = adopt\n\nfunction mockAdopt(mock = adopt) {\n  adopter = mock\n}\n\nfunction register(element, name = element.name, asRoot = false) {\n  elements[name] = element\n  if (asRoot) elements[root] = element\n\n  ;(0,_methods_js__WEBPACK_IMPORTED_MODULE_0__.addMethodNames)(Object.getOwnPropertyNames(element.prototype))\n\n  return element\n}\n\nfunction getClass(name) {\n  return elements[name]\n}\n\n// Element id sequence\nlet did = 1000\n\n// Get next named element id\nfunction eid(name) {\n  return 'Svgjs' + (0,_utils_js__WEBPACK_IMPORTED_MODULE_1__.capitalize)(name) + did++\n}\n\n// Deep new id assignment\nfunction assignNewId(node) {\n  // do the same for SVG child nodes as well\n  for (let i = node.children.length - 1; i >= 0; i--) {\n    assignNewId(node.children[i])\n  }\n\n  if (node.id) {\n    node.id = eid(node.nodeName)\n    return node\n  }\n\n  return node\n}\n\n// Method for extending objects\nfunction extend(modules, methods) {\n  let key, i\n\n  modules = Array.isArray(modules) ? modules : [modules]\n\n  for (i = modules.length - 1; i >= 0; i--) {\n    for (key in methods) {\n      modules[i].prototype[key] = methods[key]\n    }\n  }\n}\n\nfunction wrapWithAttrCheck(fn) {\n  return function (...args) {\n    const o = args[args.length - 1]\n\n    if (o && o.constructor === Object && !(o instanceof Array)) {\n      return fn.apply(this, args.slice(0, -1)).attr(o)\n    } else {\n      return fn.apply(this, args)\n    }\n  }\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/utils/adopter.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   adopt: () => (/* binding */ adopt),
+/* harmony export */   assignNewId: () => (/* binding */ assignNewId),
+/* harmony export */   create: () => (/* binding */ create),
+/* harmony export */   eid: () => (/* binding */ eid),
+/* harmony export */   extend: () => (/* binding */ extend),
+/* harmony export */   getClass: () => (/* binding */ getClass),
+/* harmony export */   makeInstance: () => (/* binding */ makeInstance),
+/* harmony export */   mockAdopt: () => (/* binding */ mockAdopt),
+/* harmony export */   nodeOrNew: () => (/* binding */ nodeOrNew),
+/* harmony export */   register: () => (/* binding */ register),
+/* harmony export */   root: () => (/* binding */ root),
+/* harmony export */   wrapWithAttrCheck: () => (/* binding */ wrapWithAttrCheck)
+/* harmony export */ });
+/* harmony import */ var _methods_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./methods.js */ "./node_modules/@svgdotjs/svg.js/src/utils/methods.js");
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils.js */ "./node_modules/@svgdotjs/svg.js/src/utils/utils.js");
+/* harmony import */ var _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../modules/core/namespaces.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/namespaces.js");
+/* harmony import */ var _utils_window_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/window.js */ "./node_modules/@svgdotjs/svg.js/src/utils/window.js");
+/* harmony import */ var _types_Base_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../types/Base.js */ "./node_modules/@svgdotjs/svg.js/src/types/Base.js");
+
+
+
+
+
+
+const elements = {}
+const root = '___SYMBOL___ROOT___'
+
+// Method for element creation
+function create(name, ns = _modules_core_namespaces_js__WEBPACK_IMPORTED_MODULE_2__.svg) {
+  // create element
+  return _utils_window_js__WEBPACK_IMPORTED_MODULE_3__.globals.document.createElementNS(ns, name)
+}
+
+function makeInstance(element, isHTML = false) {
+  if (element instanceof _types_Base_js__WEBPACK_IMPORTED_MODULE_4__["default"]) return element
+
+  if (typeof element === 'object') {
+    return adopter(element)
+  }
+
+  if (element == null) {
+    return new elements[root]()
+  }
+
+  if (typeof element === 'string' && element.charAt(0) !== '<') {
+    return adopter(_utils_window_js__WEBPACK_IMPORTED_MODULE_3__.globals.document.querySelector(element))
+  }
+
+  // Make sure, that HTML elements are created with the correct namespace
+  const wrapper = isHTML ? _utils_window_js__WEBPACK_IMPORTED_MODULE_3__.globals.document.createElement('div') : create('svg')
+  wrapper.innerHTML = element
+
+  // We can use firstChild here because we know,
+  // that the first char is < and thus an element
+  element = adopter(wrapper.firstChild)
+
+  // make sure, that element doesn't have its wrapper attached
+  wrapper.removeChild(wrapper.firstChild)
+  return element
+}
+
+function nodeOrNew(name, node) {
+  return node &&
+    (node instanceof _utils_window_js__WEBPACK_IMPORTED_MODULE_3__.globals.window.Node ||
+      (node.ownerDocument &&
+        node instanceof node.ownerDocument.defaultView.Node))
+    ? node
+    : create(name)
+}
+
+// Adopt existing svg elements
+function adopt(node) {
+  // check for presence of node
+  if (!node) return null
+
+  // make sure a node isn't already adopted
+  if (node.instance instanceof _types_Base_js__WEBPACK_IMPORTED_MODULE_4__["default"]) return node.instance
+
+  if (node.nodeName === '#document-fragment') {
+    return new elements.Fragment(node)
+  }
+
+  // initialize variables
+  let className = (0,_utils_js__WEBPACK_IMPORTED_MODULE_1__.capitalize)(node.nodeName || 'Dom')
+
+  // Make sure that gradients are adopted correctly
+  if (className === 'LinearGradient' || className === 'RadialGradient') {
+    className = 'Gradient'
+
+    // Fallback to Dom if element is not known
+  } else if (!elements[className]) {
+    className = 'Dom'
+  }
+
+  return new elements[className](node)
+}
+
+let adopter = adopt
+
+function mockAdopt(mock = adopt) {
+  adopter = mock
+}
+
+function register(element, name = element.name, asRoot = false) {
+  elements[name] = element
+  if (asRoot) elements[root] = element
+
+  ;(0,_methods_js__WEBPACK_IMPORTED_MODULE_0__.addMethodNames)(Object.getOwnPropertyNames(element.prototype))
+
+  return element
+}
+
+function getClass(name) {
+  return elements[name]
+}
+
+// Element id sequence
+let did = 1000
+
+// Get next named element id
+function eid(name) {
+  return 'Svgjs' + (0,_utils_js__WEBPACK_IMPORTED_MODULE_1__.capitalize)(name) + did++
+}
+
+// Deep new id assignment
+function assignNewId(node) {
+  // do the same for SVG child nodes as well
+  for (let i = node.children.length - 1; i >= 0; i--) {
+    assignNewId(node.children[i])
+  }
+
+  if (node.id) {
+    node.id = eid(node.nodeName)
+    return node
+  }
+
+  return node
+}
+
+// Method for extending objects
+function extend(modules, methods) {
+  let key, i
+
+  modules = Array.isArray(modules) ? modules : [modules]
+
+  for (i = modules.length - 1; i >= 0; i--) {
+    for (key in methods) {
+      modules[i].prototype[key] = methods[key]
+    }
+  }
+}
+
+function wrapWithAttrCheck(fn) {
+  return function (...args) {
+    const o = args[args.length - 1]
+
+    if (o && o.constructor === Object && !(o instanceof Array)) {
+      return fn.apply(this, args.slice(0, -1)).attr(o)
+    } else {
+      return fn.apply(this, args)
+    }
+  }
+}
+
 
 /***/ }),
 
@@ -716,7 +9101,47 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   addMethodNames: () => (/* binding */ addMethodNames),\n/* harmony export */   getMethodNames: () => (/* binding */ getMethodNames),\n/* harmony export */   getMethodsFor: () => (/* binding */ getMethodsFor),\n/* harmony export */   registerMethods: () => (/* binding */ registerMethods)\n/* harmony export */ });\nconst methods = {}\nconst names = []\n\nfunction registerMethods(name, m) {\n  if (Array.isArray(name)) {\n    for (const _name of name) {\n      registerMethods(_name, m)\n    }\n    return\n  }\n\n  if (typeof name === 'object') {\n    for (const _name in name) {\n      registerMethods(_name, name[_name])\n    }\n    return\n  }\n\n  addMethodNames(Object.getOwnPropertyNames(m))\n  methods[name] = Object.assign(methods[name] || {}, m)\n}\n\nfunction getMethodsFor(name) {\n  return methods[name] || {}\n}\n\nfunction getMethodNames() {\n  return [...new Set(names)]\n}\n\nfunction addMethodNames(_names) {\n  names.push(..._names)\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/utils/methods.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   addMethodNames: () => (/* binding */ addMethodNames),
+/* harmony export */   getMethodNames: () => (/* binding */ getMethodNames),
+/* harmony export */   getMethodsFor: () => (/* binding */ getMethodsFor),
+/* harmony export */   registerMethods: () => (/* binding */ registerMethods)
+/* harmony export */ });
+const methods = {}
+const names = []
+
+function registerMethods(name, m) {
+  if (Array.isArray(name)) {
+    for (const _name of name) {
+      registerMethods(_name, m)
+    }
+    return
+  }
+
+  if (typeof name === 'object') {
+    for (const _name in name) {
+      registerMethods(_name, name[_name])
+    }
+    return
+  }
+
+  addMethodNames(Object.getOwnPropertyNames(m))
+  methods[name] = Object.assign(methods[name] || {}, m)
+}
+
+function getMethodsFor(name) {
+  return methods[name] || {}
+}
+
+function getMethodNames() {
+  return [...new Set(names)]
+}
+
+function addMethodNames(_names) {
+  names.push(..._names)
+}
+
 
 /***/ }),
 
@@ -726,7 +9151,263 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \***************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   pathParser: () => (/* binding */ pathParser)\n/* harmony export */ });\n/* harmony import */ var _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../modules/core/regex.js */ \"./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js\");\n/* harmony import */ var _types_Point_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../types/Point.js */ \"./node_modules/@svgdotjs/svg.js/src/types/Point.js\");\n\n\n\nconst segmentParameters = {\n  M: 2,\n  L: 2,\n  H: 1,\n  V: 1,\n  C: 6,\n  S: 4,\n  Q: 4,\n  T: 2,\n  A: 7,\n  Z: 0\n}\n\nconst pathHandlers = {\n  M: function (c, p, p0) {\n    p.x = p0.x = c[0]\n    p.y = p0.y = c[1]\n\n    return ['M', p.x, p.y]\n  },\n  L: function (c, p) {\n    p.x = c[0]\n    p.y = c[1]\n    return ['L', c[0], c[1]]\n  },\n  H: function (c, p) {\n    p.x = c[0]\n    return ['H', c[0]]\n  },\n  V: function (c, p) {\n    p.y = c[0]\n    return ['V', c[0]]\n  },\n  C: function (c, p) {\n    p.x = c[4]\n    p.y = c[5]\n    return ['C', c[0], c[1], c[2], c[3], c[4], c[5]]\n  },\n  S: function (c, p) {\n    p.x = c[2]\n    p.y = c[3]\n    return ['S', c[0], c[1], c[2], c[3]]\n  },\n  Q: function (c, p) {\n    p.x = c[2]\n    p.y = c[3]\n    return ['Q', c[0], c[1], c[2], c[3]]\n  },\n  T: function (c, p) {\n    p.x = c[0]\n    p.y = c[1]\n    return ['T', c[0], c[1]]\n  },\n  Z: function (c, p, p0) {\n    p.x = p0.x\n    p.y = p0.y\n    return ['Z']\n  },\n  A: function (c, p) {\n    p.x = c[5]\n    p.y = c[6]\n    return ['A', c[0], c[1], c[2], c[3], c[4], c[5], c[6]]\n  }\n}\n\nconst mlhvqtcsaz = 'mlhvqtcsaz'.split('')\n\nfor (let i = 0, il = mlhvqtcsaz.length; i < il; ++i) {\n  pathHandlers[mlhvqtcsaz[i]] = (function (i) {\n    return function (c, p, p0) {\n      if (i === 'H') c[0] = c[0] + p.x\n      else if (i === 'V') c[0] = c[0] + p.y\n      else if (i === 'A') {\n        c[5] = c[5] + p.x\n        c[6] = c[6] + p.y\n      } else {\n        for (let j = 0, jl = c.length; j < jl; ++j) {\n          c[j] = c[j] + (j % 2 ? p.y : p.x)\n        }\n      }\n\n      return pathHandlers[i](c, p, p0)\n    }\n  })(mlhvqtcsaz[i].toUpperCase())\n}\n\nfunction makeAbsolut(parser) {\n  const command = parser.segment[0]\n  return pathHandlers[command](parser.segment.slice(1), parser.p, parser.p0)\n}\n\nfunction segmentComplete(parser) {\n  return (\n    parser.segment.length &&\n    parser.segment.length - 1 ===\n      segmentParameters[parser.segment[0].toUpperCase()]\n  )\n}\n\nfunction startNewSegment(parser, token) {\n  parser.inNumber && finalizeNumber(parser, false)\n  const pathLetter = _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.isPathLetter.test(token)\n\n  if (pathLetter) {\n    parser.segment = [token]\n  } else {\n    const lastCommand = parser.lastCommand\n    const small = lastCommand.toLowerCase()\n    const isSmall = lastCommand === small\n    parser.segment = [small === 'm' ? (isSmall ? 'l' : 'L') : lastCommand]\n  }\n\n  parser.inSegment = true\n  parser.lastCommand = parser.segment[0]\n\n  return pathLetter\n}\n\nfunction finalizeNumber(parser, inNumber) {\n  if (!parser.inNumber) throw new Error('Parser Error')\n  parser.number && parser.segment.push(parseFloat(parser.number))\n  parser.inNumber = inNumber\n  parser.number = ''\n  parser.pointSeen = false\n  parser.hasExponent = false\n\n  if (segmentComplete(parser)) {\n    finalizeSegment(parser)\n  }\n}\n\nfunction finalizeSegment(parser) {\n  parser.inSegment = false\n  if (parser.absolute) {\n    parser.segment = makeAbsolut(parser)\n  }\n  parser.segments.push(parser.segment)\n}\n\nfunction isArcFlag(parser) {\n  if (!parser.segment.length) return false\n  const isArc = parser.segment[0].toUpperCase() === 'A'\n  const length = parser.segment.length\n\n  return isArc && (length === 4 || length === 5)\n}\n\nfunction isExponential(parser) {\n  return parser.lastToken.toUpperCase() === 'E'\n}\n\nconst pathDelimiters = new Set([' ', ',', '\\t', '\\n', '\\r', '\\f'])\nfunction pathParser(d, toAbsolute = true) {\n  let index = 0\n  let token = ''\n  const parser = {\n    segment: [],\n    inNumber: false,\n    number: '',\n    lastToken: '',\n    inSegment: false,\n    segments: [],\n    pointSeen: false,\n    hasExponent: false,\n    absolute: toAbsolute,\n    p0: new _types_Point_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"](),\n    p: new _types_Point_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"]()\n  }\n\n  while (((parser.lastToken = token), (token = d.charAt(index++)))) {\n    if (!parser.inSegment) {\n      if (startNewSegment(parser, token)) {\n        continue\n      }\n    }\n\n    if (token === '.') {\n      if (parser.pointSeen || parser.hasExponent) {\n        finalizeNumber(parser, false)\n        --index\n        continue\n      }\n      parser.inNumber = true\n      parser.pointSeen = true\n      parser.number += token\n      continue\n    }\n\n    if (!isNaN(parseInt(token))) {\n      if (parser.number === '0' || isArcFlag(parser)) {\n        parser.inNumber = true\n        parser.number = token\n        finalizeNumber(parser, true)\n        continue\n      }\n\n      parser.inNumber = true\n      parser.number += token\n      continue\n    }\n\n    if (pathDelimiters.has(token)) {\n      if (parser.inNumber) {\n        finalizeNumber(parser, false)\n      }\n      continue\n    }\n\n    if (token === '-' || token === '+') {\n      if (parser.inNumber && !isExponential(parser)) {\n        finalizeNumber(parser, false)\n        --index\n        continue\n      }\n      parser.number += token\n      parser.inNumber = true\n      continue\n    }\n\n    if (token.toUpperCase() === 'E') {\n      parser.number += token\n      parser.hasExponent = true\n      continue\n    }\n\n    if (_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.isPathLetter.test(token)) {\n      if (parser.inNumber) {\n        finalizeNumber(parser, false)\n      } else if (!segmentComplete(parser)) {\n        throw new Error('parser Error')\n      } else {\n        finalizeSegment(parser)\n      }\n      --index\n    }\n  }\n\n  if (parser.inNumber) {\n    finalizeNumber(parser, false)\n  }\n\n  if (parser.inSegment && segmentComplete(parser)) {\n    finalizeSegment(parser)\n  }\n\n  return parser.segments\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/utils/pathParser.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   pathParser: () => (/* binding */ pathParser)
+/* harmony export */ });
+/* harmony import */ var _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../modules/core/regex.js */ "./node_modules/@svgdotjs/svg.js/src/modules/core/regex.js");
+/* harmony import */ var _types_Point_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../types/Point.js */ "./node_modules/@svgdotjs/svg.js/src/types/Point.js");
+
+
+
+const segmentParameters = {
+  M: 2,
+  L: 2,
+  H: 1,
+  V: 1,
+  C: 6,
+  S: 4,
+  Q: 4,
+  T: 2,
+  A: 7,
+  Z: 0
+}
+
+const pathHandlers = {
+  M: function (c, p, p0) {
+    p.x = p0.x = c[0]
+    p.y = p0.y = c[1]
+
+    return ['M', p.x, p.y]
+  },
+  L: function (c, p) {
+    p.x = c[0]
+    p.y = c[1]
+    return ['L', c[0], c[1]]
+  },
+  H: function (c, p) {
+    p.x = c[0]
+    return ['H', c[0]]
+  },
+  V: function (c, p) {
+    p.y = c[0]
+    return ['V', c[0]]
+  },
+  C: function (c, p) {
+    p.x = c[4]
+    p.y = c[5]
+    return ['C', c[0], c[1], c[2], c[3], c[4], c[5]]
+  },
+  S: function (c, p) {
+    p.x = c[2]
+    p.y = c[3]
+    return ['S', c[0], c[1], c[2], c[3]]
+  },
+  Q: function (c, p) {
+    p.x = c[2]
+    p.y = c[3]
+    return ['Q', c[0], c[1], c[2], c[3]]
+  },
+  T: function (c, p) {
+    p.x = c[0]
+    p.y = c[1]
+    return ['T', c[0], c[1]]
+  },
+  Z: function (c, p, p0) {
+    p.x = p0.x
+    p.y = p0.y
+    return ['Z']
+  },
+  A: function (c, p) {
+    p.x = c[5]
+    p.y = c[6]
+    return ['A', c[0], c[1], c[2], c[3], c[4], c[5], c[6]]
+  }
+}
+
+const mlhvqtcsaz = 'mlhvqtcsaz'.split('')
+
+for (let i = 0, il = mlhvqtcsaz.length; i < il; ++i) {
+  pathHandlers[mlhvqtcsaz[i]] = (function (i) {
+    return function (c, p, p0) {
+      if (i === 'H') c[0] = c[0] + p.x
+      else if (i === 'V') c[0] = c[0] + p.y
+      else if (i === 'A') {
+        c[5] = c[5] + p.x
+        c[6] = c[6] + p.y
+      } else {
+        for (let j = 0, jl = c.length; j < jl; ++j) {
+          c[j] = c[j] + (j % 2 ? p.y : p.x)
+        }
+      }
+
+      return pathHandlers[i](c, p, p0)
+    }
+  })(mlhvqtcsaz[i].toUpperCase())
+}
+
+function makeAbsolut(parser) {
+  const command = parser.segment[0]
+  return pathHandlers[command](parser.segment.slice(1), parser.p, parser.p0)
+}
+
+function segmentComplete(parser) {
+  return (
+    parser.segment.length &&
+    parser.segment.length - 1 ===
+      segmentParameters[parser.segment[0].toUpperCase()]
+  )
+}
+
+function startNewSegment(parser, token) {
+  parser.inNumber && finalizeNumber(parser, false)
+  const pathLetter = _modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.isPathLetter.test(token)
+
+  if (pathLetter) {
+    parser.segment = [token]
+  } else {
+    const lastCommand = parser.lastCommand
+    const small = lastCommand.toLowerCase()
+    const isSmall = lastCommand === small
+    parser.segment = [small === 'm' ? (isSmall ? 'l' : 'L') : lastCommand]
+  }
+
+  parser.inSegment = true
+  parser.lastCommand = parser.segment[0]
+
+  return pathLetter
+}
+
+function finalizeNumber(parser, inNumber) {
+  if (!parser.inNumber) throw new Error('Parser Error')
+  parser.number && parser.segment.push(parseFloat(parser.number))
+  parser.inNumber = inNumber
+  parser.number = ''
+  parser.pointSeen = false
+  parser.hasExponent = false
+
+  if (segmentComplete(parser)) {
+    finalizeSegment(parser)
+  }
+}
+
+function finalizeSegment(parser) {
+  parser.inSegment = false
+  if (parser.absolute) {
+    parser.segment = makeAbsolut(parser)
+  }
+  parser.segments.push(parser.segment)
+}
+
+function isArcFlag(parser) {
+  if (!parser.segment.length) return false
+  const isArc = parser.segment[0].toUpperCase() === 'A'
+  const length = parser.segment.length
+
+  return isArc && (length === 4 || length === 5)
+}
+
+function isExponential(parser) {
+  return parser.lastToken.toUpperCase() === 'E'
+}
+
+const pathDelimiters = new Set([' ', ',', '\t', '\n', '\r', '\f'])
+function pathParser(d, toAbsolute = true) {
+  let index = 0
+  let token = ''
+  const parser = {
+    segment: [],
+    inNumber: false,
+    number: '',
+    lastToken: '',
+    inSegment: false,
+    segments: [],
+    pointSeen: false,
+    hasExponent: false,
+    absolute: toAbsolute,
+    p0: new _types_Point_js__WEBPACK_IMPORTED_MODULE_1__["default"](),
+    p: new _types_Point_js__WEBPACK_IMPORTED_MODULE_1__["default"]()
+  }
+
+  while (((parser.lastToken = token), (token = d.charAt(index++)))) {
+    if (!parser.inSegment) {
+      if (startNewSegment(parser, token)) {
+        continue
+      }
+    }
+
+    if (token === '.') {
+      if (parser.pointSeen || parser.hasExponent) {
+        finalizeNumber(parser, false)
+        --index
+        continue
+      }
+      parser.inNumber = true
+      parser.pointSeen = true
+      parser.number += token
+      continue
+    }
+
+    if (!isNaN(parseInt(token))) {
+      if (parser.number === '0' || isArcFlag(parser)) {
+        parser.inNumber = true
+        parser.number = token
+        finalizeNumber(parser, true)
+        continue
+      }
+
+      parser.inNumber = true
+      parser.number += token
+      continue
+    }
+
+    if (pathDelimiters.has(token)) {
+      if (parser.inNumber) {
+        finalizeNumber(parser, false)
+      }
+      continue
+    }
+
+    if (token === '-' || token === '+') {
+      if (parser.inNumber && !isExponential(parser)) {
+        finalizeNumber(parser, false)
+        --index
+        continue
+      }
+      parser.number += token
+      parser.inNumber = true
+      continue
+    }
+
+    if (token.toUpperCase() === 'E') {
+      parser.number += token
+      parser.hasExponent = true
+      continue
+    }
+
+    if (_modules_core_regex_js__WEBPACK_IMPORTED_MODULE_0__.isPathLetter.test(token)) {
+      if (parser.inNumber) {
+        finalizeNumber(parser, false)
+      } else if (!segmentComplete(parser)) {
+        throw new Error('parser Error')
+      } else {
+        finalizeSegment(parser)
+      }
+      --index
+    }
+  }
+
+  if (parser.inNumber) {
+    finalizeNumber(parser, false)
+  }
+
+  if (parser.inSegment && segmentComplete(parser)) {
+    finalizeSegment(parser)
+  }
+
+  return parser.segments
+}
+
 
 /***/ }),
 
@@ -736,7 +9417,156 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \**********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   capitalize: () => (/* binding */ capitalize),\n/* harmony export */   degrees: () => (/* binding */ degrees),\n/* harmony export */   filter: () => (/* binding */ filter),\n/* harmony export */   getOrigin: () => (/* binding */ getOrigin),\n/* harmony export */   isDescriptive: () => (/* binding */ isDescriptive),\n/* harmony export */   map: () => (/* binding */ map),\n/* harmony export */   proportionalSize: () => (/* binding */ proportionalSize),\n/* harmony export */   radians: () => (/* binding */ radians),\n/* harmony export */   unCamelCase: () => (/* binding */ unCamelCase),\n/* harmony export */   writeDataToDom: () => (/* binding */ writeDataToDom)\n/* harmony export */ });\n// Map function\nfunction map(array, block) {\n  let i\n  const il = array.length\n  const result = []\n\n  for (i = 0; i < il; i++) {\n    result.push(block(array[i]))\n  }\n\n  return result\n}\n\n// Filter function\nfunction filter(array, block) {\n  let i\n  const il = array.length\n  const result = []\n\n  for (i = 0; i < il; i++) {\n    if (block(array[i])) {\n      result.push(array[i])\n    }\n  }\n\n  return result\n}\n\n// Degrees to radians\nfunction radians(d) {\n  return ((d % 360) * Math.PI) / 180\n}\n\n// Radians to degrees\nfunction degrees(r) {\n  return ((r * 180) / Math.PI) % 360\n}\n\n// Convert camel cased string to dash separated\nfunction unCamelCase(s) {\n  return s.replace(/([A-Z])/g, function (m, g) {\n    return '-' + g.toLowerCase()\n  })\n}\n\n// Capitalize first letter of a string\nfunction capitalize(s) {\n  return s.charAt(0).toUpperCase() + s.slice(1)\n}\n\n// Calculate proportional width and height values when necessary\nfunction proportionalSize(element, width, height, box) {\n  if (width == null || height == null) {\n    box = box || element.bbox()\n\n    if (width == null) {\n      width = (box.width / box.height) * height\n    } else if (height == null) {\n      height = (box.height / box.width) * width\n    }\n  }\n\n  return {\n    width: width,\n    height: height\n  }\n}\n\n/**\n * This function adds support for string origins.\n * It searches for an origin in o.origin o.ox and o.originX.\n * This way, origin: {x: 'center', y: 50} can be passed as well as ox: 'center', oy: 50\n **/\nfunction getOrigin(o, element) {\n  const origin = o.origin\n  // First check if origin is in ox or originX\n  let ox = o.ox != null ? o.ox : o.originX != null ? o.originX : 'center'\n  let oy = o.oy != null ? o.oy : o.originY != null ? o.originY : 'center'\n\n  // Then check if origin was used and overwrite in that case\n  if (origin != null) {\n    ;[ox, oy] = Array.isArray(origin)\n      ? origin\n      : typeof origin === 'object'\n        ? [origin.x, origin.y]\n        : [origin, origin]\n  }\n\n  // Make sure to only call bbox when actually needed\n  const condX = typeof ox === 'string'\n  const condY = typeof oy === 'string'\n  if (condX || condY) {\n    const { height, width, x, y } = element.bbox()\n\n    // And only overwrite if string was passed for this specific axis\n    if (condX) {\n      ox = ox.includes('left')\n        ? x\n        : ox.includes('right')\n          ? x + width\n          : x + width / 2\n    }\n\n    if (condY) {\n      oy = oy.includes('top')\n        ? y\n        : oy.includes('bottom')\n          ? y + height\n          : y + height / 2\n    }\n  }\n\n  // Return the origin as it is if it wasn't a string\n  return [ox, oy]\n}\n\nconst descriptiveElements = new Set(['desc', 'metadata', 'title'])\nconst isDescriptive = (element) =>\n  descriptiveElements.has(element.nodeName)\n\nconst writeDataToDom = (element, data, defaults = {}) => {\n  const cloned = { ...data }\n\n  for (const key in cloned) {\n    if (cloned[key].valueOf() === defaults[key]) {\n      delete cloned[key]\n    }\n  }\n\n  if (Object.keys(cloned).length) {\n    element.node.setAttribute('data-svgjs', JSON.stringify(cloned)) // see #428\n  } else {\n    element.node.removeAttribute('data-svgjs')\n    element.node.removeAttribute('svgjs:data')\n  }\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/utils/utils.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   capitalize: () => (/* binding */ capitalize),
+/* harmony export */   degrees: () => (/* binding */ degrees),
+/* harmony export */   filter: () => (/* binding */ filter),
+/* harmony export */   getOrigin: () => (/* binding */ getOrigin),
+/* harmony export */   isDescriptive: () => (/* binding */ isDescriptive),
+/* harmony export */   map: () => (/* binding */ map),
+/* harmony export */   proportionalSize: () => (/* binding */ proportionalSize),
+/* harmony export */   radians: () => (/* binding */ radians),
+/* harmony export */   unCamelCase: () => (/* binding */ unCamelCase),
+/* harmony export */   writeDataToDom: () => (/* binding */ writeDataToDom)
+/* harmony export */ });
+// Map function
+function map(array, block) {
+  let i
+  const il = array.length
+  const result = []
+
+  for (i = 0; i < il; i++) {
+    result.push(block(array[i]))
+  }
+
+  return result
+}
+
+// Filter function
+function filter(array, block) {
+  let i
+  const il = array.length
+  const result = []
+
+  for (i = 0; i < il; i++) {
+    if (block(array[i])) {
+      result.push(array[i])
+    }
+  }
+
+  return result
+}
+
+// Degrees to radians
+function radians(d) {
+  return ((d % 360) * Math.PI) / 180
+}
+
+// Radians to degrees
+function degrees(r) {
+  return ((r * 180) / Math.PI) % 360
+}
+
+// Convert camel cased string to dash separated
+function unCamelCase(s) {
+  return s.replace(/([A-Z])/g, function (m, g) {
+    return '-' + g.toLowerCase()
+  })
+}
+
+// Capitalize first letter of a string
+function capitalize(s) {
+  return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
+// Calculate proportional width and height values when necessary
+function proportionalSize(element, width, height, box) {
+  if (width == null || height == null) {
+    box = box || element.bbox()
+
+    if (width == null) {
+      width = (box.width / box.height) * height
+    } else if (height == null) {
+      height = (box.height / box.width) * width
+    }
+  }
+
+  return {
+    width: width,
+    height: height
+  }
+}
+
+/**
+ * This function adds support for string origins.
+ * It searches for an origin in o.origin o.ox and o.originX.
+ * This way, origin: {x: 'center', y: 50} can be passed as well as ox: 'center', oy: 50
+ **/
+function getOrigin(o, element) {
+  const origin = o.origin
+  // First check if origin is in ox or originX
+  let ox = o.ox != null ? o.ox : o.originX != null ? o.originX : 'center'
+  let oy = o.oy != null ? o.oy : o.originY != null ? o.originY : 'center'
+
+  // Then check if origin was used and overwrite in that case
+  if (origin != null) {
+    ;[ox, oy] = Array.isArray(origin)
+      ? origin
+      : typeof origin === 'object'
+        ? [origin.x, origin.y]
+        : [origin, origin]
+  }
+
+  // Make sure to only call bbox when actually needed
+  const condX = typeof ox === 'string'
+  const condY = typeof oy === 'string'
+  if (condX || condY) {
+    const { height, width, x, y } = element.bbox()
+
+    // And only overwrite if string was passed for this specific axis
+    if (condX) {
+      ox = ox.includes('left')
+        ? x
+        : ox.includes('right')
+          ? x + width
+          : x + width / 2
+    }
+
+    if (condY) {
+      oy = oy.includes('top')
+        ? y
+        : oy.includes('bottom')
+          ? y + height
+          : y + height / 2
+    }
+  }
+
+  // Return the origin as it is if it wasn't a string
+  return [ox, oy]
+}
+
+const descriptiveElements = new Set(['desc', 'metadata', 'title'])
+const isDescriptive = (element) =>
+  descriptiveElements.has(element.nodeName)
+
+const writeDataToDom = (element, data, defaults = {}) => {
+  const cloned = { ...data }
+
+  for (const key in cloned) {
+    if (cloned[key].valueOf() === defaults[key]) {
+      delete cloned[key]
+    }
+  }
+
+  if (Object.keys(cloned).length) {
+    element.node.setAttribute('data-svgjs', JSON.stringify(cloned)) // see #428
+  } else {
+    element.node.removeAttribute('data-svgjs')
+    element.node.removeAttribute('svgjs:data')
+  }
+}
+
 
 /***/ }),
 
@@ -746,7 +9576,48 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \***********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   getWindow: () => (/* binding */ getWindow),\n/* harmony export */   globals: () => (/* binding */ globals),\n/* harmony export */   registerWindow: () => (/* binding */ registerWindow),\n/* harmony export */   restoreWindow: () => (/* binding */ restoreWindow),\n/* harmony export */   saveWindow: () => (/* binding */ saveWindow),\n/* harmony export */   withWindow: () => (/* binding */ withWindow)\n/* harmony export */ });\nconst globals = {\n  window: typeof window === 'undefined' ? null : window,\n  document: typeof document === 'undefined' ? null : document\n}\n\nfunction registerWindow(win = null, doc = null) {\n  globals.window = win\n  globals.document = doc\n}\n\nconst save = {}\n\nfunction saveWindow() {\n  save.window = globals.window\n  save.document = globals.document\n}\n\nfunction restoreWindow() {\n  globals.window = save.window\n  globals.document = save.document\n}\n\nfunction withWindow(win, fn) {\n  saveWindow()\n  registerWindow(win, win.document)\n  fn(win, win.document)\n  restoreWindow()\n}\n\nfunction getWindow() {\n  return globals.window\n}\n\n\n//# sourceURL=webpack://annakap.github.io/./node_modules/@svgdotjs/svg.js/src/utils/window.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getWindow: () => (/* binding */ getWindow),
+/* harmony export */   globals: () => (/* binding */ globals),
+/* harmony export */   registerWindow: () => (/* binding */ registerWindow),
+/* harmony export */   restoreWindow: () => (/* binding */ restoreWindow),
+/* harmony export */   saveWindow: () => (/* binding */ saveWindow),
+/* harmony export */   withWindow: () => (/* binding */ withWindow)
+/* harmony export */ });
+const globals = {
+  window: typeof window === 'undefined' ? null : window,
+  document: typeof document === 'undefined' ? null : document
+}
+
+function registerWindow(win = null, doc = null) {
+  globals.window = win
+  globals.document = doc
+}
+
+const save = {}
+
+function saveWindow() {
+  save.window = globals.window
+  save.document = globals.document
+}
+
+function restoreWindow() {
+  globals.window = save.window
+  globals.document = save.document
+}
+
+function withWindow(win, fn) {
+  saveWindow()
+  registerWindow(win, win.document)
+  fn(win, win.document)
+  restoreWindow()
+}
+
+function getWindow() {
+  return globals.window
+}
+
 
 /***/ })
 
@@ -806,11 +9677,37 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module can't be inlined because the eval devtool is used.
-/******/ 	var __webpack_exports__ = __webpack_require__("./src/scripts/main.js");
-/******/ 	
+var __webpack_exports__ = {};
+/*!*****************************!*\
+  !*** ./src/scripts/main.js ***!
+  \*****************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _svgdotjs_svg_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @svgdotjs/svg.js */ "./node_modules/@svgdotjs/svg.js/src/main.js");
+
+var sad = function sad() {
+  var sadDraw = (0,_svgdotjs_svg_js__WEBPACK_IMPORTED_MODULE_0__.SVG)().addTo('#sad').size(180, 120); // Changed 'SVG('sad')' to addTo('#sad')
+  var frown = sadDraw.path('M 10 60 q 55 0 110 0').fill('none').stroke({
+    color: '#f06',
+    width: 4,
+    linecap: 'round',
+    linejoin: 'round'
+  });
+  var eye1 = sadDraw.ellipse(20, 5).fill('#f06').move(10, 10);
+  var eye2 = sadDraw.ellipse(20, 5).fill('#f06').move(100, 10);
+};
+var smile = function smile() {
+  var smileDraw = (0,_svgdotjs_svg_js__WEBPACK_IMPORTED_MODULE_0__.SVG)().addTo('#smile').size(180, 120); // Changed 'SVG('smile')' to addTo('#smile')
+  var smile = smileDraw.path('M 10 60 q 55 0 110 0').fill('none').stroke({
+    color: '#f06',
+    width: 4,
+    linecap: 'round',
+    linejoin: 'round'
+  });
+  var eye1 = smileDraw.ellipse(20, 5).fill('#f06').move(10, 10);
+  var eye2 = smileDraw.ellipse(20, 5).fill('#f06').move(100, 10);
+};
+sad();
+smile();
 /******/ })()
 ;
+//# sourceMappingURL=bundle.js.map
