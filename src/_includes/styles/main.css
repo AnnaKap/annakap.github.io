@@ -137,4 +137,9 @@ svg ellipse {
 
 .pdf-container {
   height:85vh;
+
+  embed {
+    height: 100%;
+    width: 100%;
+  }
 }
