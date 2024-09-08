@@ -571,10 +571,6 @@ video {
   margin-bottom: 0.5rem;
 }
 
-.ml-10 {
-  margin-left: 2.5rem;
-}
-
 .mr-4 {
   margin-right: 1rem;
 }
@@ -607,16 +603,8 @@ video {
   display: none;
 }
 
-.h-3\/5 {
-  height: 60%;
-}
-
 .h-full {
   height: 100%;
-}
-
-.w-1\/2 {
-  width: 50%;
 }
 
 .w-4\/5 {
@@ -643,10 +631,6 @@ video {
   flex-basis: 20%;
 }
 
-.flex-row {
-  flex-direction: row;
-}
-
 .flex-col {
   flex-direction: column;
 }
@@ -655,12 +639,12 @@ video {
   flex-wrap: wrap;
 }
 
-.items-start {
-  align-items: flex-start;
-}
-
 .items-end {
   align-items: flex-end;
+}
+
+.items-center {
+  align-items: center;
 }
 
 .justify-start {
@@ -677,6 +661,10 @@ video {
 
 .justify-around {
   justify-content: space-around;
+}
+
+.rounded-sm {
+  border-radius: 0.125rem;
 }
 
 .bg-orange-200 {
@@ -825,32 +813,102 @@ body {
 
 .scroll {
   scrollbar-color: rebeccapurple green;
-  overflow: scroll !important;
+  height: 80vh;
+  overflow-y: scroll !important;
 }
 
-svg path{
-  transition: d 1s, stroke 1s;
+/* Define keyframes for path animations */
+
+@keyframes smilePath {
+  0% {
+    d: path("M 10 60 q 55 100 110 0");
+    stroke: #ff0000;
+  }
+
+  50% {
+    stroke: #1900ff;
+    d: path("M 10 60 q 55 50 110 0");
+  }
+
+  100% {
+    d: path("M 10 60 q 55 100 110 0");
+    stroke: #ff0000;
+  }
 }
 
-svg ellipse{
-  transition: ry 1s, fill 1s;
+@keyframes sadPath {
+  0% {
+    d: path("M 10 100 Q 65 0 120 100");
+    stroke: #1900ff;
+  }
+
+  50% {
+    d: path("M 10 100 Q 65 50 120 100");
+    stroke: #ff0000;
+  }
+
+  100% {
+    d: path("M 10 100 Q 65 0 120 100");
+    stroke: #1900ff;
+  }
 }
 
-#smile svg:hover path {
-  d: path("M 10 60 q 55 100 110 0");
+/* Define keyframes for ellipse animations */
+
+@keyframes sadEllipse {
+  0% {
+    ry: 2;
+    fill: #1900ff;
+  }
+
+  50% {
+    ry: 10;
+    fill: #ff0000;
+  }
+
+  100% {
+    ry: 2;
+    fill: #1900ff;
+  }
 }
 
-#sad svg:hover path{
-  d: path("M 10 100 Q 65 0 120 100");
-  stroke: #1900ff;
+@keyframes hoverEllipse {
+  0% {
+    ry: 2;
+    fill: #ff0000;
+  }
+
+  50% {
+    ry: 10;
+    fill: #1900ff;
+  }
+
+  100% {
+    ry: 2;
+    fill: #ff0000;
+  }
 }
 
-#sad svg:hover ellipse{
-  fill: #1900ff;
+/* Apply animations to the respective elements */
+
+#smile svg path {
+  animation: smilePath 2s infinite;
 }
 
-svg:hover ellipse{
-  ry: 10;
+#sad svg path {
+  animation: sadPath 2s infinite;
+}
+
+#sad svg ellipse {
+  animation: sadEllipse 2s infinite;
+}
+
+svg ellipse {
+  animation: hoverEllipse 2s infinite;
+}
+
+.pdf-container {
+  height:85vh;
 }
 
 .hover\:scale-150:hover {
@@ -874,16 +932,28 @@ svg:hover ellipse{
   background-color: rgb(253 224 71 / var(--tw-bg-opacity));
 }
 
+@media (min-width: 640px) {
+  .sm\:w-4\/5 {
+    width: 80%;
+  }
+}
+
 @media (min-width: 768px) {
   .md\:block {
     display: block;
   }
 
-  .md\:w-1\/2 {
-    width: 50%;
+  .md\:w-2\/3 {
+    width: 66.666667%;
   }
 
   .md\:flex-row {
     flex-direction: row;
+  }
+}
+
+@media (min-width: 1024px) {
+  .lg\:w-1\/2 {
+    width: 50%;
   }
 }
