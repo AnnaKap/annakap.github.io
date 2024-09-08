@@ -1,9 +1,9 @@
-<section class="px-10 flex justify-around items-end">
+<section class="md:px-10 pl-1 pr-4 flex justify-evenly items-end">
   {% include 'components/userHeader.liquid' %}
   <nav class="grow">
     <ul class="flex flex-wrap justify-end">
       {% for item in navBar.items %}
-        <li class="mr-2">
+        <li class="mr-4">
           <a class="text-base  hover:bg-red-300 {% if page.url == item.url %}bg-red-300 {% endif %}" href="{{ item.url }}">{{ item.title }}</a>
         </li>
       {% endfor %}
