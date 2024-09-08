@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!-- [if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif] -->
+<!-- [if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif] -->
+<!-- [if IE 8]>         <html class="no-js lt-ie9"> <![endif] -->
+<!-- [if gt IE 8]>      <html class="no-js"> <!--<![endif] -->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Contact</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/styles/main.css">
+    
+  </head>
+  <body class="">
+    <!-- [if lt IE 7]>
+        <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p><![endif] -->
+    <section class="m-2">
+      <section class="px-10 flex justify-around items-end">
+  <a href="/info/" class="">
+  <h1 class="text-xl font-bold">Anna Kaplan</h1>
+  <p class="text-base md:block hidden">software engineer and artist</p>
+</a>
+  <nav class="grow">
+    <ul class="flex justify-end">
+      
+        <li class="mr-4">
+          <a class="text-base  hover:bg-red-300 " href="/info/">info</a>
+        </li>
+      
+        <li class="mr-4">
+          <a class="text-base  hover:bg-red-300 bg-red-300 " href="/contact/">contact</a>
+        </li>
+      
+        <li class="mr-4">
+          <a class="text-base  hover:bg-red-300 " href="/blog/">blog</a>
+        </li>
+      
+        <li class="mr-4">
+          <a class="text-base  hover:bg-red-300 " href="/cv/">CV</a>
+        </li>
+      
+        <li class="mr-4">
+          <a class="text-base  hover:bg-red-300 " href="/projects/">projects</a>
+        </li>
+      
+    </ul>
+  </nav>
+</section>
+      <main class="px-10 py-8">
+        <section>
+  <button class="text-base hover:bg-red-300" id="copy-btn">• email •
+  </button>
+  <a
+    class="text-base hover:bg-red-300"
+    href="https://github.com/AnnaKap"
+    target="_blank"
+    rel="noreferrer noopener">github •
+  </a>
+  <a
+    class="text-base hover:bg-red-300"
+    href="https://www.linkedin.com/in/annakaplan1/"
+    target="_blank"
+    rel="noreferrer noopener">LinkedIn •</a>
+</section>
+<script>
+    const copyBtn = document.getElementById('copy-btn');
+    copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText('miss.akaplan@gmail.com');
+        alert('Email copied to clipboard');
+    }).catch(err => {
+        alert('Failed to copy email. Please try again ');
+    });
+</script>
+      </main>
+    </section>
+    <script
+      src=""
+      async
+      defer></script>
+  </body>
+</html>
