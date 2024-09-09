@@ -2,9 +2,10 @@
     "projects" : [
         {
             "date":"Current",
-            "title": "Spotify Stats",
+            "title": "Spotify Stats - Work in progress",
             "description": "Currently working on a project that uses the Spotify API to visually display data about a playlist such as genre make up.",
-            "tools": ["Docker", "NestJs", "React", "Redis", "Spotify API"]
+            "tools": ["Docker", "NestJs", "React", "Redis", "Spotify API"],
+            "github": "https://github.com/AnnaKap/spotify-stats"
         },
         {
             "date":"September 2024",
